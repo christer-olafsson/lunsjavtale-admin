@@ -12,7 +12,7 @@ query{
         edges{
           node{
             id
-            price
+            actualPrice
             name
             description
             attachments(isCover:true){
@@ -42,7 +42,7 @@ export const GET_SINGLE_CATEGORY = gql`
             id
             name
             title
-            price
+            actualPrice
             description
             category{
             name

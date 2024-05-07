@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './pages/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
 import NotFound from './pages/notFound/Index'
@@ -16,12 +16,22 @@ import Promotion from './pages/promotion/Index'
 import Settings from './pages/settings/Index'
 import OrderDetails from './pages/orders/OrderDetails'
 import SalesDetails from './pages/salesHistory/SalesDetails'
+import Meeting from './pages/meeting/Index'
+import Login from './pages/login/Login'
+import { useEffect, useState } from 'react'
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  useEffect(() => {
+    setToken(localStorage.getItem('token'))
+  }, [])
+
 
   return (
     <Routes>
-      <Route element={<Layout />}>
+      <Route path='/login' element={token ? <Navigate to='/dashboard' /> : <Login />} />
+      <Route element={token ? <Layout /> : <Navigate to='/login' />}>
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />
@@ -31,6 +41,7 @@ function App() {
         <Route path='/dashboard/sales-history' element={<SalesHistory />} />
         <Route path='/dashboard/sales-history/details/:id' element={<SalesDetails />} />
         <Route path='/dashboard/customers' element={<Customers />} />
+        <Route path='/dashboard/meetings' element={<Meeting />} />
         <Route path='/dashboard/coupons' element={<Coupons />} />
         <Route path='/dashboard/invoice' element={<Invoice />} />
         <Route path='/dashboard/brand' element={<Brand />} />

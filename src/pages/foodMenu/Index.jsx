@@ -131,7 +131,7 @@ const FoodItem = () => {
                   [1, 2, 3, 4, 5, 6, 7, 8, 9].map((data, id) => (
                     <>
                       <Box key={id} sx={{
-                        width: { xs: '100%', lg: '300px' },
+                        width: { xs: '100%', md: '300px' },
                         bgcolor: 'light.main',
                         p: { xs: 1, lg: 2.5 },
                         borderRadius: '8px'

@@ -13,10 +13,16 @@ query{
           node{
             id
             actualPrice
-            priceWithTax
             name
             description
-            photoUrl
+            attachments(isCover:true){
+              edges{
+                node{
+                  id
+                  fileUrl
+                }
+              }
+            }
           }
         }
       }

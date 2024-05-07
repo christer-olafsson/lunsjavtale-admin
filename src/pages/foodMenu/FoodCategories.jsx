@@ -40,7 +40,8 @@ const FoodCategories = () => {
   const [addCategoryOpen, setAddCategoryOpen] = useState(false)
   const [categoryId, setCategoryId] = useState(1);
   const [allCategorys, setAllCategorys] = useState([]);
-  const [singleCategory, setSingleCategory] = useState([])
+  const [singleCategory, setSingleCategory] = useState([]);
+
 
   const { loading: loadingCategory, error: categoryErr } = useQuery(GET_ALL_CATEGORY, {
     onCompleted: (data) => {
@@ -48,8 +49,8 @@ const FoodCategories = () => {
       setAllCategorys(res)
     },
   });
-
-  console.log(singleCategory)
+console.log(allCategorys)
+  
   const { loading: loadinSingleCat, error: errSingleCat } = useQuery(GET_SINGLE_CATEGORY, {
     variables: {
       id: categoryId
@@ -78,7 +79,7 @@ const FoodCategories = () => {
                 color: categoryId === item.node.id ? '#fff' : 'inherit',
                 borderRadius: '8px',
                 padding: '20px 35px',
-                width:{xs:'100%',lg:'300px'},
+                width:{xs:'100%',md:'300px'},
                 cursor: 'pointer'
               }} direction='row' gap={2} alignItems='center'>
                 <img src='/Breakfast.png' alt="" />
@@ -92,14 +93,14 @@ const FoodCategories = () => {
         }
       </Stack>
 
-      <Stack direction={{xs:'column',lg:'row'}} gap={2} mt={3}>
+      <Stack direction={{xs:'column',md:'row'}} gap={2} mt={3}>
         {
           loadinSingleCat ? <Loader /> : errSingleCat ? <ErrorMsg /> :
             singleCategory.map(item => (
               <Box key={item.node.id} sx={{
                 bgcolor: 'light.main',
                 p: 2, borderRadius: '8px',
-                width: {xs:'100%',lg:'235px'}
+                width: {xs:'100%',md:'235px'}
               }}>
                 <img style={{ width: '100%', height: '138px', borderRadius: '8px', objectFit: 'cover' }} 
                 src={item.node.attachments.edges[0].node.fileUrl} alt="" />

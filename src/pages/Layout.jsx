@@ -11,8 +11,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, History, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, Notifications, NotificationsNone, People, Recommend, Search, Settings, SpaceDashboard, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, Notifications, NotificationsNone, People, Recommend, Search, Settings, SpaceDashboard, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
+import { LOGOUT } from './login/graphql/mutation';
+import toast from 'react-hot-toast';
+import { useMutation } from '@apollo/client';
 
 const drawerWidth = 264;
 
@@ -99,6 +102,21 @@ function Layout() {
   const [expandFoodMenu, setExpandFoodMenu] = useState(false)
 
   const { pathname } = useLocation()
+
+
+  const [logout, { loading }] = useMutation(LOGOUT, {
+    onCompleted: (res) => {
+      localStorage.clear()
+      toast.success(res.message)
+      window.location.href = '/login'
+    },
+  });
+
+  const handleLogout = () => {
+    logout()
+    localStorage.clear()
+    window.location.href = '/'
+  }
 
   const open = Boolean(userMenuOpen);
   const handleUserMenuOpen = (event) => {
@@ -199,6 +217,18 @@ function Layout() {
           icon={<People />}
           text='Customers'
           selected={pathname === '/dashboard/customers'}
+        />
+        <ListBtn onClick={handleDrawerClose}
+          link='/dashboard/vendor'
+          icon={<HolidayVillage />}
+          text='Vendor'
+          selected={pathname === '/dashboard/vendor'}
+        />
+        <ListBtn onClick={handleDrawerClose}
+          link='/dashboard/meetings'
+          icon={<Diversity3 />}
+          text='Meeting-Schedule'
+          selected={pathname === '/dashboard/meetings'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/coupons'
@@ -354,7 +384,6 @@ function Layout() {
             </ClickAwayListener>
             {/* user menu */}
             <Box>
-              <Tooltip title="Account settings">
                 <IconButton
                   onClick={handleUserMenuOpen}
                   size="small"
@@ -364,7 +393,6 @@ function Layout() {
                 >
                   <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
                 </IconButton>
-              </Tooltip>
               <Menu
                 anchorEl={userMenuOpen}
                 id="account-menu"
@@ -388,7 +416,10 @@ function Layout() {
                   </ListItemIcon>
                   Settings
                 </MenuItem>
-                <MenuItem onClick={handleUserMenuClose}>
+                <MenuItem onClick={()=> (
+                  handleUserMenuClose(),
+                  handleLogout()
+                )}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>
@@ -442,7 +473,7 @@ function Layout() {
         <Toolbar />
         <Outlet />
       </Box>
-    </Box>
+    </Box >
   );
 }
 

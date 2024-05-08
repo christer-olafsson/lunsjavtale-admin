@@ -1,14 +1,51 @@
 /* eslint-disable react/prop-types */
+import { useMutation, useQuery } from '@apollo/client';
 import { Close, CloudUpload } from '@mui/icons-material'
 import { Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
+import { CREATE_PRODUCT } from './graphql/mutation'
+import { GET_ALL_CATEGORY } from './graphql/query';
 
 
 const AddItem = ({ closeDialog }) => {
   const [category, setCategory] = useState('');
   const [currency, setCurrency] = useState('');
-  const [productImg, setProductImg] = useState(null)
+  const [productImg, setProductImg] = useState(null);
+  const [errors, setErrors] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
+  const [payload, setPayload] = useState({
+    name: '',
+    category: '',
 
+  })
+
+
+  const [createProduct, { loading }] = useMutation(CREATE_PRODUCT, {
+    onCompleted: (res) => {
+      console.log('create product res:', res)
+      // fetchCategory()
+      // toast.success(res.categoryMutation.message)
+      closeDialog()
+    },
+    onError: (err) => {
+      if (err.graphQLErrors && err.graphQLErrors.length > 0) {
+        const graphqlError = err.graphQLErrors[0];
+        const { extensions } = graphqlError;
+        if (extensions && extensions.errors) {
+          // setErrors(extensions.errors)
+          setErrors(Object.values(extensions.errors));
+        }
+      }
+    }
+  });
+
+  console.log('errors:', errors)
+
+  useQuery(GET_ALL_CATEGORY, {
+    onCompleted: (data) => {
+      setAllCategories(data?.categories?.edges)
+    },
+  });
 
   return (
     <Box sx={{
@@ -33,27 +70,29 @@ const AddItem = ({ closeDialog }) => {
                 label="Category"
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <MenuItem value={20}>Brekfast</MenuItem>
-                <MenuItem value={30}>Lunch</MenuItem>
-                <MenuItem value={10}>Dinner</MenuItem>
-                <MenuItem value={22}>Option</MenuItem>
+                {
+                  allCategories?.map(item => (
+                    <MenuItem key={item.node.id} value={item.node.id}>{item.node.name}</MenuItem>
+                  ))
+                }
               </Select>
             </FormControl>
-            <TextField label='Quantity' type='number' />
+            <TextField label='Price (excl. Tax)' />
           </Stack>
           <Stack flex={1} gap={2}>
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Currency</InputLabel>
               <Select
                 value={currency}
                 label="Currency"
                 onChange={(e) => setCurrency(e.target.value)}
               >
-                <MenuItem value={20}>USD</MenuItem>
-                <MenuItem value={23}>GBP</MenuItem>
+                <MenuItem value={20}>NOK</MenuItem>
               </Select>
-            </FormControl>
-            <TextField label='Price' />
+            </FormControl> */}
+            <TextField label='Tax(15%)' type='number' />
+            <TextField label='Price (incl. Tax)' />
+
           </Stack>
         </Stack>
         <TextField label='Description' placeholder='Products details' rows={4} multiline />
@@ -62,7 +101,7 @@ const AddItem = ({ closeDialog }) => {
           <FormControlLabel control={<Switch color="warning" defaultChecked />} label="Discount Active" />
         </Stack>
 
-        <Stack direction={{xs:'column',md:'row'}} gap={2} mt={2}>
+        <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
           {
             productImg && <Box sx={{
               flex: 1
@@ -71,15 +110,15 @@ const AddItem = ({ closeDialog }) => {
                 width: '100%',
                 height: '114px'
               }}>
-                <img style={{ width: '100%', height: '100%', objectFit: 'cover',borderRadius:'8px' }} src={productImg ? URL.createObjectURL(productImg) : ''} alt="" />
+                <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} src={productImg ? URL.createObjectURL(productImg) : ''} alt="" />
               </Box>
             </Box>
           }
           <Box sx={{
             flex: 1
           }}>
-            <Stack sx={{width:'100%',p:2, border:'1px solid lightgray', borderRadius:'8px'}}>
-              <Typography sx={{fontSize:'14px',textAlign:'center',mb:2}}>Chose files (jpg,png)</Typography>
+            <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
+              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png)</Typography>
               <Button
                 component="label"
                 role={undefined}

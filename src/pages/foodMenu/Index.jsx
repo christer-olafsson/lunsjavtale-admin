@@ -1,11 +1,15 @@
 import { Add, ArrowRightAlt, Search } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Input, Rating, Stack, Tab, Tabs, Typography, styled, tabClasses, tabsClasses } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CDialog from '../../common/dialog/CDialog';
 import AddItem from './AddItem';
 import EditItem from './EditItem';
 import { Link } from 'react-router-dom';
+import { GET_ALL_CATEGORY } from './graphql/query';
+import { useLazyQuery } from '@apollo/client';
+import Loader from '../../common/loader/Index';
+import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 
 const TabItem = styled(Tab)(({ theme }) => ({
   position: "relative",
@@ -65,7 +69,16 @@ const FoodItem = () => {
   const [productAddDialogOpen, setAddItemDialogOpen] = useState(false)
   const [productEditDialogOpen, setProductEditDialogOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
+  const [allCategorys, setAllCategorys] = useState([]);
 
+
+  const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      setAllCategorys(data?.categories?.edges)
+    },
+  });
+  
   const handleProductEditDialogOpen = (id) => {
     setSelectedProductId(id)
     setProductEditDialogOpen(true);
@@ -74,6 +87,9 @@ const FoodItem = () => {
     setProductEditDialogOpen(false);
   };
 
+  useEffect(() => {
+    fetchCategory()
+  }, [])
 
 
   return (
@@ -116,59 +132,60 @@ const FoodItem = () => {
         }}
       >
         {
-          // loading ? <Loader /> : error ? <h4>Something went wrong!</h4> :
-          tabName.map((item) => (
-            <TabItem key={item} disableRipple label={item} />
+          allCategorys?.map((item) => (
+            <TabItem key={item.node.id} disableRipple label={item.node.name} />
           ))
         }
       </Tabs>
       <Box mt={3}>
         {
-          [1, 2, 3, 4, 5].map((item, id) => (
-            <CustomTabPanel key={id} value={tabIndex} index={id}>
-              <Stack direction='row' flexWrap='wrap' gap={2}>
-                {
-                  [1, 2, 3, 4, 5, 6, 7, 8, 9].map((data, id) => (
-                    <>
-                      <Box key={id} sx={{
-                        width: { xs: '100%', md: '300px' },
-                        bgcolor: 'light.main',
-                        p: { xs: 1, lg: 2.5 },
-                        borderRadius: '8px'
-                      }}>
-                        <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }} src="/insImg5.png" alt="" />
-                        <Stack gap={1}>
-                          <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography>
-                          <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>The lunch collective's Caesar salad</Typography>
-                          <Stack direction='row' alignItems='center' gap={1}>
-                            <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
-                            <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
-                            <span>|</span>
-                            <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
+          loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
+            allCategorys.map((item, id) => (
+              <CustomTabPanel key={item.node.id} value={tabIndex} index={id}>
+                <Stack direction='row' flexWrap='wrap' gap={2}>
+                  {
+                    item?.node?.products?.edges?.map((data, id) => (
+                      <>
+                        <Box key={id} sx={{
+                          width: { xs: '100%', md: '300px' },
+                          bgcolor: 'light.main',
+                          p: { xs: 1, lg: 2.5 },
+                          borderRadius: '8px'
+                        }}>
+                          <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
+                            src={data?.node?.attachments.edges[0].node.fileUrl} alt="" />
+                          <Stack gap={1}>
+                            {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
+                            <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>
+                            <Stack direction='row' alignItems='center' gap={1}>
+                              <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
+                              <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
+                              <span>|</span>
+                              <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
+                            </Stack>
+                            <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
+                              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>${data.node.actualPrice}</Typography>
+                              <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff' }}>Edit Now</Button>
+                            </Stack>
                           </Stack>
-                          <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
-                            <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>$200.00</Typography>
-                            <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff' }}>Edit Now</Button>
-                          </Stack>
-                        </Stack>
-                        <Link to={`/dashboard/food-details/${21}`}>
-                          <Button endIcon={<ArrowRightAlt />}>Details</Button>
-                        </Link>
-                      </Box>
-                      {/* product edit dialog */}
-                      {
-                        selectedProductId === id && (
-                          <CDialog openDialog={productEditDialogOpen}>
-                            <EditItem closeDialog={handleProductEditDialogClose} />
-                          </CDialog>
-                        )
-                      }
-                    </>
-                  ))
-                }
-              </Stack>
-            </CustomTabPanel>
-          ))
+                          <Link to={`/dashboard/food-details/${item.node.id}`}>
+                            <Button endIcon={<ArrowRightAlt />}>Details</Button>
+                          </Link>
+                        </Box>
+                        {/* product edit dialog */}
+                        {
+                          selectedProductId === id && (
+                            <CDialog openDialog={productEditDialogOpen}>
+                              <EditItem closeDialog={handleProductEditDialogClose} />
+                            </CDialog>
+                          )
+                        }
+                      </>
+                    ))
+                  }
+                </Stack>
+              </CustomTabPanel>
+            ))
         }
       </Box>
     </Box>

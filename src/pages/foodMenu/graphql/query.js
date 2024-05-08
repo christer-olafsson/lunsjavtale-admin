@@ -8,6 +8,8 @@ query{
       id
       name
       description
+      isActive
+      logoUrl
       products{
         edges{
           node{

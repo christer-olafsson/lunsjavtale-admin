@@ -16,7 +16,7 @@ const EditItem = ({ closeDialog }) => {
     }}>
 
       <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Add New Items</Typography>
+        <Typography variant='h5'>Edit Items</Typography>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>

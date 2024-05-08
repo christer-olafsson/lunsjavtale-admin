@@ -9,6 +9,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { ApolloProvider } from '@apollo/client'
 import { client } from './client.js'
 import { BrowserRouter } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <CssBaseline />
+          <Toaster position="bottom-center" />
           <App />
         </BrowserRouter>
       </ThemeProvider>

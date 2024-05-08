@@ -1,12 +1,13 @@
-import { useQuery } from '@apollo/client'
-import { Add } from '@mui/icons-material'
-import { Box, Button, Divider, Rating, Stack, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { useLazyQuery, useQuery } from '@apollo/client'
+import { Add, Edit } from '@mui/icons-material'
+import { Box, Button, Divider, IconButton, Rating, Stack, Typography, useTheme } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import { GET_ALL_CATEGORY, GET_SINGLE_CATEGORY } from './graphql/query'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import CDialog from '../../common/dialog/CDialog'
 import AddCategory from './AddCategory'
+import EditCategory from './EditCategory'
 
 const categorydata = [
   {
@@ -38,19 +39,23 @@ const categorydata = [
 
 const FoodCategories = () => {
   const [addCategoryOpen, setAddCategoryOpen] = useState(false)
+  const [editCategoryOpen, setEditCategoryOpen] = useState(false)
   const [categoryId, setCategoryId] = useState(1);
   const [allCategorys, setAllCategorys] = useState([]);
   const [singleCategory, setSingleCategory] = useState([]);
+  const [editCategoryData, setEditCategoryData] = useState({})
+
+  const theme = useTheme();
 
 
-  const { loading: loadingCategory, error: categoryErr } = useQuery(GET_ALL_CATEGORY, {
+  const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
+    fetchPolicy: "network-only",
     onCompleted: (data) => {
-      const res = data?.categories?.edges
-      setAllCategorys(res)
+      setAllCategorys(data?.categories?.edges)
     },
   });
-console.log(allCategorys)
-  
+
+
   const { loading: loadinSingleCat, error: errSingleCat } = useQuery(GET_SINGLE_CATEGORY, {
     variables: {
       id: categoryId
@@ -61,49 +66,86 @@ console.log(allCategorys)
     },
   });
 
+  const handleEdit = (item) => {
+    setEditCategoryData(item);
+    setCategoryId(item.node.id)
+    setEditCategoryOpen(true)
+  };
+
+  useEffect(() => {
+    fetchCategory()
+  }, [])
+
+
   return (
     <Box>
       <Stack direction='row' justifyContent='space-between'>
         <Box />
-        <Button onClick={()=> setAddCategoryOpen(true)} startIcon={<Add />} variant='contained'>New Categories</Button>
+        <Button onClick={() => setAddCategoryOpen(true)} startIcon={<Add />} variant='contained'>New Categories</Button>
       </Stack>
+      {/* add category */}
       <CDialog openDialog={addCategoryOpen}>
-          <AddCategory closeDialog={() => setAddCategoryOpen(false)} />
-        </CDialog>
+        <AddCategory fetchCategory={fetchCategory} closeDialog={() => setAddCategoryOpen(false)} />
+      </CDialog>
       <Stack direction='row' gap={2} flexWrap='wrap' mt={4}>
         {
           loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
             allCategorys.map(item => (
-              <Stack onClick={() => setCategoryId(item.node.id)} key={item.node.id} sx={{
-                bgcolor: categoryId === item.node.id ? 'primary.main' : 'light.main',
-                color: categoryId === item.node.id ? '#fff' : 'inherit',
-                borderRadius: '8px',
-                padding: '20px 35px',
-                width:{xs:'100%',md:'300px'},
-                cursor: 'pointer'
-              }} direction='row' gap={2} alignItems='center'>
-                <img src='/Breakfast.png' alt="" />
-                <Divider orientation="vertical" />
-                <Box>
-                  <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>{item.node.name}</Typography>
-                  <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>999 Available products</Typography>
-                </Box>
-              </Stack>
+              <Box sx={{
+                position: 'relative'
+              }} key={item.node.id}>
+                <Stack onClick={() => setCategoryId(item.node.id)} sx={{
+                  bgcolor: categoryId === item.node.id ? 'primary.main' : 'light.main',
+                  color: categoryId === item.node.id ? '#fff' : !item.node.isActive ? '#AEAEAE' : 'inherit',
+                  borderRadius: '8px',
+                  padding: '10px 25px',
+                  width: { xs: '100%', md: '300px' },
+                  cursor: 'pointer',
+                  border: item.node.isActive ? `1px solid ${theme.palette.primary.main}` : ''
+                }} direction='row' gap={2} alignItems='center'>
+                  <img style={{
+                    opacity: !item.node.isActive ? '.4' : '.8',
+                    width: '50px',
+                    height: '50px',
+                    objectFit: 'cover'
+                  }} src={item.node.logoUrl ? item.node.logoUrl : '/Breakfast.png'} alt="" />
+                  <Divider orientation="vertical" />
+                  <Box>
+                    <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>{item.node.isActive ? 'Active' : 'Inactive'}</Typography>
+                    <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>{item.node.name}</Typography>
+                    <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>999 Available products</Typography>
+                  </Box>
+                </Stack>
+                <IconButton onClick={() => handleEdit(item)} sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0
+                }}>
+                  <Edit fontSize='small' />
+                </IconButton>
+                {/* edit category */}
+                {
+                  categoryId === item.node.id &&
+                  <CDialog openDialog={editCategoryOpen}>
+                    <EditCategory fetchCategory={fetchCategory} data={editCategoryData} closeDialog={() => setEditCategoryOpen(false)} />
+                  </CDialog>
+                }
+              </Box>
             ))
         }
       </Stack>
 
-      <Stack direction={{xs:'column',md:'row'}} gap={2} mt={3}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={3}>
         {
           loadinSingleCat ? <Loader /> : errSingleCat ? <ErrorMsg /> :
             singleCategory.map(item => (
               <Box key={item.node.id} sx={{
                 bgcolor: 'light.main',
                 p: 2, borderRadius: '8px',
-                width: {xs:'100%',md:'235px'}
+                width: { xs: '100%', md: '235px' }
               }}>
-                <img style={{ width: '100%', height: '138px', borderRadius: '8px', objectFit: 'cover' }} 
-                src={item.node.attachments.edges[0].node.fileUrl} alt="" />
+                <img style={{ width: '100%', height: '138px', borderRadius: '8px', objectFit: 'cover' }}
+                  src={item.node.attachments.edges[0].node.fileUrl} alt="" />
                 <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>{item.node.category.name}</Typography>
                 <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{item.node.name}</Typography>
                 <Stack direction='row' gap={1} alignItems='center'>

@@ -30,10 +30,10 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
         padding: '8px 12px',
         borderRadius: '4px',
         overflow: 'hidden',
-        mb: 1,
+        // mb: 1,
         cursor: 'pointer',
         color: selected ? 'primary.main' : 'gray',
-        bgcolor: selected ? '#fff' : '',
+        bgcolor: selected ? 'light.main' : '',
         ...style,
         position: 'relative',
         ":before": {
@@ -43,7 +43,7 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
           left: 0,
           content: '""',
           height: '100%',
-          width: '5px',
+          width: '3px',
           bgcolor: 'primary.main',
         }
       }}>
@@ -51,7 +51,7 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
           {icon}
           <Typography sx={{
             color: 'gray',
-            fontSize: '16px',
+            fontSize: '15px',
             fontWeight: 400, ml: 1
           }}>{text}</Typography>
         </Box>
@@ -147,8 +147,8 @@ function Layout() {
       flexDirection: 'column',
       // justifyContent: 'center',
       alignItems: 'center',
-      bgcolor: '#F1F3F6',
-      height: '100%',
+      // bgcolor: '#F1F3F6',
+      // height: '100%',
     }}>
       <Toolbar sx={{
         display: 'flex',
@@ -193,7 +193,7 @@ function Layout() {
           selected={pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories'}
         />
         <Collapse in={expandFoodMenu} timeout="auto" unmountOnExit>
-          <Box sx={{ ml: 3 }}>
+          <Box sx={{ ml: 3,mt:1 }}>
             <ListBtn onClick={handleDrawerClose} link='/dashboard/food-item' text='Food Item'
               selected={pathname === '/dashboard/food-item'} />
             <ListBtn onClick={handleDrawerClose} link='/dashboard/food-categories' text='Food Categories'
@@ -219,10 +219,10 @@ function Layout() {
           selected={pathname === '/dashboard/customers'}
         />
         <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/vendor'
+          link='/dashboard/supplier'
           icon={<HolidayVillage />}
-          text='Vendor'
-          selected={pathname === '/dashboard/vendor'}
+          text='Food Supplier'
+          selected={pathname === '/dashboard/supplier'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/meetings'
@@ -384,15 +384,15 @@ function Layout() {
             </ClickAwayListener>
             {/* user menu */}
             <Box>
-                <IconButton
-                  onClick={handleUserMenuOpen}
-                  size="small"
-                  aria-controls={open ? 'account-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? 'true' : undefined}
-                >
-                  <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
-                </IconButton>
+              <IconButton
+                onClick={handleUserMenuOpen}
+                size="small"
+                aria-controls={open ? 'account-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+              >
+                <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+              </IconButton>
               <Menu
                 anchorEl={userMenuOpen}
                 id="account-menu"
@@ -416,7 +416,7 @@ function Layout() {
                   </ListItemIcon>
                   Settings
                 </MenuItem>
-                <MenuItem onClick={()=> (
+                <MenuItem onClick={() => (
                   handleUserMenuClose(),
                   handleLogout()
                 )}>

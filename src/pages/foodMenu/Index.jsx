@@ -78,7 +78,7 @@ const FoodItem = () => {
       setAllCategorys(data?.categories?.edges)
     },
   });
-  
+
   const handleProductEditDialogOpen = (id) => {
     setSelectedProductId(id)
     setProductEditDialogOpen(true);
@@ -91,7 +91,7 @@ const FoodItem = () => {
     fetchCategory()
   }, [])
 
-
+  console.log(allCategorys)
   return (
     <Box maxWidth='xxl'>
       <Stack direction='row' justifyContent='space-between' mb={2} gap={2}>
@@ -114,7 +114,7 @@ const FoodItem = () => {
       {/* product add dialog */}
       {
         <CDialog openDialog={productAddDialogOpen}>
-          <AddItem closeDialog={() => setAddItemDialogOpen(false)} />
+          <AddItem fetchCategory={fetchCategory} closeDialog={() => setAddItemDialogOpen(false)} />
         </CDialog>
       }
       <Tabs
@@ -133,7 +133,7 @@ const FoodItem = () => {
       >
         {
           allCategorys?.map((item) => (
-            <TabItem key={item.node.id} disableRipple label={item.node.name} />
+            <TabItem key={item?.node.id} disableRipple label={item?.node.name} />
           ))
         }
       </Tabs>
@@ -153,7 +153,7 @@ const FoodItem = () => {
                           borderRadius: '8px'
                         }}>
                           <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
-                            src={data?.node?.attachments.edges[0].node.fileUrl} alt="" />
+                            src={data?.node.attachments.edges[0] ? data?.node.attachments.edges[0].node.fileUrl : ''} alt="" />
                           <Stack gap={1}>
                             {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
                             <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>

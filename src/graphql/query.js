@@ -32,6 +32,20 @@ query{
 }
 `
 
+export const GET_INGREDIENTS = gql`
+  query{
+    ingredients{
+      edges{
+        node{
+          id
+          name
+          isActive
+      }
+    }
+  }
+}
+`
+
 export const CHECk_POST_CODE = gql`
   query CheckPostCode ($postCode: Int){
     checkPostCode(postCode: $postCode)

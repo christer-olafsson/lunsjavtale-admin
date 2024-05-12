@@ -83,15 +83,12 @@ const FoodItem = () => {
     setSelectedProductId(id)
     setProductEditDialogOpen(true);
   };
-  const handleProductEditDialogClose = () => {
-    setProductEditDialogOpen(false);
-  };
 
   useEffect(() => {
     fetchCategory()
   }, [])
 
-  console.log(allCategorys)
+  // console.log(allCategorys)
   return (
     <Box maxWidth='xxl'>
       <Stack direction='row' justifyContent='space-between' mb={2} gap={2}>
@@ -141,10 +138,10 @@ const FoodItem = () => {
         {
           loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
             allCategorys.map((item, id) => (
-              <CustomTabPanel key={item.node.id} value={tabIndex} index={id}>
+              <CustomTabPanel key={id} value={tabIndex} index={id}>
                 <Stack direction='row' flexWrap='wrap' gap={2}>
                   {
-                    item?.node?.products?.edges?.map((data, id) => (
+                    item?.node.products.edges.map((data, id) => (
                       <>
                         <Box key={id} sx={{
                           width: { xs: '100%', md: '300px' },
@@ -164,19 +161,23 @@ const FoodItem = () => {
                               <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
                             </Stack>
                             <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
-                              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>${data.node.actualPrice}</Typography>
-                              <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff' }}>Edit Now</Button>
+                              <Typography sx={{ fontSize: '16px' }}>${data.node.priceWithTax}
+                                <i style={{ fontWeight: 400, fontSize: '13px' }}> (Tax)</i> </Typography>
+                              <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}>${data.node.actualPrice}</Typography>
                             </Stack>
                           </Stack>
-                          <Link to={`/dashboard/food-details/${item.node.id}`}>
-                            <Button endIcon={<ArrowRightAlt />}>Details</Button>
-                          </Link>
+                          <Stack direction='row' alignItems='center' justifyContent='space-between' mt={2}>
+                            <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Edit Now</Button>
+                            <Link to={`/dashboard/food-details/${data.node.id}`}>
+                              <Button endIcon={<ArrowRightAlt />}>Details</Button>
+                            </Link>
+                          </Stack>
                         </Box>
                         {/* product edit dialog */}
                         {
                           selectedProductId === id && (
                             <CDialog openDialog={productEditDialogOpen}>
-                              <EditItem closeDialog={handleProductEditDialogClose} />
+                              <EditItem fetchCategory={fetchCategory} data={data.node} closeDialog={() => setProductEditDialogOpen(false)} />
                             </CDialog>
                           )
                         }

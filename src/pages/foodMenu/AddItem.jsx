@@ -3,16 +3,17 @@ import { useMutation, useQuery } from '@apollo/client';
 import { Add, ArrowDropDown, Close, CloudUpload } from '@mui/icons-material'
 import { Box, Button, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
-import { CREATE_PRODUCT } from './graphql/mutation'
 import { GET_ALL_CATEGORY } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import toast from 'react-hot-toast';
+import { uploadMultiFile } from '../../utils/uploadFile';
+import { PRODUCT_MUTATION } from './graphql/mutation';
 
 
-const AddItem = ({fetchCategory, closeDialog }) => {
+const AddItem = ({ fetchCategory, closeDialog }) => {
   const [categoryId, setCategoryId] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -21,25 +22,27 @@ const AddItem = ({fetchCategory, closeDialog }) => {
   const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [priceWithTax, setPriceWithTax] = useState("");
   const [priceWithoutTax, setPriceWithoutTax] = useState("");
-  const [statusAvailable, setStatusAvailable] = useState(true);
-  const [discountActive, setDiscountActive] = useState(false);
   const [addAllergyInputOpen, setAddAllergyInputOpen] = useState(false);
   const [newAllergyInput, setNewAllergyInput] = useState('');
   const [newAllergies, setNewAllergies] = useState([]);
   const [selectedNewAllergies, setSelectedNewAllergies] = useState([])
-  const [selectAllergySecOpen, setSelectAllergySecOpen] = useState(false)
+  const [selectAllergySecOpen, setSelectAllergySecOpen] = useState(false);
+  const [imgUploadLoading, setImgUploadLoading] = useState(false)
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
     price: '',
-    description: ''
+    description: '',
+    selectedFile: ''
   })
   // const [taxRate, setTaxRate] = useState(0.15); // Default tax rate of 15%
   const [payload, setPayload] = useState({
     name: '',
     title: '',
     description: '',
-    contains: ''
+    contains: '',
+    availability: true,
+    discountAvailability: false
   })
 
   const handlePriceWithTaxChange = (event) => {
@@ -67,8 +70,9 @@ const AddItem = ({fetchCategory, closeDialog }) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   };
 
+  // added mutiple image
   const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files);
+    const files = Array.from(event.target.files).slice(0, 5);
     setSelectedFiles(files);
   };
   const handleFileDeselect = (index) => {
@@ -77,8 +81,8 @@ const AddItem = ({fetchCategory, closeDialog }) => {
     setSelectedFiles(updatedFiles);
   };
 
-
-  const [createProduct, { loading: createProductLoading }] = useMutation(CREATE_PRODUCT, {
+  // product create
+  const [productMutation, { loading: productMutationLoading }] = useMutation(PRODUCT_MUTATION, {
     onCompleted: (res) => {
       fetchCategory()
       toast.success(res.productMutation.message)
@@ -104,6 +108,7 @@ const AddItem = ({fetchCategory, closeDialog }) => {
     }
   });
 
+  // allargy list select or deselect
   const toggleAllergy = (allergy) => {
     const isSelected = selectedAllergies.includes(allergy);
     if (isSelected) {
@@ -112,6 +117,8 @@ const AddItem = ({fetchCategory, closeDialog }) => {
       setSelectedAllergies([...selectedAllergies, allergy]);
     }
   };
+
+  //new added allargy list select or deselect
   const toggleNewAllergy = (allergy) => {
     const isSelected = selectedNewAllergies.includes(allergy);
     if (isSelected) {
@@ -120,14 +127,14 @@ const AddItem = ({fetchCategory, closeDialog }) => {
       setSelectedNewAllergies([...selectedNewAllergies, allergy]);
     }
   };
-
+  // new allergy remove from list
   const handleNewAllergyRemove = (allergy) => {
     const filtered = newAllergies.filter(item => item !== allergy);
     setNewAllergies(filtered)
     setSelectedNewAllergies(selectedNewAllergies.filter(item => item !== allergy))
   }
 
-  const handleProductSave = () => {
+  const handleProductSave = async () => {
     if (!payload.name) {
       setInputerr({ name: "Product name required!" });
       return;
@@ -144,7 +151,22 @@ const AddItem = ({fetchCategory, closeDialog }) => {
       setInputerr({ description: "Product description required!" });
       return;
     }
-    createProduct({
+    if (selectedFiles.length === 0) {
+      setInputerr({ selectedFile: 'Product image empty!' });
+      return
+    }
+    let attachments = []
+    if (selectedFiles  && Object.values(inputerr).every(value => value === '')) {
+      setImgUploadLoading(true)
+      const res = await uploadMultiFile(selectedFiles, 'products');
+      attachments = res.map(item => ({
+        fileUrl: item.secure_url,
+        fileId: item.public_id,
+        isCover: false
+      }));
+      setImgUploadLoading(false)
+    }
+    productMutation({
       variables: {
         input: {
           ...payload,
@@ -153,12 +175,12 @@ const AddItem = ({fetchCategory, closeDialog }) => {
           priceWithTax,
           category: categoryId,
         },
-        ingredients: [...selectedAllergies, ...selectedNewAllergies]
-        // attachments: {}
+        ingredients: [...selectedAllergies, ...selectedNewAllergies],
+        attachments
       }
     })
   }
-  console.log([...selectedAllergies, ...selectedNewAllergies])
+
   useQuery(GET_ALL_CATEGORY, {
     onCompleted: (data) => {
       setAllCategories(data?.categories?.edges)
@@ -246,8 +268,16 @@ const AddItem = ({fetchCategory, closeDialog }) => {
           multiline
         />
         <Stack direction='row' gap={2} mt={2} alignItems='center'>
-          <FormControlLabel sx={{ mb: 1, width: 'fit-content' }} control={<Switch checked={statusAvailable} onChange={e => setStatusAvailable(e.target.checked)} />} label="Status Available" />
-          <FormControlLabel control={<Switch color="warning" checked={discountActive} onChange={e => setDiscountActive(e.target.checked)} />} label="Discount Active" />
+          <FormControlLabel
+            sx={{ mb: 1, width: 'fit-content' }}
+            control={<Switch checked={payload.availability}
+              onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
+            label="Status Available" />
+          <FormControlLabel
+            control={<Switch color="warning"
+              checked={payload.discountAvailability}
+              onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
+            label="Discount Active" />
         </Stack>
 
 
@@ -339,11 +369,12 @@ const AddItem = ({fetchCategory, closeDialog }) => {
           </Collapse>
         </Box>
 
-        <Stack gap={2}>
+        {/* selected image */}
+        <Stack gap={2} mt={2}>
           <Stack direction='row' gap={2} flexWrap='wrap' >
             {selectedFiles.map((file, index) => (
               <Box sx={{ position: 'relative' }} key={index}>
-                <IconButton sx={{ position: 'absolute', top: 0, right: 0, bgcolor: 'light.main' }} onClick={() => handleFileDeselect(index)}>
+                <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }} onClick={() => handleFileDeselect(index)}>
                   <Close fontSize='small' />
                 </IconButton>
                 <img
@@ -357,12 +388,16 @@ const AddItem = ({fetchCategory, closeDialog }) => {
           </Stack>
           <Box sx={{ flex: 1 }}>
             <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png)</Typography>
+              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (jpg,png)</Typography>
               <Button component="label" role={undefined} variant="outlined" startIcon={<CloudUpload />}>
                 Upload file
                 <input type="file" accept="image/*" multiple onChange={handleFileSelect} hidden />
               </Button>
             </Stack>
+            {
+              inputerr.selectedFile &&
+              <Typography sx={{fontSize:'14px', color: 'red'}}>{inputerr.selectedFile}</Typography>
+            }
           </Box>
         </Stack>
       </Stack>
@@ -374,7 +409,7 @@ const AddItem = ({fetchCategory, closeDialog }) => {
           ))}
         </ul>
       )}
-      <CButton isLoading={createProductLoading} onClick={handleProductSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
+      <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
     </Box>
 
   )

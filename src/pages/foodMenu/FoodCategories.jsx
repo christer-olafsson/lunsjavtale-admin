@@ -9,33 +9,6 @@ import CDialog from '../../common/dialog/CDialog'
 import AddCategory from './AddCategory'
 import EditCategory from './EditCategory'
 
-const categorydata = [
-  {
-    icon: '/Breakfast.png',
-    name: 'Breakfast',
-    available: '999 Available products'
-  },
-  {
-    icon: '/Dinner.png',
-    name: 'Dinner',
-    available: '999 Available products'
-  },
-  {
-    icon: '/Lunch.png',
-    name: 'Lunch',
-    available: '999 Available products'
-  },
-  {
-    icon: '/Option.png',
-    name: 'Option',
-    available: '999 Available products'
-  },
-  {
-    icon: '/All.png',
-    name: 'All',
-    available: '999 Available products'
-  },
-]
 
 const FoodCategories = () => {
   const [addCategoryOpen, setAddCategoryOpen] = useState(false)
@@ -46,7 +19,6 @@ const FoodCategories = () => {
   const [editCategoryData, setEditCategoryData] = useState({})
 
   const theme = useTheme();
-
 
   const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
     fetchPolicy: "network-only",
@@ -76,7 +48,6 @@ const FoodCategories = () => {
     fetchCategory()
   }, [])
 
-
   return (
     <Box>
       <Stack direction='row' justifyContent='space-between'>
@@ -90,11 +61,11 @@ const FoodCategories = () => {
       <Stack direction='row' gap={2} flexWrap='wrap' mt={4}>
         {
           loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
-            allCategorys.map(item => (
+            allCategorys?.map(item => (
               <Box sx={{
                 position: 'relative'
-              }} key={item.node.id}>
-                <Stack onClick={() => setCategoryId(item.node.id)} sx={{
+              }} key={item?.node.id}>
+                <Stack onClick={() => setCategoryId(item?.node.id)} sx={{
                   bgcolor: categoryId === item.node.id ? 'primary.main' : 'light.main',
                   color: categoryId === item.node.id ? '#fff' : !item.node.isActive ? '#AEAEAE' : 'inherit',
                   borderRadius: '8px',
@@ -108,7 +79,7 @@ const FoodCategories = () => {
                     width: '50px',
                     height: '50px',
                     objectFit: 'cover'
-                  }} src={item.node.logoUrl ? item.node.logoUrl : '/Breakfast.png'} alt="" />
+                  }} src={item.node.logoUrl ? item.node?.logoUrl : '/Breakfast.png'} alt="" />
                   <Divider orientation="vertical" />
                   <Box>
                     <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>{item.node.isActive ? 'Active' : 'Inactive'}</Typography>
@@ -125,7 +96,7 @@ const FoodCategories = () => {
                 </IconButton>
                 {/* edit category */}
                 {
-                  categoryId === item.node.id &&
+                  categoryId === item?.node.id &&
                   <CDialog openDialog={editCategoryOpen}>
                     <EditCategory fetchCategory={fetchCategory} data={editCategoryData} closeDialog={() => setEditCategoryOpen(false)} />
                   </CDialog>
@@ -145,7 +116,7 @@ const FoodCategories = () => {
                 width: { xs: '100%', md: '235px' }
               }}>
                 <img style={{ width: '100%', height: '138px', borderRadius: '8px', objectFit: 'cover' }}
-                  src={item.node.attachments.edges[0].node.fileUrl} alt="" />
+                  src={item.node.attachments.edges[0] ? item.node.attachments.edges[0].node.fileUrl : ''} alt="" />
                 <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>{item.node.category.name}</Typography>
                 <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{item.node.name}</Typography>
                 <Stack direction='row' gap={1} alignItems='center'>
@@ -155,7 +126,9 @@ const FoodCategories = () => {
                   <Typography sx={{ fontSize: '12px', fontWeight: 400 }}>27 Delivery</Typography>
                 </Stack>
                 <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>
-                  <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>$200.00</Typography>
+                  <Typography sx={{ fontSize: '16px' }}>${item.node.priceWithTax}
+                    <i style={{ fontWeight: 400, fontSize: '16px' }}> (Tax)</i> </Typography>
+                  <Typography sx={{ fontSize: { xs: '14px', lg: '16px',color: '#848995' } }}>${item.node.actualPrice}</Typography>
                   {/* <Button size='small' variant='outlin ed' sx={{ bgcolor: '#fff' }}>Edit Now</Button> */}
                 </Stack>
               </Box>

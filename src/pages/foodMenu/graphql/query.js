@@ -10,18 +10,39 @@ query{
       description
       isActive
       logoUrl
-      products{
+      fileId
+      products(isDeleted: false){
         edges{
           node{
             id
-            actualPrice
             name
+            title
+            actualPrice
+            priceWithTax
+            contains
             description
-            attachments(isCover:true){
+            availability
+            discountAvailability
+            isDeleted
+            category{
+              id
+              name
+            }
+            ingredients{
+              edges{
+                node{
+                  id
+                  name
+                }
+              }
+            }
+            attachments{
               edges{
                 node{
                   id
                   fileUrl
+                  fileId
+                  isCover
                 }
               }
             }
@@ -45,7 +66,9 @@ export const GET_SINGLE_CATEGORY = gql`
             name
             title
             actualPrice
+            priceWithTax
             description
+            isDeleted
             category{
             name
           }
@@ -53,6 +76,7 @@ export const GET_SINGLE_CATEGORY = gql`
               edges{
                 node{
                   fileUrl
+                  fileId
               }
             }
           }
@@ -61,4 +85,45 @@ export const GET_SINGLE_CATEGORY = gql`
     }
     }
   }
+`
+
+export const GET_SINGLE_PRODUCTS = gql`
+  query Products ($id: ID) {
+      products(id:$id){
+        edges{
+      node{
+        id
+        name
+        priceWithTax
+        actualPrice
+        description
+        title
+        contains
+        ingredients{
+          edges{
+            node{
+              id
+              name
+              description
+              isActive
+            }
+          }
+        }
+        attachments{
+          edges{
+            node{
+              id
+              fileUrl
+              fileId
+            }
+          }
+        }
+        category{
+          name
+        }
+      }
+    }
+      }
+  }
+
 `

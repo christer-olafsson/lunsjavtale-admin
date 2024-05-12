@@ -2,6 +2,7 @@
 import { ArrowUpward } from '@mui/icons-material'
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react';
+import { deleteFile } from '../../utils/deleteFile';
 
 const TotalBox = ({ item }) => {
   return (
@@ -15,17 +16,17 @@ const TotalBox = ({ item }) => {
         {item.price && <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>${item.price}</Typography>}
         {item.orders && <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>{item.orders}</Typography>}
         {item.customers && <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>{item.customers}</Typography>}
-        
+
         <Box sx={{
           display: 'inline-flex',
           alignItems: 'center',
           color: item.percent > 15 ? 'primary.main' : 'red'
         }}>
           <Typography sx={{ fontSize: '14px', fontWeight: 400, }}>+{item.percent}%</Typography>
-          <ArrowUpward sx={{ 
-            fontSize: '14px', 
+          <ArrowUpward sx={{
+            fontSize: '14px',
             transform: item.percent > 15 ? 'none' : 'rotate(180deg)'
-            }} />
+          }} />
         </Box>
       </Stack>
     </Box>
@@ -38,7 +39,6 @@ const totalBoxData = [
   { title: 'Total Orders', orders: '382', percent: '36' },
   { title: 'Total Customers', customers: '57', percent: '43' },
 ]
-
 
 const Dashboard = () => {
   return (

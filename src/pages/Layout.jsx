@@ -219,10 +219,10 @@ function Layout() {
           selected={pathname === '/dashboard/customers'}
         />
         <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/supplier'
+          link='/dashboard/suppliers'
           icon={<HolidayVillage />}
-          text='Food Supplier'
-          selected={pathname === '/dashboard/supplier'}
+          text='Suppliers'
+          selected={pathname === '/dashboard/suppliers'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/meetings'

@@ -4,9 +4,9 @@ import { Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, Inpu
 import { useState } from 'react';
 import { CREATE_CATEGORY } from './graphql/mutation';
 import { useMutation } from '@apollo/client';
-import { fileUpload } from '../../utils/fileHandle/fileUpload';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import { uploadFile } from '../../utils/uploadFile';
 
 
 const AddCategory = ({ fetchCategory, closeDialog }) => {
@@ -44,19 +44,22 @@ const AddCategory = ({ fetchCategory, closeDialog }) => {
       setNameErr('Category Name Required!');
       return;
     }
-    let photoUrl = '';
+    let attachments = '';
     if (file) {
       setFileUploadLoading(true)
-      const { location } = await fileUpload(file, 'category');
+      const { secure_url, public_id } = await uploadFile(file, 'category');
+      attachments = {
+        logoUrl: secure_url,
+        fileId: public_id,
+      };
       setFileUploadLoading(false)
-      photoUrl = location
     }
     createCategory({
       variables: {
         input: {
           ...payload,
-          isActive,
-          logoUrl: photoUrl
+          ...attachments,
+          isActive
         }
       }
     })

@@ -19,6 +19,8 @@ import SalesDetails from './pages/salesHistory/SalesDetails'
 import Meeting from './pages/meeting/Index'
 import Login from './pages/login/Login'
 import { useEffect, useState } from 'react'
+import InvoiceDetails from './pages/invoice/InvoiceDetails'
+import Suppliers from './pages/suppliers/Index'
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -41,9 +43,11 @@ function App() {
         <Route path='/dashboard/sales-history' element={<SalesHistory />} />
         <Route path='/dashboard/sales-history/details/:id' element={<SalesDetails />} />
         <Route path='/dashboard/customers' element={<Customers />} />
+        <Route path='/dashboard/suppliers' element={<Suppliers />} />
         <Route path='/dashboard/meetings' element={<Meeting />} />
         <Route path='/dashboard/coupons' element={<Coupons />} />
         <Route path='/dashboard/invoice' element={<Invoice />} />
+        <Route path='/dashboard/invoice/details/:id' element={<InvoiceDetails />} />
         <Route path='/dashboard/brand' element={<Brand />} />
         <Route path='/dashboard/faq' element={<Faq />} />
         <Route path='/dashboard/promotion' element={<Promotion />} />

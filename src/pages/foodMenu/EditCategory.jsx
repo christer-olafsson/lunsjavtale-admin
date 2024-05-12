@@ -4,10 +4,11 @@ import { Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, Inpu
 import { useEffect, useState } from 'react';
 import { CATEGORY_DELETE, CREATE_CATEGORY } from './graphql/mutation';
 import { useMutation } from '@apollo/client';
-import { fileUpload } from '../../utils/fileHandle/fileUpload';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import { GET_ALL_CATEGORY } from './graphql/query';
+import { uploadFile } from '../../utils/uploadFile';
+import { deleteFile } from '../../utils/deleteFile';
 
 
 const EditCategory = ({ fetchCategory, data, closeDialog }) => {
@@ -56,12 +57,15 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
       setNameErr('Category Name Required!');
       return;
     }
-    let photoUrl = data.node.logoUrl;
+    let logoUrl = data.node.logoUrl;
+    let fileId = data.node.fileId;
     if (file) {
       setFileUploadLoading(true)
-      const { location } = await fileUpload(file, 'category');
+      const { secure_url, public_id } = await uploadFile(file, 'category');
+      await deleteFile(data.node.fileId)
+      logoUrl = secure_url;
+      fileId = public_id;
       setFileUploadLoading(false)
-      photoUrl = location
     }
     createCategory({
       variables: {
@@ -69,13 +73,15 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
           ...payload,
           id: data.node.id,
           isActive,
-          logoUrl: photoUrl
+          logoUrl,
+          fileId
         }
       }
     })
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    await deleteFile(data.node.fileId)
     deleteCategory({
       variables: {
         id: data.node.id

@@ -160,7 +160,7 @@ const Coupons = () => {
   return (
     <Box maxWidth='xxl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Coupons</Typography>
-      <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction={{xs:'column',md:'row'}} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
@@ -214,7 +214,7 @@ const Coupons = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={3}>
+      <Box mt={{xs:10,md:3}}>
         <DataTable
           columns={columns}
           rows={rows}

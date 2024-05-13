@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Close, CloudUpload } from '@mui/icons-material'
-import { Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import { CATEGORY_DELETE, CREATE_CATEGORY } from './graphql/mutation';
 import { useMutation } from '@apollo/client';
@@ -9,6 +9,7 @@ import CButton from '../../common/CButton/CButton';
 import { GET_ALL_CATEGORY } from './graphql/query';
 import { uploadFile } from '../../utils/uploadFile';
 import { deleteFile } from '../../utils/deleteFile';
+import CDialog from '../../common/dialog/CDialog';
 
 
 const EditCategory = ({ fetchCategory, data, closeDialog }) => {
@@ -17,7 +18,8 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
   const [isActive, setIsActive] = useState(null);
   const [nameErr, setNameErr] = useState('')
   const [fileUploadLoading, setFileUploadLoading] = useState(false);
-  const [deleteBtnOn, setDeleteBtnOn] = useState(false)
+  const [deleteBtnOn, setDeleteBtnOn] = useState(false);
+  const [deleteAllProductCheck, setDeleteAllProductCheck] = useState(false)
   const [payload, setPayload] = useState({
     name: '',
     description: '',
@@ -84,7 +86,8 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
     await deleteFile(data.node.fileId)
     deleteCategory({
       variables: {
-        id: data.node.id
+        id: data.node.id,
+        withAllProduct: deleteAllProductCheck
       }
     })
   }
@@ -100,8 +103,6 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
     })
     setIsActive(data.node.isActive)
   }, [data])
-
-
 
   return (
     <Box sx={{
@@ -147,19 +148,21 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
 
       </FormGroup>
       <Stack direction='row' justifyContent='space-between'>
-        {
-          deleteBtnOn ?
-            <Paper elevation={4} sx={{
-              py: 1, px: 2
-            }}>
-              <Typography sx={{ fontSize: '14px' }}>Confirm delete this category?</Typography>
-              <Stack direction='row' gap={2} alignItems='center' justifyContent='end'>
-                <Button color="error" disabled={deleteCatLoading} onClick={handleDelete} size='small' >Confirm</Button>
-                <Button onClick={() => setDeleteBtnOn(false)} size='small'>Cencel</Button>
-              </Stack>
-            </Paper> :
-            <Button onClick={() => setDeleteBtnOn(true)} color="error">Delete this Category</Button>
-        }
+        <CDialog closeDialog={() => setDeleteBtnOn(false)} openDialog={deleteBtnOn}>
+          <Box sx={{
+            py: 1, px: 2
+          }}>
+            <Typography variant='h5' sx={{ color:'red' }}>Confirm delete this category?</Typography>
+            <FormControlLabel checked={deleteAllProductCheck} onChange={e=> setDeleteAllProductCheck(e.target.checked)} control={<Checkbox color='warning' size="small" />} label="All products under this category" />
+            <Stack direction='row' gap={2} alignItems='center' justifyContent='end'>
+              <Button color="error" disabled={deleteCatLoading} onClick={handleDelete} variant='contained' size='small' >Confirm</Button>
+              <Button onClick={() => setDeleteBtnOn(false)} variant='outlined' size='small'>Cencel</Button>
+            </Stack>
+          </Box>
+        </CDialog>
+
+        <Button onClick={() => setDeleteBtnOn(true)} color="error">Delete this Category</Button>
+
         <CButton isLoading={loading || fileUploadLoading} onClick={handleUpdate} variant='contained' sx={{ width: '100%', mt: 2 }}>
           Update
         </CButton>

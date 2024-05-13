@@ -7,7 +7,7 @@ const GeneralSettings = () => {
   return (
     <Box>
 
-      <Stack direction='row' gap={6} alignItems='center'>
+      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}} mt={2}>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Public Profile</Typography>
           <Typography sx={{ fontSize: '14px' }}>This will be displayed on your profile.</Typography>
@@ -22,7 +22,7 @@ const GeneralSettings = () => {
         </Box>
       </Stack>
 
-      <Stack direction='row' gap={6} mt={4} alignItems='center'>
+      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}} mt={2}>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Tagline</Typography>
           <Typography sx={{ fontSize: '14px' }}>A quick snapshot of your company</Typography>
@@ -32,7 +32,7 @@ const GeneralSettings = () => {
         </Box>
       </Stack>
 
-      <Stack direction='row' gap={6} mt={4} alignItems='center'>
+      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}} mt={4} alignItems='center'>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Company logo</Typography>
           <Typography sx={{ fontSize: '14px' }}>Update your company logo and then choose where you want it to display.</Typography>
@@ -70,7 +70,7 @@ const GeneralSettings = () => {
         </Box>
       </Stack>
 
-      <Stack direction='row' gap={6} mt={4} alignItems='center'>
+      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}}>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Address</Typography>
         </Box>

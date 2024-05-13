@@ -58,7 +58,7 @@ const FoodCategories = () => {
       <CDialog openDialog={addCategoryOpen}>
         <AddCategory fetchCategory={fetchCategory} closeDialog={() => setAddCategoryOpen(false)} />
       </CDialog>
-      <Stack direction='row' gap={2} flexWrap='wrap' mt={4}>
+      <Stack direction={{xs:'column',md:'row'}} gap={2} flexWrap='wrap' mt={4}>
         {
           loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
             allCategorys?.map(item => (

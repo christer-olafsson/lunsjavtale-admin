@@ -24,7 +24,7 @@ const Brand = () => {
   return (
     <Box maxWidth='xxl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Brand </Typography>
-      <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction={{xs:'column',md:'row'}} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
@@ -46,15 +46,17 @@ const Brand = () => {
           <NewBrand closeDialog={() => setAddNewBrandDialogOpen(false)} />
         </CDialog>
       </Stack>
-      <Stack direction='row' gap={2} alignItems='center' flexWrap='wrap' mt={4}>
+      <Stack direction='row' gap={2} alignItems='center' flexWrap='wrap' mt={{xs:10,md:4}}>
         {
           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, id) => (
             <Box sx={{
-              width: '229px',
-              height: '96px',
-              position: 'relative'
+              width: {xs:'100%',md:'229px'},
+              height: '110px',
+              position: 'relative',
+              border: '1px solid lightgray',
+              borderRadius:'8px',
             }} key={id}>
-              <img style={{ width: '100%', height: '100%', objectFit: 'cover' }} src="/brandlogo.png" alt="" />
+              <img style={{ width: '100%', height: '100%', objectFit: 'cover',padding:'20px' }} src="/brandlogo.png" alt="" />
               <Stack sx={{
                 position: 'absolute',
                 top: 0,

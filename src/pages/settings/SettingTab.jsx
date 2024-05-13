@@ -3,6 +3,9 @@ import { Avatar, Box, Button, Paper, Stack, Tab, Tabs, Typography, styled, tabCl
 import PropTypes from 'prop-types';
 import { useState } from "react";
 import GeneralSettings from "./tabs/GeneralSettings";
+import UserManagemenet from "./tabs/UserManagemenet";
+import PaymentSettings from "./tabs/PaymentSettings";
+import NotificationSettings from "./tabs/NotificationSettings";
 
 
 const TabItem = styled(Tab)(({ theme }) => ({
@@ -90,6 +93,9 @@ const SettingTab = () => {
 
       <Box maxWidth='lg' sx={{ p: { xs: 1, lg: 3 } }}>
         <CustomTabPanel value={tabIndex} index={0}><GeneralSettings /></CustomTabPanel>
+        <CustomTabPanel value={tabIndex} index={1}><UserManagemenet /></CustomTabPanel>
+        <CustomTabPanel value={tabIndex} index={2}><PaymentSettings /></CustomTabPanel>
+        <CustomTabPanel value={tabIndex} index={3}><NotificationSettings /></CustomTabPanel>
       </Box>
 
     </Paper>

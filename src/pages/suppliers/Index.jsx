@@ -173,7 +173,7 @@ const Suppliers = () => {
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers</Typography>
         <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>3 users</Typography>
       </Stack>
-      <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction={{xs:'column',md:'row'}} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
@@ -227,7 +227,7 @@ const Suppliers = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={3}>
+      <Box mt={{xs:10,md:3}}>
         <DataTable
           columns={columns}
           rows={rows}

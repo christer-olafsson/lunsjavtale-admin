@@ -10,8 +10,8 @@ export const CREATE_CATEGORY = gql`
 `
 
 export const CATEGORY_DELETE = gql`
-  mutation CategoryDelete ($id: ID!){
-    categoryDelete(id:$id){
+  mutation CategoryDelete ($id: ID!,$withAllProduct: Boolean){
+    categoryDelete(id:$id, withAllProduct: $withAllProduct){
     success
     message
   }

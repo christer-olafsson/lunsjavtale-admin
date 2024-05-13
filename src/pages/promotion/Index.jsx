@@ -32,40 +32,38 @@ const Promotion = () => {
       <CDialog openDialog={addPromotionDialogOpen}>
         <NewPromotion closeDialog={() => setAddPromotionDialogOpen(false)} />
       </CDialog>
-      <Stack gap={3}>
+      <Stack gap={3} mt={3}>
         {
           [1, 2, 3].map((item, id) => (
             <Stack key={id} sx={{
               maxWidth: '992px',
               border: `1px solid ${theme.palette.primary.main}`,
               borderRadius: '8px',
-              position: 'relative'
-            }} direction='row' gap={2} alignItems='center'>
+            }} direction={{xs:'column',md:'row'}} gap={2} alignItems='center'>
               <Box sx={{
                 width: { xs: '100%', md: '500px' },
                 height: '220px'
               }}>
                 <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} src="/banner1.png" alt="" />
               </Box>
-              <Box>
+              <Box p={{xs:2,md:0}}>
+                <Stack direction='row' justifyContent='space-between'>
+                  <Box />
+                  <Stack direction='row'>
+                    <IconButton onClick={() => handleEditPromotion(id)}>
+                      <EditOutlined fontSize='small' />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeletePromotion(id)}>
+                      <DeleteOutline fontSize='small' />
+                    </IconButton>
+                  </Stack>
+                </Stack>
                 <Typography sx={{ fontSize: '18px', fontWeight: 600, mb: 1 }}>Enjoy 20% Off Your Next Meal</Typography>
                 <Typography sx={{ fontSize: '16px', mb: 1 }}>Complementing the exquisite cuisine is Lunsjavtale's thoughtfully curated selection of wines and spirits.</Typography>
                 <Typography sx={{ fontSize: '14px', mb: 1 }}>https://www.Lunsjavtale.no</Typography>
                 <FormControlLabel control={<Switch defaultChecked />} label="Show Sign In & Sign Up Page " />
               </Box>
-              <Stack sx={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                p: 2
-              }} direction='row'>
-                <IconButton onClick={() => handleEditPromotion(id)}>
-                  <EditOutlined fontSize='small' />
-                </IconButton>
-                <IconButton onClick={() => handleDeletePromotion(id)}>
-                  <DeleteOutline fontSize='small' />
-                </IconButton>
-              </Stack>
+
               {/*edit */}
               {
                 selectedPromotionId === id &&
@@ -74,7 +72,7 @@ const Promotion = () => {
                 </CDialog>
               }
               {/* delete */}
-               {
+              {
                 selectedDeletePromotionId === id &&
                 <CDialog closeDialog={() => setDeletePromotionDialogOpen(false)} maxWidth='sm' openDialog={deletePromotionDialogOpen}>
                   <Box>

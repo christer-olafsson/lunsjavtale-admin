@@ -5,6 +5,9 @@ export const LOGIN_USER = gql`
     loginUser(email: $email, password:$password){
       success
       access
+      user{
+        isAdmin
+      }
     }
   }
 `

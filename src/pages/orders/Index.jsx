@@ -137,9 +137,9 @@ const Orders = () => {
   return (
     <Box maxWidth='xxl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
-      <Stack direction='row' justifyContent='space-between' mt={3}>
+      <Stack direction={{xs:'column-reverse',md:'row'}} gap={2} justifyContent='space-between' mt={3}>
         <Box sx={{ minWidth: 200 }}>
-          <FormControl fullWidth>
+          <FormControl size='small' fullWidth>
             <InputLabel>Filter</InputLabel>
             <Select
               value={filter}

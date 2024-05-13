@@ -238,7 +238,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     })
     setPriceWithTax(data.priceWithTax);
     setPriceWithoutTax(data.actualPrice);
-    setCategoryId(data.category.id);
+    setCategoryId(data?.category?.id);
     setSelectedAllergies(data?.ingredients.edges.map(item => item.node.name));
     setProductImgFromData(data.attachments.edges.map(item => ({
       fileUrl: item.node.fileUrl,
@@ -247,7 +247,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     })));
   }, [])
 
-
+console.log(data)
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
       <Stack direction='row' justifyContent='space-between' mb={4}>

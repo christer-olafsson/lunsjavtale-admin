@@ -156,7 +156,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
       return
     }
     let attachments = []
-    if (selectedFiles  && Object.values(inputerr).every(value => value === '')) {
+    if (selectedFiles) {
       setImgUploadLoading(true)
       const res = await uploadMultiFile(selectedFiles, 'products');
       attachments = res.map(item => ({

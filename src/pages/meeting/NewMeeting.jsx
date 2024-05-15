@@ -36,7 +36,7 @@ const NewMeeting = ({ closeDialog }) => {
     }}>
 
       <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Edit Meeting</Typography>
+        <Typography variant='h5'>Create Meeting</Typography>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>

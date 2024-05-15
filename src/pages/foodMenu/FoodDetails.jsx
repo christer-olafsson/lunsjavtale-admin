@@ -37,14 +37,14 @@ console.log(product)
         loading ? <Loader /> : error ? <ErrorMsg /> :
           <>
 
-            <Stack direction='row' alignItems='center' gap={2} mb={2}>
+            {/* <Stack direction='row' alignItems='center' gap={2} mb={2}>
               <Link to='/dashboard/food-item'>
                 <IconButton>
                   <West />
                 </IconButton>
               </Link>
               <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
-            </Stack>
+            </Stack> */}
             <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
               <Stack direction='row' gap={2}>
                 <Stack sx={{

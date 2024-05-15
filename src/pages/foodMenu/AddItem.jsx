@@ -44,23 +44,16 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     availability: true,
     discountAvailability: false
   })
-
-  const handlePriceWithTaxChange = (event) => {
-    const inputPrice = parseFloat(event.target.value);
-    const taxRate = 0.15; // 15% tax rate
-    const taxAmount = inputPrice * taxRate;
-    const priceWithoutTax = inputPrice - taxAmount;
-    setPriceWithTax(inputPrice)
-    setPriceWithoutTax(priceWithoutTax)
-  };
+  
   const handlePriceWithoutTaxChange = (event) => {
     const inputPrice = parseFloat(event.target.value);
     const taxRate = 0.15; // 15% tax rate
     const taxAmount = inputPrice * taxRate;
     const priceWithTax = inputPrice + taxAmount;
-    setPriceWithTax(priceWithTax)
-    setPriceWithoutTax(inputPrice)
-  };
+    setPriceWithTax(Math.round(priceWithTax * 100) / 100);
+    setPriceWithoutTax(inputPrice);
+};
+
   // const handleTaxRateChange = (event) => {
   //   const newTaxRate = parseFloat(event.target.value);
   //   setTaxRate(newTaxRate);
@@ -93,8 +86,9 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         const graphqlError = err.graphQLErrors[0];
         const { extensions } = graphqlError;
         if (extensions && extensions.errors) {
-          // setErrors(extensions.errors)
-          setErrors(Object.values(extensions.errors));
+          setErrors(extensions.errors)
+          // setErrors(Object.values(extensions.errors));
+          console.log(extensions.errors)
         }
       }
     }
@@ -172,7 +166,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           ...payload,
           contains: JSON.stringify(payload.contains),
           taxPercent: 15,
-          priceWithTax,
+          priceWithTax: priceWithTax.toString(),
           category: categoryId,
         },
         ingredients: [...selectedAllergies, ...selectedNewAllergies],
@@ -198,8 +192,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
 
       <Stack>
         <TextField
-          error={Boolean(inputerr.name)}
-          helperText={inputerr.name}
+          error={Boolean(inputerr.name || errors.name)}
+          helperText={inputerr.name || errors.name}
           name='name'
           value={payload.name}
           onChange={handleInputChange}
@@ -221,12 +215,12 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               {inputerr.category && <FormHelperText>{inputerr.category}</FormHelperText>}
             </FormControl>
             <TextField
-              error={Boolean(inputerr.price)}
               type="number"
-              value={priceWithTax}
-              onChange={handlePriceWithTaxChange}
-              label='Price (incl. Tax)'
-              helperText='Including Tax (15%)'
+              value={priceWithoutTax}
+              onChange={handlePriceWithoutTaxChange}
+              error={Boolean(inputerr.price)}
+              label='Price (excl. Tax)'
+              helperText='Without Tax (0%)'
             />
           </Stack>
           <Stack flex={1} gap={2}>
@@ -238,13 +232,16 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               placeholder='E.g: Todays..'
             />
             <TextField
-              type="number"
-              value={priceWithoutTax}
-              onChange={handlePriceWithoutTaxChange}
-              label='Price (excl. Tax)'
-              helperText='Without Tax (0%)'
+              error={Boolean(inputerr.price || errors.priceWithTax)}
+              // type="number"
+              value={priceWithTax ? priceWithTax : ''}
+              InputProps={{ readOnly: true }}
+              // onChange={handlePriceWithTaxChange}
+              label='Price (incl. Tax 15%)'
+              helperText={errors.priceWithTax}
             />
           </Stack>
+
         </Stack>
         <TextField
           name='contains'
@@ -396,19 +393,19 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
             </Stack>
             {
               inputerr.selectedFile &&
-              <Typography sx={{fontSize:'14px', color: 'red'}}>{inputerr.selectedFile}</Typography>
+              <Typography sx={{ fontSize: '14px', color: 'red' }}>{inputerr.selectedFile}</Typography>
             }
           </Box>
         </Stack>
       </Stack>
 
-      {errors.length > 0 && (
+      {/* {errors.length > 0 && (
         <ul style={{ color: 'red', fontSize: '13px', padding: '10px' }}>
           {errors.map((err, id) => (
             <li key={id}>{err}</li>
           ))}
         </ul>
-      )}
+      )} */}
       <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
     </Box>
 

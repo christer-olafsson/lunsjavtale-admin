@@ -179,10 +179,10 @@ const FoodItem = () => {
               singleCategory.map((data, id) => (
                 <Box key={id} sx={{
                   width: { xs: '100%', md: '300px' },
-                  bgcolor: 'light.main',
+                  bgcolor:  data.node.availability ? 'light.main' : '#fff',
                   p: { xs: 1, lg: 2.5 },
                   borderRadius: '8px',
-                  border: data.node.availability ? '1px solid lightgray' : 'none',
+                  border:  '1px solid lightgray' ,
                   opacity: data.node.availability ? '1' : '.6'
                 }}>
                   <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
@@ -190,10 +190,17 @@ const FoodItem = () => {
                   <Stack>
                     {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
                     <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>
+                    <Stack direction='row' alignItems='center' gap={2}>
                     <Typography
-                      sx={{ fontSize: '14px', color: 'primary.main' }}>
+                      sx={{ fontSize: '12px', 
+                      bgcolor: data.node.availability ? 'primary.main' : 'darkgray',
+                      color: '#fff',
+                      px:1,borderRadius:'4px',
+                      }}>
                       {data.node.availability ? 'Available' : 'Not Available'}
                     </Typography>
+                      <Typography sx={{fontSize:'12px',fontWeight:500}}>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</Typography>
+                    </Stack>
                     <Stack direction='row' alignItems='center' gap={1}>
                       <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
                       <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
@@ -206,7 +213,7 @@ const FoodItem = () => {
                       <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}>${data.node.actualPrice}</Typography>
                     </Stack>
                   </Stack>
-                  <Stack direction='row' alignItems='center' justifyContent='space-between' mt={2}>
+                  <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>
                     <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Edit Now</Button>
                     <Link to={`/dashboard/food-details/${data.node.id}`}>
                       <Button endIcon={<ArrowRightAlt />}>Details</Button>

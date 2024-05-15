@@ -29,6 +29,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const [selectedNewAllergies, setSelectedNewAllergies] = useState([])
   const [selectAllergySecOpen, setSelectAllergySecOpen] = useState(false);
   const [imgUploadLoading, setImgUploadLoading] = useState(false);
+  const [imgDeleteLoading, setImgDeleteLoading] = useState(false);
   const [productImgFromData, setProductImgFromData] = useState([]);
   const [deletedImgId, setDeletedImgId] = useState([]);
   const [productDeleteSecOpen, setProductDeleteSecOpen] = useState(false)
@@ -107,7 +108,6 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   // product delete
   const [productDelete, { loading: productDeleteLoading }] = useMutation(PRODUCT_DELETE, {
     onCompleted: (res) => {
-      console.log(res)
       toast.success(res.productDelete.message);
       fetchCategory()
       closeDialog()
@@ -212,7 +212,9 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
 
   const handleProductDelete = async () => {
     const fileIds = data.attachments.edges.map(item => item.node.fileId);
+    setImgDeleteLoading(true)
     await deleteMultiFile(fileIds)
+    setImgDeleteLoading(false)
     productDelete({
       variables: {
         id: data.id
@@ -247,7 +249,6 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     })));
   }, [])
 
-console.log(data)
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
       <Stack direction='row' justifyContent='space-between' mb={4}>
@@ -489,7 +490,7 @@ console.log(data)
         <Paper elevation={3} sx={{ p: 2 }}>
           <Typography>Are you want to sure remove this product?</Typography>
           <Stack direction='row' gap={2}>
-            <Button disabled={productDeleteLoading} onClick={handleProductDelete} color='warning'>Confirm</Button>
+            <Button disabled={productDeleteLoading || imgDeleteLoading} onClick={handleProductDelete} color='warning'>Confirm</Button>
             <Button onClick={() => setProductDeleteSecOpen(false)}>Cencel</Button>
           </Stack>
         </Paper>

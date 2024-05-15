@@ -11,7 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, Notifications, NotificationsNone, People, Recommend, Search, Settings, SpaceDashboard, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, Search, Settings, SpaceDashboard, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
@@ -182,13 +182,17 @@ function Layout() {
       }}>
         <ListBtn
           onClick={handleDrawerClose}
-          link='/dashboard' icon={<SpaceDashboard />} text='Dashboard'
+          link='/dashboard' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
           selected={pathname === '/dashboard'} />
+        <ListBtn
+          onClick={handleDrawerClose}
+          link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
+          selected={pathname === '/dashboard/areas'} />
         <ListBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
-          link='/dashboard/food-item'
+          link='/dashboard/areas'
           expandIcon
           expand={expandFoodMenu}
-          icon={<LunchDining />}
+          icon={<LunchDining fontSize='small' />}
           text='Food Menu'
           selected={pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories'}
         />
@@ -202,67 +206,67 @@ function Layout() {
         </Collapse>
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/orders'
-          icon={<Notifications />}
+          icon={<Notifications fontSize='small' />}
           text='Orders'
           selected={pathname === '/dashboard/orders'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/sales-history'
-          icon={<History />}
+          icon={<History fontSize='small' />}
           text='Sales History'
           selected={pathname === '/dashboard/sales-history'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/customers'
-          icon={<People />}
+          icon={<People fontSize='small' />}
           text='Customers'
           selected={pathname === '/dashboard/customers'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/suppliers'
-          icon={<HolidayVillage />}
+          icon={<HolidayVillage fontSize='small' />}
           text='Suppliers'
           selected={pathname === '/dashboard/suppliers'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/meetings'
-          icon={<Diversity3 />}
+          icon={<Diversity3 fontSize='small' />}
           text='Meeting-Schedule'
           selected={pathname === '/dashboard/meetings'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/coupons'
-          icon={<Discount />}
+          icon={<Discount fontSize='small' />}
           text='Coupons'
           selected={pathname === '/dashboard/coupons'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/invoice'
-          icon={<Description />}
+          icon={<Description fontSize='small' />}
           text='Invoice'
           selected={pathname === '/dashboard/invoice'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/brand'
-          icon={<Business />}
+          icon={<Business fontSize='small' />}
           text='Brand'
           selected={pathname === '/dashboard/brand'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/faq'
-          icon={<LiveHelp />}
+          icon={<LiveHelp fontSize='small' />}
           text='Faq'
           selected={pathname === '/dashboard/faq'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/promotion'
-          icon={<Recommend />}
+          icon={<Recommend fontSize='small' />}
           text='Promotion'
           selected={pathname === '/dashboard/promotion'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/settings'
-          icon={<Settings />}
+          icon={<Settings fontSize='small' />}
           text='Settings'
           selected={pathname === '/dashboard/settings'}
         />

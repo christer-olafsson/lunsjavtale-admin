@@ -44,7 +44,7 @@ const AddCategory = ({ fetchCategory, closeDialog }) => {
       setNameErr('Category Name Required!');
       return;
     }
-    let attachments = '';
+    let attachments = {};
     if (file) {
       setFileUploadLoading(true)
       const { secure_url, public_id } = await uploadFile(file, 'category');

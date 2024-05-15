@@ -1,0 +1,65 @@
+import { gql } from "@apollo/client";
+
+export const COMPANIES = gql`
+  query{
+  companies{
+    edges{
+      node{
+        id
+        isDeleted
+        isBlocked
+        name
+        description
+        email
+        contact
+        workingEmail
+        postCode
+        allowancePercentage
+        noOfEmployees
+        formationDate
+        orderedAmount
+        invoiceAmount
+        logoUrl
+        fileId
+        paidAmount
+        isValid
+       totalEmployee
+       owner{
+          id
+          username
+          email
+          firstName
+          lastName
+          photoUrl
+        }
+       users{
+          edges{
+            node{
+              id
+              username
+              email
+              firstName
+              isVerified
+              isActive
+              isStaff
+              phone
+              postCode
+              gender
+              role
+              photoUrl
+              allergies{
+                edges{
+                  node{
+                    id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`

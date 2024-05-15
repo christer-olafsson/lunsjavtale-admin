@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Layout from './pages/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
 import NotFound from './pages/notFound/Index'
@@ -21,9 +21,16 @@ import Login from './pages/login/Login'
 import { useEffect, useState } from 'react'
 import InvoiceDetails from './pages/invoice/InvoiceDetails'
 import Suppliers from './pages/suppliers/Index'
+import Areas from './pages/postCode/Index'
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
+
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   useEffect(() => {
     setToken(localStorage.getItem('token'))
@@ -35,6 +42,7 @@ function App() {
       <Route path='/login' element={token ? <Navigate to='/dashboard' /> : <Login />} />
       <Route element={token ? <Layout /> : <Navigate to='/login' />}>
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/dashboard/areas' element={<Areas />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />
         <Route path='/dashboard/food-details/:id' element={<FoodDetails />} />

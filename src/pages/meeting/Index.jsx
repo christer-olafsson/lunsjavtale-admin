@@ -1,13 +1,10 @@
 import { Add, BorderColor, Delete, DeleteForeverOutlined, DeleteOutline, EditOutlined, LockOpenOutlined, LockOutlined, ModeEditOutlineOutlined, MoreHoriz, MoreVert, Remove, Search } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import DataTable from '../../common/datatable/DataTable';
 import NewMeeting from './NewMeeting';
 import CDialog from '../../common/dialog/CDialog';
-import EditCustomer from './EditCustomer';
-import EditCoupon from './EditCoupon';
 import EditMeeting from './EditMeeting';
+import { useState } from 'react';
 
 const rows = [
   { id: '987', name: 'Phoenix Baker', username: 'phoenix11', email: 'phoenix@untitledui.com', type: 'Remote', meetingDate: '10 Feb, 2023', meetingTime: '3.00pm', startIn: '22hours', status: 'upcoming' },

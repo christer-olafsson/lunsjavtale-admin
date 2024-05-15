@@ -1,4 +1,4 @@
-import { Add, ApprovalOutlined, BorderColor, DeleteForeverOutlined, DeleteOutlineOutlined, LocationOnOutlined, LockOpenOutlined, LockOutlined, MailOutlined, ModeEditOutlineOutlined, MoreHoriz, Person, PersonOutline, Remove, Search, Store, StoreOutlined } from '@mui/icons-material'
+import { Add, ApprovalOutlined, BorderColor, DeleteForeverOutlined, DeleteOutlineOutlined, DoneAllOutlined, FmdBadOutlined, LocationOffOutlined, LocationOnOutlined, LockOpenOutlined, LockOutlined, MailOutlined, ModeEditOutlineOutlined, MoreHoriz, Person, PersonOutline, Remove, RemoveDoneOutlined, RoomOutlined, Search, Store, StoreOutlined } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -59,8 +59,12 @@ const Customers = () => {
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
           {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> : <StoreOutlined />}
           <Box >
-            <Typography sx={{ fontSize: '16px', fontWeight: 500 }}>{params.row.company}</Typography>
-            {
+            <Stack direction='row' alignItems='center'>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.company}</Typography>
+              {!params.row.isValid && <FmdBadOutlined sx={{color: 'red'}} fontSize='small' />}
+              
+            </Stack>
+            {/* {
               params.row.isValid ?
                 <Typography sx={{
                   fontSize: '12px',
@@ -76,7 +80,7 @@ const Customers = () => {
                   fontSize: '12px',
                   width: 'fit-content'
                 }}>&#x2022; Not Available</Typography>
-            }
+            } */}
           </Box>
         </Stack>
       )
@@ -88,7 +92,7 @@ const Customers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} gap={1} direction='row' alignItems='center'>
-          <MailOutlined fontSize='small'/>
+          <MailOutlined fontSize='small' />
           <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
         </Stack>
       )
@@ -137,8 +141,17 @@ const Customers = () => {
         const { row } = params;
         return (
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <ApprovalOutlined fontSize='small' />
-            <Typography sx={{ fontSize: '14px', noOfEmployees: '10' }}>{params.row.postCode}</Typography>
+            {
+              row.isValid ?
+                <RoomOutlined sx={{ color: 'primary.main' }} fontSize='small' /> :
+                <LocationOffOutlined sx={{ color: 'darkgray' }} fontSize='small' />
+
+            }
+            <Typography sx={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: row.isValid ? 'primary.main' : 'darkgray'
+            }}>{params.row.postCode}</Typography>
           </Stack>
         )
       }
@@ -274,7 +287,7 @@ const Customers = () => {
                 <MenuItem value={10}>New</MenuItem>
                 <MenuItem value={20}>Active</MenuItem>
                 <MenuItem value={30}>Locked</MenuItem>
-                <MenuItem value={30}>Deleted</MenuItem>
+                <MenuItem value={40}>Unavailable</MenuItem>
               </Select>
             </FormControl>
           </Box>

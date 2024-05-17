@@ -1,11 +1,78 @@
 /* eslint-disable react/prop-types */
+import { useMutation } from '@apollo/client';
 import { Close, CloudUpload } from '@mui/icons-material'
 import { Box, Button, FormControlLabel, IconButton, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
+import { PROMOTION_MUTATION } from './graphql/mutation';
+import toast from 'react-hot-toast';
+import { uploadFile } from '../../utils/uploadFile';
+import CButton from '../../common/CButton/CButton';
 
 
-const NewPromotion = ({ closeDialog }) => {
+const NewPromotion = ({ fetchPromotions, closeDialog }) => {
   const [file, setFile] = useState(null);
+  const [errors, setErrors] = useState({})
+  const [fileUploadLoading, setFileUploadLoading] = useState(false)
+  const [payload, setPayload] = useState({
+    title: '',
+    description: '',
+    productUrl: '',
+    startDate: '',
+    endDate: '',
+    isActive: true
+  })
+
+  const [promotionMutation, { loading }] = useMutation(PROMOTION_MUTATION, {
+    onCompleted: (res) => {
+      fetchPromotions()
+      toast.success(res.promotionMutation.message)
+      closeDialog()
+    },
+    onError: (err) => {
+      if (err.graphQLErrors && err.graphQLErrors.length > 0) {
+        const graphqlError = err.graphQLErrors[0];
+        const { extensions } = graphqlError;
+        if (extensions && extensions.errors) {
+          setErrors(extensions.errors)
+        }
+      }
+    }
+  });
+
+  const handleInputChange = (e) => {
+    setPayload({ ...payload, [e.target.name]: e.target.value })
+  };
+
+  const handleSave = async () => {
+    if (!payload.title) {
+      setErrors({ title: 'Title empty!' })
+      return
+    }
+    if (!payload.description) {
+      setErrors({ description: 'Description empty!' })
+      return
+    }
+    let attachments = {};
+    if (file) {
+      setFileUploadLoading(true)
+      const { secure_url, public_id } = await uploadFile(file, 'promotions');
+      attachments = {
+        photoUrl: secure_url,
+        fileId: public_id,
+      };
+      setFileUploadLoading(false)
+    }
+    promotionMutation({
+      variables: {
+        input: {
+          ...payload,
+          ...attachments,
+          startDate: payload.startDate ? payload.startDate : null,
+          endDate: payload.endDate ? payload.endDate : null
+        }
+      }
+    })
+  }
 
   return (
     <Box sx={{
@@ -19,14 +86,23 @@ const NewPromotion = ({ closeDialog }) => {
       </Stack>
 
       <Stack flex={1} gap={2}>
-        <TextField label='Promotional Title' />
-        <TextField label='Product URL' />
-        <TextField label='Description' multiline rows={2} />
+        <TextField error={Boolean(errors.title)} helperText={errors.title} name='title' onChange={handleInputChange} value={payload.title} label='Promotional Title' />
+        <TextField name='productUrl' onChange={handleInputChange} value={payload.productUrl} label='Product URL' />
+        <TextField error={Boolean(errors.description)} helperText={errors.description} name='description' onChange={handleInputChange} value={payload.description} label='Description' multiline rows={4} />
         <Stack direction='row' gap={2}>
-          <TextField fullWidth helperText='Start Date' type='date' />
-          <TextField fullWidth helperText='End Date' type='date' />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant='body2'>Start Date</Typography>
+            <TextField name='startDate' onChange={handleInputChange} value={payload.startDate} size='small' fullWidth type='date' />
+            <Button onClick={() => (
+              setPayload({ ...payload, startDate: '', endDate: '' })
+            )}>Clear Date</Button>
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant='body2'>End Date</Typography>
+            <TextField name='endDate' onChange={handleInputChange} value={payload.endDate} size='small' fullWidth type='date' />
+          </Box>
         </Stack>
-        <FormControlLabel control={<Switch defaultChecked />} label="Show Sign In & Sign Up Page " />
+        <FormControlLabel control={<Switch onChange={(e) => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Show Sign In & Sign Up Page " />
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
@@ -48,7 +124,7 @@ const NewPromotion = ({ closeDialog }) => {
           <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
             <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png)</Typography>
             <Button
-            component='label'
+              component='label'
               variant="outlined"
               startIcon={<CloudUpload />}
             >
@@ -59,8 +135,7 @@ const NewPromotion = ({ closeDialog }) => {
         </Box>
       </Stack>
 
-      <Button variant='contained' sx={{ width: '100%', mt: 2 }}>Save and Add </Button>
-
+      <CButton onClick={handleSave} isLoading={fileUploadLoading || loading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add </CButton>
     </Box>
   )
 }

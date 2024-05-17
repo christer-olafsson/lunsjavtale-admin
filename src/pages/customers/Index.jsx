@@ -6,15 +6,13 @@ import DataTable from '../../common/datatable/DataTable';
 import AddCustomer from './AddCustomer';
 import CDialog from '../../common/dialog/CDialog';
 import EditCustomer from './EditCustomer';
-import { useLazyQuery } from '@apollo/client';
-import { COMPANIES } from './graphql/query';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
-
-// const rows = [
-//   { id: '987654', ownerName: 'Atlas Freight', email: 'deanna.curtis@example.com',noOfEmployees: '10', isBlocked: false, company: 'Brekke-Willms ' },
-//   { id: '987324', ownerName: 'Atlas Freight', email: 'deanna.curtis@example.com',noOfEmployees: '20', isBlocked: true, company: 'Brekke-Willms ' },
-// ];
+import { COMPANIES } from '../../graphql/query';
+import { COMPANY_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
+import CButton from '../../common/CButton/CButton';
 
 
 const Customers = () => {
@@ -25,6 +23,7 @@ const Customers = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState([]);
   const [editCustomerData, setEditCustomerData] = useState({})
+  const [deleteCompanyId, setDeleteCompanyId] = useState('')
 
 
   const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANIES, {
@@ -32,6 +31,17 @@ const Customers = () => {
     onCompleted: (res) => {
       setCompanies(res.companies.edges)
     },
+  });
+
+  const [companyDelete, { loading: deleteLoading }] = useMutation(COMPANY_DELETE, {
+    onCompleted: (res) => {
+      fetchCompany()
+      toast.success(res.companyDelete.message)
+      setDeleteDialogOpen(false)
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
   });
 
 
@@ -45,6 +55,15 @@ const Customers = () => {
   }
   function handleDelete(row) {
     setDeleteDialogOpen(true)
+    setDeleteCompanyId(row.id)
+  }
+
+  function handleCompanyDelete() {
+    companyDelete({
+      variables: {
+        id: parseInt(deleteCompanyId)
+      }
+    })
   }
 
 
@@ -179,7 +198,7 @@ const Customers = () => {
       field: 'delete', headerName: '', width: 50,
       renderCell: (params) => {
         return (
-          <IconButton onClick={() => setDeleteDialogOpen(true)} sx={{
+          <IconButton onClick={() => handleDelete(params.row)} sx={{
             borderRadius: '5px',
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
@@ -310,7 +329,7 @@ const Customers = () => {
           <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this company? This action cannot be undone.</Typography>
           <Stack direction='row' gap={2} mt={3}>
             <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-            <Button fullWidth variant='contained' color='error'>Delete</Button>
+            <CButton isLoading={deleteLoading} onClick={handleCompanyDelete} style={{width:'100%'}} variant='contained' color='error'>Delete</CButton>
           </Stack>
         </Box>
       </CDialog>

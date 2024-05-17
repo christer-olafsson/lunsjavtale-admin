@@ -2,10 +2,72 @@
 import { Close, CloudUpload } from '@mui/icons-material'
 import { Box, Button, FormControlLabel, IconButton, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
+import { BRAND_MUTATION } from './graphql/mutation';
+import { useMutation } from '@apollo/client';
+import toast from 'react-hot-toast';
+import { uploadFile } from '../../utils/uploadFile';
+import CButton from '../../common/CButton/CButton';
 
 
-const NewBrand = ({ closeDialog }) => {
+const NewBrand = ({fetchBrands, closeDialog }) => {
   const [file, setFile] = useState(null);
+  const [errors, setErrors] = useState({})
+  const [fileUploadLoading, setFileUploadLoading] = useState(false)
+  const [payload, setPayload] = useState({
+    name: '',
+    siteUrl: '',
+    isActive: true
+  })
+
+  const [brandMutation, { loading: brandMutationLoading }] = useMutation(BRAND_MUTATION, {
+    onCompleted: (res) => {
+      toast.success(res.supportedBrandMutation.message)
+      closeDialog()
+      fetchBrands()
+    },
+    onError: (err) => {
+      if (err.graphQLErrors && err.graphQLErrors.length > 0) {
+        const graphqlError = err.graphQLErrors[0];
+        const { extensions } = graphqlError;
+        if (extensions && extensions.errors) {
+          setErrors(extensions.errors)
+        }
+      }
+    }
+  });
+
+  const handleInputChange = (e) => {
+    setPayload({ ...payload, [e.target.name]: e.target.value })
+  }
+
+  const handleSave = async () => {
+    if (!payload.name) {
+      setErrors({ name: 'Brand Name Required!' })
+      return
+    }
+    if (!file) {
+      setErrors({ file: 'Brand Logo Required!' })
+      return
+    }
+    let attachments = {};
+    if (file) {
+      setFileUploadLoading(true)
+      const { secure_url, public_id } = await uploadFile(file, 'brands');
+      attachments = {
+        logoUrl: secure_url,
+        fileId: public_id,
+      };
+      setFileUploadLoading(false)
+    }
+    brandMutation({
+      variables: {
+        input: {
+          ...payload,
+          ...attachments
+        }
+      }
+    })
+  }
 
   return (
     <Box sx={{
@@ -19,10 +81,9 @@ const NewBrand = ({ closeDialog }) => {
       </Stack>
 
       <Stack flex={1} gap={2}>
-        <TextField label='Brand Title' />
-        <TextField label='Website URL' />
-        <TextField label='Description' multiline rows={2} />
-        <FormControlLabel control={<Switch defaultChecked />} label="Show Brand Carousal " />
+        <TextField onChange={handleInputChange} error={Boolean(errors.name)} helperText={errors.name} value={payload.name} name='name' label='Brand Name' />
+        <TextField onChange={handleInputChange} value={payload.siteUrl} name='siteUrl' label='Website URL' />
+        <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Status Active " />
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
@@ -51,11 +112,12 @@ const NewBrand = ({ closeDialog }) => {
               Upload file
               <input onChange={(e) => setFile(e.target.files[0])} type="file" hidden />
             </Button>
+            {errors.file && <Typography variant='body2' sx={{color:'red'}}>{errors.file}</Typography>}
           </Stack>
         </Box>
       </Stack>
 
-      <Button variant='contained' sx={{ width: '100%', mt: 2 }}>Save and Add </Button>
+      <CButton onClick={handleSave} isLoading={brandMutationLoading || fileUploadLoading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add </CButton>
 
     </Box>
   )

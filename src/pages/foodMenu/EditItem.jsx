@@ -1,17 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useMutation, useQuery } from '@apollo/client';
-import { Add, ArrowDropDown, Close, CloudUpload } from '@mui/icons-material'
-import { Box, Button, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Add, ArrowDropDown, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
+import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import { GET_ALL_CATEGORY } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
-import Loader from '../../common/loader/Index';
-import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
 import { PRODUCT_DELETE, PRODUCT_MUTATION } from './graphql/mutation';
-import { deleteFile, deleteMultiFile } from '../../utils/deleteFile';
+import { deleteMultiFile } from '../../utils/deleteFile';
+
+const icon = <CheckBoxOutlineBlank fontSize="small" />;
+const checkedIcon = <CheckBox fontSize="small" />;
 
 
 const EditItem = ({ data, fetchCategory, closeDialog }) => {
@@ -23,11 +24,6 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [priceWithTax, setPriceWithTax] = useState("");
   const [priceWithoutTax, setPriceWithoutTax] = useState("");
-  const [addAllergyInputOpen, setAddAllergyInputOpen] = useState(false);
-  const [newAllergyInput, setNewAllergyInput] = useState('');
-  const [newAllergies, setNewAllergies] = useState([]);
-  const [selectedNewAllergies, setSelectedNewAllergies] = useState([])
-  const [selectAllergySecOpen, setSelectAllergySecOpen] = useState(false);
   const [imgUploadLoading, setImgUploadLoading] = useState(false);
   const [imgDeleteLoading, setImgDeleteLoading] = useState(false);
   const [productImgFromData, setProductImgFromData] = useState([]);
@@ -49,22 +45,15 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     discountAvailability: false
   })
 
-  const handlePriceWithTaxChange = (event) => {
-    const inputPrice = parseFloat(event.target.value);
-    const taxRate = 0.15; // 15% tax rate
-    const taxAmount = inputPrice * taxRate;
-    const priceWithoutTax = inputPrice - taxAmount;
-    setPriceWithTax(inputPrice)
-    setPriceWithoutTax(priceWithoutTax)
-  };
   const handlePriceWithoutTaxChange = (event) => {
     const inputPrice = parseFloat(event.target.value);
     const taxRate = 0.15; // 15% tax rate
     const taxAmount = inputPrice * taxRate;
     const priceWithTax = inputPrice + taxAmount;
-    setPriceWithTax(priceWithTax)
-    setPriceWithoutTax(inputPrice)
+    setPriceWithTax(Math.round(priceWithTax * 100) / 100);
+    setPriceWithoutTax(inputPrice);
   };
+
   // const handleTaxRateChange = (event) => {
   //   const newTaxRate = parseFloat(event.target.value);
   //   setTaxRate(newTaxRate);
@@ -73,6 +62,12 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const handleInputChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   };
+
+  // select allergies
+  const handleAutoCompleteChange = (event, value) => {
+    setSelectedAllergies(value)
+  }
+
 
   // added mutiple image
   const handleFileSelect = (event) => {
@@ -122,38 +117,10 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     }
   });
 
-  //previus allargy list select or deselect
-  const toggleAllergy = (allergy) => {
-    const isSelected = selectedAllergies.includes(allergy);
-    if (isSelected) {
-      setSelectedAllergies(selectedAllergies.filter(item => item !== allergy));
-    } else {
-      setSelectedAllergies([...selectedAllergies, allergy]);
-    }
-  };
-
-  //new added allargy list select or deselect
-  const toggleNewAllergy = (allergy) => {
-    const isSelected = selectedNewAllergies.includes(allergy);
-    if (isSelected) {
-      setSelectedNewAllergies(selectedNewAllergies.filter(item => item !== allergy));
-    } else {
-      setSelectedNewAllergies([...selectedNewAllergies, allergy]);
-    }
-  };
-  // new allergy remove from list
-  const handleNewAllergyRemove = (allergy) => {
-    const filtered = newAllergies.filter(item => item !== allergy);
-    setNewAllergies(filtered)
-    setSelectedNewAllergies(selectedNewAllergies.filter(item => item !== allergy))
-  }
-
 
   const handleProductImgRemove = (data) => {
-    if (productImgFromData.length > 1) {
-      const filteredData = productImgFromData.filter(item => item.fileId !== data.fileId);
-      setProductImgFromData(filteredData);
-    }
+    const filteredData = productImgFromData.filter(item => item.fileId !== data.fileId);
+    setProductImgFromData(filteredData);
     setDeletedImgId([...deletedImgId, data.fileId])
   }
 
@@ -199,10 +166,10 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
             ...payload,
             contains: JSON.stringify(payload.contains),
             taxPercent: 15,
-            priceWithTax,
+            priceWithTax: priceWithTax.toString(),
             category: categoryId,
           },
-          ingredients: [...selectedAllergies, ...selectedNewAllergies],
+          ingredients: selectedAllergies,
           attachments: [...productImgFromData, ...attachments]
         }
       })
@@ -252,7 +219,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
       <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Add New Items</Typography>
+        <Typography variant='h5'>Update Items</Typography>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>
@@ -283,12 +250,10 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
               {inputerr.category && <FormHelperText>{inputerr.category}</FormHelperText>}
             </FormControl>
             <TextField
-              error={Boolean(inputerr.price)}
               type="number"
-              value={priceWithTax}
-              onChange={handlePriceWithTaxChange}
-              label='Price (incl. Tax)'
-              helperText='Including Tax (15%)'
+              value={priceWithoutTax}
+              onChange={handlePriceWithoutTaxChange}
+              label='Price'
             />
           </Stack>
           <Stack flex={1} gap={2}>
@@ -300,19 +265,42 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
               placeholder='E.g: Todays..'
             />
             <TextField
+              error={Boolean(inputerr.price)}
               type="number"
-              value={priceWithoutTax}
-              onChange={handlePriceWithoutTaxChange}
-              label='Price (excl. Tax)'
-              helperText='Without Tax (0%)'
+              value={priceWithTax}
+              inputProps={{ readOnly: true }}
+              label='Price incl. Tax (15%)'
             />
           </Stack>
         </Stack>
+        <Autocomplete
+          freeSolo
+          multiple
+          options={allAllergies}
+          value={selectedAllergies}
+          disableCloseOnSelect
+          onChange={handleAutoCompleteChange}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              {option}
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Allergies" placeholder="Type and press Enter" />
+          )}
+        />
         <TextField
           name='contains'
           value={payload.contains}
           onChange={handleInputChange}
-          sx={{ mb: 2 }}
+          sx={{ my: 2 }}
           label='Contains'
           placeholder='E.g: 570 Calories, 40g carbohydrate..'
           rows={2}
@@ -342,97 +330,8 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
             label="Discount Active" />
         </Stack>
 
-
-        <Box >
-          <Stack direction='row' justifyContent='space-between'>
-            <Box />
-            <Button onClick={() => setSelectAllergySecOpen(!selectAllergySecOpen)} variant='outlined' endIcon={<ArrowDropDown />}>Select Allergies</Button>
-          </Stack>
-          <Collapse in={selectAllergySecOpen}>
-            <Stack direction='row' flexWrap='wrap' mt={2}>
-              {ingredientLoading ? <Loader /> : ingredientErr ? <ErrorMsg /> : allAllergies.map((allergy, index) => (
-                <Box
-                  key={index}
-                  onClick={() => toggleAllergy(allergy)}
-                  sx={{
-                    padding: { xs: '3px 5px', md: '6px 10px' },
-                    margin: '5px',
-                    cursor: 'pointer',
-                    border: `1px solid gray`,
-                    borderRadius: '8px',
-                    color: selectedAllergies.includes(allergy) ? '#fff' : 'inherit',
-                    bgcolor: selectedAllergies.includes(allergy) ? 'primary.main' : 'transparent',
-                    userSelect: 'none',
-                    position: 'relative'
-                  }}
-                >
-                  <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{allergy}</Typography>
-                </Box>
-              ))}
-              {
-                newAllergies.map((allergy => (
-                  <Box sx={{
-                    position: 'relative',
-                    userSelect: 'none',
-                  }} key={allergy}>
-                    <Box
-                      onClick={() => toggleNewAllergy(allergy)}
-                      sx={{
-                        padding: { xs: '3px 5px', md: '6px 10px' },
-                        margin: '5px',
-                        cursor: 'pointer',
-                        border: `1px solid gray`,
-                        borderRadius: '8px',
-                        color: selectedNewAllergies.includes(allergy) ? '#fff' : 'inherit',
-                        bgcolor: selectedNewAllergies.includes(allergy) ? 'primary.main' : 'transparent',
-                      }}
-                    >
-                      <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{allergy}</Typography>
-                    </Box>
-                    <IconButton onClick={() => handleNewAllergyRemove(allergy)} color='primary' sx={{
-                      width: '20px',
-                      height: '20px',
-                      position: 'absolute',
-                      top: '-2px', right: '-2px',
-                      border: 'none',
-                      bgcolor: 'light.main',
-                      ":hover": {
-                        bgcolor: 'light.main'
-                      }
-                    }}>
-                      <Close fontSize='small' />
-                    </IconButton>
-                  </Box>
-                )))
-              }
-              <IconButton onClick={() => setAddAllergyInputOpen(true)}>
-                <Add />
-              </IconButton>
-            </Stack>
-            <Collapse in={addAllergyInputOpen}>
-              <Paper elevation={4} sx={{
-                mt: 2,
-                p: 2
-              }}>
-                <TextField value={newAllergyInput} onChange={(e) => setNewAllergyInput(e.target.value)} size='small' label='New Allergy Name' />
-                <Stack direction='row' justifyContent='space-between'>
-                  <Box />
-                  <Stack direction='row' gap={2}>
-                    <Button onClick={() => setAddAllergyInputOpen(false)}>Cencel</Button>
-                    <Button onClick={() => (
-                      setNewAllergies([...newAllergies, newAllergyInput]),
-                      setAddAllergyInputOpen(false),
-                      setNewAllergyInput('')
-                    )}>Add</Button>
-                  </Stack>
-                </Stack>
-              </Paper>
-            </Collapse>
-          </Collapse>
-        </Box>
-
         {/* Product image from api */}
-        <Stack gap={2} mt={2}>
+        <Stack gap={2} >
           <Stack direction='row' gap={2} flexWrap='wrap' >
             {productImgFromData.map((data, index) => (
               <Box sx={{ position: 'relative' }} key={index}>
@@ -467,7 +366,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
           </Stack>
           <Box sx={{ flex: 1 }}>
             <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (jpg,png)</Typography>
+              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (500*500 px)</Typography>
               <Button component="label" role={undefined} variant="outlined" startIcon={<CloudUpload />}>
                 Upload file
                 <input type="file" accept="image/*" multiple onChange={handleFileSelect} hidden />

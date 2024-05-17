@@ -186,7 +186,7 @@ const FoodItem = () => {
                   opacity: data.node.availability ? '1' : '.6'
                 }}>
                   <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
-                    src={data?.node.attachments.edges[0] ? data?.node.attachments.edges[0].node.fileUrl : ''} alt="" />
+                    src={data?.node.attachments.edges[0] ? data?.node.attachments.edges[0].node.fileUrl : '/noImage.png'} alt="" />
                   <Stack>
                     {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
                     <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>

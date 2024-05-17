@@ -1,19 +1,14 @@
-import { Add, BorderColor, Delete, DeleteForeverOutlined, DeleteOutline, LockOpenOutlined, LockOutlined, ModeEditOutlineOutlined, MoreHoriz, MoreVert, Remove, Search } from '@mui/icons-material'
-import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
+import { Add, DeleteOutline, Search } from '@mui/icons-material'
+import { Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import DataTable from '../../common/datatable/DataTable';
 import NewCoupon from './NewCoupon';
 import CDialog from '../../common/dialog/CDialog';
-import EditCustomer from './EditCustomer';
 import EditCoupon from './EditCoupon';
-
-const rows = [
-  { id: '9876sds54', img: '/Table cell.png', title: 'Enjoy 20% Off Your Next Meal', promoCode: 'TASTY20', discount: '20%', freeDelivery: 'No', startDate: '10 Feb, 2023', endDate: '20 Feb , 2023', status: 'active' },
-  { id: '9876ds54', img: '/Table cell.png', title: 'Enjoy 20% Off Your Next Meal', promoCode: 'TASTY20', discount: '20%', freeDelivery: 'No', startDate: '10 Feb, 2023', endDate: '20 Feb , 2023', status: 'reject' },
-  { id: '98ds7654', img: '/Table cell.png', title: 'Enjoy 20% Off Your Next Meal', promoCode: 'TASTY20', discount: '20%', freeDelivery: 'No', startDate: '10 Feb, 2023', endDate: '20 Feb , 2023', status: 'active' },
-];
-
+import { useLazyQuery } from '@apollo/client';
+import { COUPONS } from './graphql/query';
+import LoadingBar from '../../common/loadingBar/LoadingBar';
+import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 
 const Coupons = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
@@ -21,9 +16,20 @@ const Coupons = () => {
   const [addCouponDialogOpen, setAddCouponDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editCouponDialogOpen, setEditCouponDialogOpen] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+  const [editCouponData, setEditCouponData] = useState({})
+
+
+  const [fetchCoupons, { loading: couponsLoading, error: couponsErr }] = useLazyQuery(COUPONS, {
+    fetchPolicy: 'network-only',
+    onCompleted: (res) => {
+      setCoupons(res.coupons.edges.map(item => item.node))
+    }
+  })
 
   const handleEdit = (row) => {
     setEditCouponDialogOpen(true)
+    setEditCouponData(row)
   }
 
   const handleStatusFilterChange = (event) => {
@@ -37,21 +43,6 @@ const Coupons = () => {
 
   const columns = [
     {
-      field: 'title', width: 300,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Title</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <Avatar src={params.row.img} sx={{ borderRadius: '4px', width: '80px' }} />
-            <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.title}</Typography>
-          </Stack>
-        )
-      }
-    },
-    {
       field: 'promoCode', width: 150,
       renderHeader: (params) => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Promo Code </Typography>
@@ -61,52 +52,44 @@ const Coupons = () => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
-            }}>{row.promoCode}</Typography>
+              fontSize:'14px', 
+              fontWeight:600,
+              color: row.isActive ? 'inherit' : 'darkgray'
+              }}>{row.name}</Typography>
           </Stack>
         )
       }
     },
     {
-      field: 'disount', headerName: '', width: 150,
+      field: 'disount', headerName: '', width: 100,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Discount</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.discount}</Typography>
+          <Typography sx={{ fontSize: '14px',color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.value}%</Typography>
         </Stack>
       )
     },
     {
-      field: 'freeDelivery', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Free Delivery</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.freeDelivery}</Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'startDate', headerName: '', width: 150,
+      field: 'startDate', headerName: '', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Start Date</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.startDate}</Typography>
+          <Typography sx={{ fontSize: '14px',color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.startDate}</Typography>
         </Stack>
       )
     },
     {
-      field: 'endDate', headerName: '', width: 150,
+      field: 'endDate', headerName: '', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>End Date</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.endDate}</Typography>
+          <Typography sx={{ fontSize: '14px',color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.endDate}</Typography>
         </Stack>
       )
     },
@@ -121,10 +104,10 @@ const Coupons = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
               fontSize: { xs: '12px', md: '16px' },
-              color: row.status === 'reject' ? 'red' : 'primary.main ',
-              bgcolor: 'light.main',
+              color: '#fff',
+              bgcolor: row.isActive ? 'primary.main' : 'darkgray',
               px: 1, borderRadius: '8px',
-            }}>&#x2022; {row.status}</Typography>
+            }}>&#x2022; {row.isActive ? 'Active' : 'Deactive'}</Typography>
           </Stack>
         )
       }
@@ -142,25 +125,22 @@ const Coupons = () => {
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDelete(params.row)}>
-            <DeleteOutline sx={{ color: 'red' }} />
+            <DeleteOutline fontSize='small' />
           </IconButton>
         )
       },
     },
   ];
 
-  // useEffect(() => {
-  //   setColumnVisibilityModel({
-  //     paymentInfo: isMobile ? false : true,
-  //     status: isMobile ? false : true,
-  //     deliveryDate: isMobile ? false : true,
-  //   })
-  // }, [isMobile])
+  useEffect(() => {
+    fetchCoupons()
+  }, [])
+  
 
   return (
     <Box maxWidth='xxl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Coupons</Typography>
-      <Stack direction={{xs:'column',md:'row'}} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
@@ -196,11 +176,11 @@ const Coupons = () => {
       </Stack>
       {/* edit coupon */}
       <CDialog openDialog={editCouponDialogOpen}>
-        <EditCoupon closeDialog={() => setEditCouponDialogOpen(false)} />
+        <EditCoupon data={editCouponData} fetchCoupons={fetchCoupons} closeDialog={() => setEditCouponDialogOpen(false)} />
       </CDialog>
       {/* add coupon */}
       <CDialog openDialog={addCouponDialogOpen}>
-        <NewCoupon closeDialog={() => setAddCouponDialogOpen(false)} />
+        <NewCoupon fetchCoupons={fetchCoupons} closeDialog={() => setAddCouponDialogOpen(false)} />
       </CDialog>
       {/* delete coupon */}
       <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
@@ -214,12 +194,15 @@ const Coupons = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={{xs:10,md:3}}>
-        <DataTable
-          columns={columns}
-          rows={rows}
-          columnVisibilityModel={columnVisibilityModel}
-        />
+      <Box mt={{ xs: 10, md: 3 }}>
+        {
+          couponsLoading ? <LoadingBar /> : couponsErr ? <ErrorMsg /> :
+            <DataTable
+              columns={columns}
+              rows={coupons}
+              columnVisibilityModel={columnVisibilityModel}
+            />
+        }
       </Box>
     </Box>
   )

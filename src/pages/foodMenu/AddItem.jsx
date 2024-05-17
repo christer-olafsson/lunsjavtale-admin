@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useMutation, useQuery } from '@apollo/client';
-import { Add, ArrowDropDown, Close, CloudUpload } from '@mui/icons-material'
-import { Box, Button, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Add, ArrowDropDown, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
+import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
 import { GET_ALL_CATEGORY } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
@@ -12,6 +12,8 @@ import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
 import { PRODUCT_MUTATION } from './graphql/mutation';
 
+const icon = <CheckBoxOutlineBlank fontSize="small" />;
+const checkedIcon = <CheckBox fontSize="small" />;
 
 const AddItem = ({ fetchCategory, closeDialog }) => {
   const [categoryId, setCategoryId] = useState('');
@@ -19,15 +21,10 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [errors, setErrors] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [allAllergies, setAllAllergies] = useState([]);
-  const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [priceWithTax, setPriceWithTax] = useState("");
   const [priceWithoutTax, setPriceWithoutTax] = useState("");
-  const [addAllergyInputOpen, setAddAllergyInputOpen] = useState(false);
-  const [newAllergyInput, setNewAllergyInput] = useState('');
-  const [newAllergies, setNewAllergies] = useState([]);
-  const [selectedNewAllergies, setSelectedNewAllergies] = useState([])
-  const [selectAllergySecOpen, setSelectAllergySecOpen] = useState(false);
   const [imgUploadLoading, setImgUploadLoading] = useState(false)
+  const [selectedAllergies, setSelectedAllergies] = useState([])
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -44,7 +41,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     availability: true,
     discountAvailability: false
   })
-  
+
   const handlePriceWithoutTaxChange = (event) => {
     const inputPrice = parseFloat(event.target.value);
     const taxRate = 0.15; // 15% tax rate
@@ -52,7 +49,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     const priceWithTax = inputPrice + taxAmount;
     setPriceWithTax(Math.round(priceWithTax * 100) / 100);
     setPriceWithoutTax(inputPrice);
-};
+  };
 
   // const handleTaxRateChange = (event) => {
   //   const newTaxRate = parseFloat(event.target.value);
@@ -62,6 +59,11 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const handleInputChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   };
+
+  // select allergies
+  const handleAutoCompleteChange = (event, value) => {
+    setSelectedAllergies(value)
+  }
 
   // added mutiple image
   const handleFileSelect = (event) => {
@@ -87,46 +89,26 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         const { extensions } = graphqlError;
         if (extensions && extensions.errors) {
           setErrors(extensions.errors)
-          // setErrors(Object.values(extensions.errors));
-          console.log(extensions.errors)
         }
       }
     }
   });
 
   //get all allergies
-  const { error: ingredientErr, loading: ingredientLoading } = useQuery(GET_INGREDIENTS, {
+  useQuery(GET_INGREDIENTS, {
     onCompleted: (res) => {
       const allergiesName = res.ingredients.edges.map(item => item.node.name)
       setAllAllergies(allergiesName)
     }
   });
 
-  // allargy list select or deselect
-  const toggleAllergy = (allergy) => {
-    const isSelected = selectedAllergies.includes(allergy);
-    if (isSelected) {
-      setSelectedAllergies(selectedAllergies.filter(item => item !== allergy));
-    } else {
-      setSelectedAllergies([...selectedAllergies, allergy]);
-    }
-  };
+  // get all category
+  useQuery(GET_ALL_CATEGORY, {
+    onCompleted: (data) => {
+      setAllCategories(data?.categories?.edges)
+    },
+  });
 
-  //new added allargy list select or deselect
-  const toggleNewAllergy = (allergy) => {
-    const isSelected = selectedNewAllergies.includes(allergy);
-    if (isSelected) {
-      setSelectedNewAllergies(selectedNewAllergies.filter(item => item !== allergy));
-    } else {
-      setSelectedNewAllergies([...selectedNewAllergies, allergy]);
-    }
-  };
-  // new allergy remove from list
-  const handleNewAllergyRemove = (allergy) => {
-    const filtered = newAllergies.filter(item => item !== allergy);
-    setNewAllergies(filtered)
-    setSelectedNewAllergies(selectedNewAllergies.filter(item => item !== allergy))
-  }
 
   const handleProductSave = async () => {
     if (!payload.name) {
@@ -145,10 +127,10 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
       setInputerr({ description: "Product description required!" });
       return;
     }
-    if (selectedFiles.length === 0) {
-      setInputerr({ selectedFile: 'Product image empty!' });
-      return
-    }
+    // if (selectedFiles.length === 0) {
+    //   setInputerr({ selectedFile: 'Product image empty!' });
+    //   return
+    // }
     let attachments = []
     if (selectedFiles) {
       setImgUploadLoading(true)
@@ -169,17 +151,12 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           priceWithTax: priceWithTax.toString(),
           category: categoryId,
         },
-        ingredients: [...selectedAllergies, ...selectedNewAllergies],
+        ingredients: selectedAllergies,
         attachments
       }
     })
   }
 
-  useQuery(GET_ALL_CATEGORY, {
-    onCompleted: (data) => {
-      setAllCategories(data?.categories?.edges)
-    },
-  });
 
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
@@ -219,8 +196,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               value={priceWithoutTax}
               onChange={handlePriceWithoutTaxChange}
               error={Boolean(inputerr.price)}
-              label='Price (excl. Tax)'
-              helperText='Without Tax (0%)'
+              label='Price'
             />
           </Stack>
           <Stack flex={1} gap={2}>
@@ -233,21 +209,41 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
             />
             <TextField
               error={Boolean(inputerr.price || errors.priceWithTax)}
-              // type="number"
               value={priceWithTax ? priceWithTax : ''}
               InputProps={{ readOnly: true }}
-              // onChange={handlePriceWithTaxChange}
               label='Price (incl. Tax 15%)'
               helperText={errors.priceWithTax}
             />
           </Stack>
 
         </Stack>
+        <Autocomplete
+          freeSolo
+          multiple
+          options={allAllergies}
+          disableCloseOnSelect
+          onChange={handleAutoCompleteChange}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              {option}
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Allergies" placeholder="Type and press Enter" />
+          )}
+        />
         <TextField
           name='contains'
           value={payload.contains}
           onChange={handleInputChange}
-          sx={{ mb: 2 }}
+          sx={{ my: 2 }}
           label='Contains'
           placeholder='E.g: 570 Calories, 40g carbohydrate..'
           rows={2}
@@ -277,95 +273,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
             label="Discount Active" />
         </Stack>
 
-
-        <Box >
-          <Stack direction='row' justifyContent='space-between'>
-            <Box />
-            <Button onClick={() => setSelectAllergySecOpen(!selectAllergySecOpen)} variant='outlined' endIcon={<ArrowDropDown />}>Select Allergies</Button>
-          </Stack>
-          <Collapse in={selectAllergySecOpen}>
-            <Stack direction='row' flexWrap='wrap' mt={2}>
-              {ingredientLoading ? <Loader /> : ingredientErr ? <ErrorMsg /> : allAllergies.map((allergy, index) => (
-                <Box
-                  key={index}
-                  onClick={() => toggleAllergy(allergy)}
-                  sx={{
-                    padding: { xs: '3px 5px', md: '6px 10px' },
-                    margin: '5px',
-                    cursor: 'pointer',
-                    border: `1px solid gray`,
-                    borderRadius: '8px',
-                    color: selectedAllergies.includes(allergy) ? '#fff' : 'inherit',
-                    bgcolor: selectedAllergies.includes(allergy) ? 'primary.main' : 'transparent',
-                    userSelect: 'none',
-                    position: 'relative'
-                  }}
-                >
-                  <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{allergy}</Typography>
-                </Box>
-              ))}
-              {
-                newAllergies.map((allergy => (
-                  <Box sx={{
-                    position: 'relative',
-                    userSelect: 'none',
-                  }} key={allergy}>
-                    <Box
-                      onClick={() => toggleNewAllergy(allergy)}
-                      sx={{
-                        padding: { xs: '3px 5px', md: '6px 10px' },
-                        margin: '5px',
-                        cursor: 'pointer',
-                        border: `1px solid gray`,
-                        borderRadius: '8px',
-                        color: selectedNewAllergies.includes(allergy) ? '#fff' : 'inherit',
-                        bgcolor: selectedNewAllergies.includes(allergy) ? 'primary.main' : 'transparent',
-                      }}
-                    >
-                      <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{allergy}</Typography>
-                    </Box>
-                    <IconButton onClick={() => handleNewAllergyRemove(allergy)} color='primary' sx={{
-                      width: '20px',
-                      height: '20px',
-                      position: 'absolute',
-                      top: '-2px', right: '-2px',
-                      border: 'none',
-                      bgcolor: 'light.main',
-                      ":hover": {
-                        bgcolor: 'light.main'
-                      }
-                    }}>
-                      <Close fontSize='small' />
-                    </IconButton>
-                  </Box>
-                )))
-              }
-              <IconButton onClick={() => setAddAllergyInputOpen(true)}>
-                <Add />
-              </IconButton>
-            </Stack>
-            <Collapse in={addAllergyInputOpen}>
-              <Paper elevation={4} sx={{
-                mt: 2,
-                p: 2
-              }}>
-                <TextField value={newAllergyInput} onChange={(e) => setNewAllergyInput(e.target.value)} size='small' label='New Allergy Name' />
-                <Stack direction='row' justifyContent='space-between'>
-                  <Box />
-                  <Stack direction='row' gap={2}>
-                    <Button onClick={() => setAddAllergyInputOpen(false)}>Cencel</Button>
-                    <Button onClick={() => (
-                      setNewAllergies([...newAllergies, newAllergyInput]),
-                      setAddAllergyInputOpen(false),
-                      setNewAllergyInput('')
-                    )}>Add</Button>
-                  </Stack>
-                </Stack>
-              </Paper>
-            </Collapse>
-          </Collapse>
-        </Box>
-
         {/* selected image */}
         <Stack gap={2} mt={2}>
           <Stack direction='row' gap={2} flexWrap='wrap' >
@@ -385,7 +292,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           </Stack>
           <Box sx={{ flex: 1 }}>
             <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (jpg,png)</Typography>
+              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (min 500*500 px)</Typography>
               <Button component="label" role={undefined} variant="outlined" startIcon={<CloudUpload />}>
                 Upload file
                 <input type="file" accept="image/*" multiple onChange={handleFileSelect} hidden />

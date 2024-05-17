@@ -8,3 +8,12 @@ export const COMPANY_MUTATION = gql`
     }
   }
 `
+
+export const COMPANY_DELETE = gql`
+  mutation CompanyDelete ($id: ID!){
+    companyDelete(id:$id){
+      success
+      message
+    }
+  }
+`

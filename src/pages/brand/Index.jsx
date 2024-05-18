@@ -104,14 +104,14 @@ const Brand = () => {
                 border: '1px solid lightgray',
                 borderRadius: '8px', p: 1
               }} key={item.node.id}>
-                <Typography variant='body2'>{item.node.name}</Typography>
-                <Typography sx={{
+                <Typography sx={{fontWeight:600}} variant='body2'>{item.node.name}</Typography>
+                {/* <Typography sx={{
                   fontSize: '12px',
                   bgcolor: item.node.isActive ? 'primary.main' : 'darkgray',
                   px: 1, borderRadius: '4px',
                   color: '#fff',
                   width: 'fit-content',
-                }}>&#x2022; {item.node.isActive ? 'Active' : 'Not Active'}</Typography>
+                }}>&#x2022; {item.node.isActive ? 'Active' : 'Not Active'}</Typography> */}
                 <a href={item.node.siteUrl} target='blank'>{item.node.siteUrl}</a>
                 <Box sx={{
                   width: '100%',

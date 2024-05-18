@@ -24,8 +24,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [priceWithTax, setPriceWithTax] = useState("");
   const [priceWithoutTax, setPriceWithoutTax] = useState("");
   const [imgUploadLoading, setImgUploadLoading] = useState(false)
-  const [selectedAllergies, setSelectedAllergies] = useState([]);
-  const [selectedCoverImgId, setSelectedCoverImgId] = useState(0)
+  const [selectedAllergies, setSelectedAllergies] = useState([])
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -138,10 +137,10 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     if (selectedFiles) {
       setImgUploadLoading(true)
       const res = await uploadMultiFile(selectedFiles, 'products');
-      attachments = res.map((item,id) => ({
+      attachments = res.map(item => ({
         fileUrl: item.secure_url,
         fileId: item.public_id,
-        isCover: selectedCoverImgId === id ? true : false
+        isCover: false
       }));
       setImgUploadLoading(false)
     }
@@ -280,37 +279,16 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         <Stack gap={2} mt={2}>
           <Stack direction='row' gap={2} flexWrap='wrap' >
             {selectedFiles.map((file, index) => (
-              <Box onClick={() => setSelectedCoverImgId(index)} sx={{
-                position: 'relative',
-                border: selectedCoverImgId === index ? '3px solid green' : '',
-                borderRadius: '4px',
-                width: "100px",
-                height: "100px",
-                // p: selectedCoverImgId === index ? .5 : '',
-                cursor: 'pointer',
-                "::before": {
-                  position: 'absolute',
-                  content: selectedCoverImgId === index ? '"Cover"' : '""',
-                  width: '100%',
-                  color: '#fff',
-                  pl:1,
-                  height: '25px', bottom: 0,
-                  bgcolor: selectedCoverImgId === index ? 'rgba(0,0,0,.7)' : '',
-                  // border: '2px solid green',
-                  // borderRadius:'4px',
-                  zIndex: 11
-                }
-              }} key={index}>
-                <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }}
-                  onClick={() => handleFileDeselect(index)}>
+              <Box sx={{ position: 'relative' }} key={index}>
+                <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }} onClick={() => handleFileDeselect(index)}>
                   <Close fontSize='small' />
                 </IconButton>
                 <img
                   src={URL.createObjectURL(file)}
                   alt={`Image ${index}`}
-                  style={{ width: "100%", height: "100%", objectFit: 'cover', borderRadius: '4px' }}
+                  style={{ width: "100px", height: "100px", objectFit: 'cover' }}
                 />
-                {/* <p>{file.name}</p> */}
+                <p>{file.name}</p>
               </Box>
             ))}
           </Stack>

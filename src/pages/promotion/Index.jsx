@@ -18,7 +18,7 @@ const Promotion = () => {
   const [selectedDeletePromotionId, setSelectedDeletePromotionId] = useState('');
   const [promotions, setPromotions] = useState([])
 
-
+console.log(promotions)
   const [fetchPromotions, { loading: promotionLoading, error: promotionErr }] = useLazyQuery(PROMOTIONS, {
     fetchPolicy: "network-only",
     onCompleted: (res) => {

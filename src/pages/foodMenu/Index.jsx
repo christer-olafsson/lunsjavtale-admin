@@ -10,6 +10,7 @@ import { GET_ALL_CATEGORY, GET_SINGLE_PRODUCTS } from './graphql/query';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
+import LoadingBar from '../../common/loadingBar/LoadingBar';
 
 const TabItem = styled(Tab)(({ theme }) => ({
   position: "relative",
@@ -104,7 +105,7 @@ const FoodItem = () => {
     fetchProducts()
   }, [])
 
-
+console.log(singleCategory)
   return (
     <Box maxWidth='xxl'>
       <Stack direction='row' justifyContent='space-between' mb={2} gap={2}>
@@ -143,7 +144,8 @@ const FoodItem = () => {
           <Typography>All</Typography>
         </Box>
         {
-          loadingCategory ? <Loader/> : categoryErr ? <ErrorMsg/> :
+          // loadingCategory ? <LoadingBar/> : 
+          categoryErr ? <ErrorMsg/> :
           allCategorys?.map((item) => (
             <Box sx={{
               border: '1px solid lightgray',
@@ -173,7 +175,7 @@ const FoodItem = () => {
       </Stack>
       <Stack direction='row' flexWrap='wrap' gap={2}>
         {
-          loadinProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
+          loadinProducts ? <LoadingBar /> : errProducts ? <ErrorMsg /> :
             singleCategory.length === 0 ?
               <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
               singleCategory.map((data, id) => (
@@ -186,7 +188,9 @@ const FoodItem = () => {
                   opacity: data.node.availability ? '1' : '.6'
                 }}>
                   <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
-                    src={data?.node.attachments.edges[0] ? data?.node.attachments.edges[0].node.fileUrl : '/noImage.png'} alt="" />
+                    src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="" />
+                  {/* <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
+                    src={data?.node.attachments.edges[0] ? data?.node.attachments.edges[0].node.fileUrl : '/noImage.png'} alt="" /> */}
                   <Stack>
                     {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
                     <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>
@@ -201,12 +205,12 @@ const FoodItem = () => {
                     </Typography>
                       <Typography sx={{fontSize:'12px',fontWeight:500}}>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</Typography>
                     </Stack>
-                    <Stack direction='row' alignItems='center' gap={1}>
+                    {/* <Stack direction='row' alignItems='center' gap={1}>
                       <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
                       <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
                       <span>|</span>
                       <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
-                    </Stack>
+                    </Stack> */}
                     <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
                       <Typography sx={{ fontSize: '16px' }}>${data.node.priceWithTax}
                         <i style={{ fontWeight: 400, fontSize: '13px' }}> (Tax)</i> </Typography>

@@ -29,6 +29,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const [productImgFromData, setProductImgFromData] = useState([]);
   const [deletedImgId, setDeletedImgId] = useState([]);
   const [productDeleteSecOpen, setProductDeleteSecOpen] = useState(false)
+  const [selectedCoverImgId, setSelectedCoverImgId] = useState(null);
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -79,6 +80,12 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     updatedFiles.splice(index, 1);
     setSelectedFiles(updatedFiles);
   };
+  // remove imge from data
+  const handleProductImgRemove = (data) => {
+    const filteredData = productImgFromData.filter(item => item.fileId !== data.fileId);
+    setProductImgFromData(filteredData);
+    setDeletedImgId([...deletedImgId, data.fileId])
+  }
 
 
   // product create update
@@ -110,20 +117,23 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   })
 
   //get all allergies
-  const { error: ingredientErr, loading: ingredientLoading } = useQuery(GET_INGREDIENTS, {
+  useQuery(GET_INGREDIENTS, {
     onCompleted: (res) => {
       const allergiesName = res.ingredients.edges.map(item => item.node.name)
       setAllAllergies(allergiesName)
     }
   });
-
-
-  const handleProductImgRemove = (data) => {
-    const filteredData = productImgFromData.filter(item => item.fileId !== data.fileId);
-    setProductImgFromData(filteredData);
-    setDeletedImgId([...deletedImgId, data.fileId])
-  }
-
+  
+  // set cover image
+  const handleSetCoverImgId = (index) => {
+    setSelectedCoverImgId(index);
+    setProductImgFromData((prevData) =>
+      prevData.map((item, idx) => ({
+        ...item,
+        isCover: idx === index
+      }))
+    );
+  };
 
   const handleProductUpdate = async () => {
     if (!payload.name) {
@@ -195,7 +205,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     },
   });
 
-
+  
   useEffect(() => {
     setPayload({
       name: data.name,
@@ -212,9 +222,12 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     setProductImgFromData(data.attachments.edges.map(item => ({
       fileUrl: item.node.fileUrl,
       fileId: item.node.fileId,
-      isCover: item.node.isCover
+      isCover: item.node.isCover,
     })));
   }, [])
+  
+
+
 
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
@@ -334,7 +347,27 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
         <Stack gap={2} >
           <Stack direction='row' gap={2} flexWrap='wrap' >
             {productImgFromData.map((data, index) => (
-              <Box sx={{ position: 'relative' }} key={index}>
+              <Box onClick={() => handleSetCoverImgId(index)} sx={{
+                position: 'relative',
+                border: selectedCoverImgId === index ? '3px solid green' : '',
+                borderRadius: '4px',
+                width: "100px",
+                height: "100px",
+                // p: selectedCoverImgId === data.id ? .5 : '',
+                cursor: 'pointer',
+                "::before": {
+                  position: 'absolute',
+                  content: data.isCover ? '"Cover"' : '""',
+                  width: '100%',
+                  pl:1,
+                  color: '#fff',
+                  height: '25px', bottom: 0,
+                  bgcolor: data.isCover ? 'rgba(0,0,0,.7)' : '',
+                  // border: '2px solid green',
+                  // borderRadius:'4px',
+                  zIndex: 11
+                }
+              }} key={index}>
                 <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }}
                   onClick={() => handleProductImgRemove(data)}>
                   <Close fontSize='small' />
@@ -342,9 +375,9 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
                 <img
                   src={data.fileUrl}
                   alt={`Image ${index}`}
-                  style={{ width: "100px", height: "100px", objectFit: 'cover' }}
+                  style={{ width: "100%", height: "100%", objectFit: 'cover' }}
                 />
-                <p>{data.name}</p>
+                {/* <p>{data.name}</p> */}
               </Box>
             ))}
           </Stack>

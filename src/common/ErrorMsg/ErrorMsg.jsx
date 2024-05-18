@@ -7,7 +7,7 @@ const ErrorMsg = () => {
       width: '100%',p:10
     }} alignItems='center' justifyContent='center'>
       <Typography variant='h6' sx={{ color: 'red', }}>Something Went Wrong!</Typography>
-      <Typography variant='body2'>Please try again later</Typography>
+      {/* <Typography variant='body2'>Please try again later</Typography> */}
     </Stack>
   )
 }

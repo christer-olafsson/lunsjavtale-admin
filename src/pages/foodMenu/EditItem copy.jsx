@@ -2,36 +2,38 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { Add, ArrowDropDown, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
 import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GET_ALL_CATEGORY } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
-import Loader from '../../common/loader/Index';
-import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
-import { PRODUCT_MUTATION } from './graphql/mutation';
+import { PRODUCT_DELETE, PRODUCT_MUTATION } from './graphql/mutation';
+import { deleteMultiFile } from '../../utils/deleteFile';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
 
-const AddItem = ({ fetchCategory, closeDialog }) => {
+
+const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const [categoryId, setCategoryId] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errors, setErrors] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [allAllergies, setAllAllergies] = useState([]);
+  const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [priceWithTax, setPriceWithTax] = useState("");
   const [priceWithoutTax, setPriceWithoutTax] = useState("");
-  const [imgUploadLoading, setImgUploadLoading] = useState(false)
-  const [selectedAllergies, setSelectedAllergies] = useState([]);
-  const [selectedCoverImgId, setSelectedCoverImgId] = useState(0)
+  const [imgUploadLoading, setImgUploadLoading] = useState(false);
+  const [imgDeleteLoading, setImgDeleteLoading] = useState(false);
+  const [productImgFromData, setProductImgFromData] = useState([]);
+  const [deletedImgId, setDeletedImgId] = useState([]);
+  const [productDeleteSecOpen, setProductDeleteSecOpen] = useState(false)
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
     price: '',
     description: '',
-    selectedFile: ''
   })
   // const [taxRate, setTaxRate] = useState(0.15); // Default tax rate of 15%
   const [payload, setPayload] = useState({
@@ -58,15 +60,14 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   // };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPayload({ ...payload, [name]: value });
+    setPayload({ ...payload, [e.target.name]: e.target.value })
   };
-
 
   // select allergies
   const handleAutoCompleteChange = (event, value) => {
     setSelectedAllergies(value)
   }
+
 
   // added mutiple image
   const handleFileSelect = (event) => {
@@ -79,7 +80,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     setSelectedFiles(updatedFiles);
   };
 
-  // product create
+
+  // product create update
   const [productMutation, { loading: productMutationLoading }] = useMutation(PRODUCT_MUTATION, {
     onCompleted: (res) => {
       fetchCategory()
@@ -91,29 +93,39 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         const graphqlError = err.graphQLErrors[0];
         const { extensions } = graphqlError;
         if (extensions && extensions.errors) {
-          setErrors(extensions.errors)
+          // setErrors(extensions.errors)
+          setErrors(Object.values(extensions.errors));
         }
       }
     }
   });
 
+  // product delete
+  const [productDelete, { loading: productDeleteLoading }] = useMutation(PRODUCT_DELETE, {
+    onCompleted: (res) => {
+      toast.success(res.productDelete.message);
+      fetchCategory()
+      closeDialog()
+    }
+  })
+
   //get all allergies
-  useQuery(GET_INGREDIENTS, {
+  const { error: ingredientErr, loading: ingredientLoading } = useQuery(GET_INGREDIENTS, {
     onCompleted: (res) => {
       const allergiesName = res.ingredients.edges.map(item => item.node.name)
       setAllAllergies(allergiesName)
     }
   });
 
-  // get all category
-  useQuery(GET_ALL_CATEGORY, {
-    onCompleted: (data) => {
-      setAllCategories(data?.categories?.edges)
-    },
-  });
+
+  const handleProductImgRemove = (data) => {
+    const filteredData = productImgFromData.filter(item => item.fileId !== data.fileId);
+    setProductImgFromData(filteredData);
+    setDeletedImgId([...deletedImgId, data.fileId])
+  }
 
 
-  const handleProductSave = async () => {
+  const handleProductUpdate = async () => {
     if (!payload.name) {
       setInputerr({ name: "Product name required!" });
       return;
@@ -130,41 +142,84 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
       setInputerr({ description: "Product description required!" });
       return;
     }
-    // if (selectedFiles.length === 0) {
-    //   setInputerr({ selectedFile: 'Product image empty!' });
-    //   return
-    // }
-    let attachments = []
+    if (deletedImgId) {
+      setImgUploadLoading(true)
+      await deleteMultiFile(deletedImgId);
+      setImgUploadLoading(false)
+    }
+    let attachments = [];
     if (selectedFiles) {
       setImgUploadLoading(true)
       const res = await uploadMultiFile(selectedFiles, 'products');
-      attachments = res.map((item,id) => ({
+      attachments = res.map(item => ({
         fileUrl: item.secure_url,
         fileId: item.public_id,
-        isCover: selectedCoverImgId === id ? true : false
+        isCover: false
       }));
       setImgUploadLoading(false)
     }
-    productMutation({
+    if (data.id) {
+      productMutation({
+        variables: {
+          input: {
+            id: data.id,
+            ...payload,
+            contains: JSON.stringify(payload.contains),
+            taxPercent: 15,
+            priceWithTax: priceWithTax.toString(),
+            category: categoryId,
+          },
+          ingredients: selectedAllergies,
+          attachments: [...productImgFromData, ...attachments]
+        }
+      })
+    }
+  }
+
+
+  const handleProductDelete = async () => {
+    const fileIds = data.attachments.edges.map(item => item.node.fileId);
+    setImgDeleteLoading(true)
+    await deleteMultiFile(fileIds)
+    setImgDeleteLoading(false)
+    productDelete({
       variables: {
-        input: {
-          ...payload,
-          contains: JSON.stringify(payload.contains),
-          taxPercent: 15,
-          priceWithTax: priceWithTax.toString(),
-          category: categoryId,
-        },
-        ingredients: selectedAllergies,
-        attachments
+        id: data.id
       }
     })
   }
 
+  useQuery(GET_ALL_CATEGORY, {
+    onCompleted: (data) => {
+      setAllCategories(data?.categories?.edges)
+    },
+  });
+
+console.log(productImgFromData)
+  useEffect(() => {
+    setPayload({
+      name: data.name,
+      title: data.title,
+      description: data.description,
+      contains: JSON.parse(data.contains),
+      availability: data.availability,
+      discountAvailability: data.discountAvailability
+    })
+    setPriceWithTax(data.priceWithTax);
+    setPriceWithoutTax(data.actualPrice);
+    setCategoryId(data?.category?.id);
+    setSelectedAllergies(data?.ingredients.edges.map(item => item.node.name));
+    setProductImgFromData(data.attachments.edges.map(item => ({
+      fileUrl: item.node.fileUrl,
+      fileId: item.node.fileId,
+      isCover: item.node.isCover
+    })));
+  }, [])
 
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
       <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Add New Items</Typography>
+        <Typography variant='h5'>Update Items</Typography>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>
@@ -172,8 +227,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
 
       <Stack>
         <TextField
-          error={Boolean(inputerr.name || errors.name)}
-          helperText={inputerr.name || errors.name}
+          error={Boolean(inputerr.name)}
+          helperText={inputerr.name}
           name='name'
           value={payload.name}
           onChange={handleInputChange}
@@ -198,7 +253,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               type="number"
               value={priceWithoutTax}
               onChange={handlePriceWithoutTaxChange}
-              error={Boolean(inputerr.price)}
               label='Price'
             />
           </Stack>
@@ -211,19 +265,19 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               placeholder='E.g: Todays..'
             />
             <TextField
-              error={Boolean(inputerr.price || errors.priceWithTax)}
-              value={priceWithTax ? priceWithTax : ''}
-              InputProps={{ readOnly: true }}
-              label='Price (incl. Tax 15%)'
-              helperText={errors.priceWithTax}
+              error={Boolean(inputerr.price)}
+              type="number"
+              value={priceWithTax}
+              inputProps={{ readOnly: true }}
+              label='Price incl. Tax (15%)'
             />
           </Stack>
-
         </Stack>
         <Autocomplete
           freeSolo
           multiple
           options={allAllergies}
+          value={selectedAllergies}
           disableCloseOnSelect
           onChange={handleAutoCompleteChange}
           getOptionLabel={(option) => option}
@@ -276,71 +330,73 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
             label="Discount Active" />
         </Stack>
 
-        {/* selected image */}
-        <Stack gap={2} mt={2}>
+        {/* Product image from api */}
+        <Stack gap={2} >
+          <Stack direction='row' gap={2} flexWrap='wrap' >
+            {productImgFromData.map((data, index) => (
+              <Box sx={{ position: 'relative' }} key={index}>
+                <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }}
+                  onClick={() => handleProductImgRemove(data)}>
+                  <Close fontSize='small' />
+                </IconButton>
+                <img
+                  src={data.fileUrl}
+                  alt={`Image ${index}`}
+                  style={{ width: "100px", height: "100px", objectFit: 'cover' }}
+                />
+                <p>{data.name}</p>
+              </Box>
+            ))}
+          </Stack>
+          {/* selected image from file */}
           <Stack direction='row' gap={2} flexWrap='wrap' >
             {selectedFiles.map((file, index) => (
-              <Box onClick={() => setSelectedCoverImgId(index)} sx={{
-                position: 'relative',
-                border: selectedCoverImgId === index ? '3px solid green' : '',
-                borderRadius: '4px',
-                width: "100px",
-                height: "100px",
-                // p: selectedCoverImgId === index ? .5 : '',
-                cursor: 'pointer',
-                "::before": {
-                  position: 'absolute',
-                  content: selectedCoverImgId === index ? '"Cover"' : '""',
-                  width: '100%',
-                  color: '#fff',
-                  pl:1,
-                  height: '25px', bottom: 0,
-                  bgcolor: selectedCoverImgId === index ? 'rgba(0,0,0,.7)' : '',
-                  // border: '2px solid green',
-                  // borderRadius:'4px',
-                  zIndex: 11
-                }
-              }} key={index}>
-                <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }}
-                  onClick={() => handleFileDeselect(index)}>
+              <Box sx={{ position: 'relative' }} key={index}>
+                <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: -10, right: -5, bgcolor: 'light.main' }} onClick={() => handleFileDeselect(index)}>
                   <Close fontSize='small' />
                 </IconButton>
                 <img
                   src={URL.createObjectURL(file)}
                   alt={`Image ${index}`}
-                  style={{ width: "100%", height: "100%", objectFit: 'cover', borderRadius: '4px' }}
+                  style={{ width: "100px", height: "100px", objectFit: 'cover' }}
                 />
-                {/* <p>{file.name}</p> */}
+                <p>{file.name}</p>
               </Box>
             ))}
           </Stack>
           <Box sx={{ flex: 1 }}>
             <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (min 500*500 px)</Typography>
+              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose multiple files Max(5) (500*500 px)</Typography>
               <Button component="label" role={undefined} variant="outlined" startIcon={<CloudUpload />}>
                 Upload file
                 <input type="file" accept="image/*" multiple onChange={handleFileSelect} hidden />
               </Button>
             </Stack>
-            {
-              inputerr.selectedFile &&
-              <Typography sx={{ fontSize: '14px', color: 'red' }}>{inputerr.selectedFile}</Typography>
-            }
           </Box>
         </Stack>
       </Stack>
 
-      {/* {errors.length > 0 && (
+      {errors.length > 0 && (
         <ul style={{ color: 'red', fontSize: '13px', padding: '10px' }}>
           {errors.map((err, id) => (
             <li key={id}>{err}</li>
           ))}
         </ul>
-      )} */}
-      <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
+      )}
+      <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductUpdate} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
+      <Button onClick={() => setProductDeleteSecOpen(true)} sx={{ mt: 3 }} color='warning'>Delete this product</Button>
+      <Collapse in={productDeleteSecOpen}>
+        <Paper elevation={3} sx={{ p: 2 }}>
+          <Typography>Are you want to sure remove this product?</Typography>
+          <Stack direction='row' gap={2}>
+            <Button disabled={productDeleteLoading || imgDeleteLoading} onClick={handleProductDelete} color='warning'>Confirm</Button>
+            <Button onClick={() => setProductDeleteSecOpen(false)}>Cencel</Button>
+          </Stack>
+        </Paper>
+      </Collapse>
     </Box>
 
   )
 }
 
-export default AddItem
+export default EditItem

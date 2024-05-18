@@ -70,7 +70,7 @@ const GeneralSettings = () => {
         </Box>
       </Stack>
 
-      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}}>
+      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} mt={2} alignItems={{xs:'start',md:'center'}}>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Address</Typography>
         </Box>

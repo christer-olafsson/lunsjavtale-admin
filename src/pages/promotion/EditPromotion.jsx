@@ -17,7 +17,7 @@ const EditPromotion = ({ data, fetchPromotions, closeDialog }) => {
   const [payload, setPayload] = useState({
     title: '',
     description: '',
-    productUrl: '',
+    productUrl: 'https://',
     startDate: '',
     endDate: '',
     isActive: true
@@ -84,7 +84,7 @@ const EditPromotion = ({ data, fetchPromotions, closeDialog }) => {
     setPayload({
       title: data.title,
       description: data.description,
-      productUrl: data.productUrl,
+      productUrl: data.productUrl ? data.productUrl : 'https://',
       startDate: data.startDate,
       endDate: data.endDate,
       isActive: data.isActive ? data.isActive : false
@@ -97,7 +97,7 @@ const EditPromotion = ({ data, fetchPromotions, closeDialog }) => {
       p: { xs: 0, md: 2 }
     }}>
       <Stack direction='row' justifyContent='space-between' mb={4} alignItems='center'>
-        <Typography variant='h5'>Add Promotional Banner</Typography>
+        <Typography variant='h5'>Edit Promotional Banner</Typography>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>
@@ -120,7 +120,7 @@ const EditPromotion = ({ data, fetchPromotions, closeDialog }) => {
             <TextField name='endDate' onChange={handleInputChange} value={payload.endDate} size='small' fullWidth type='date' />
           </Box>
         </Stack>
-        <FormControlLabel control={<Switch onChange={(e) => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Show Sign In & Sign Up Page " />
+        <FormControlLabel control={<Switch onChange={(e) => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Active" />
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
@@ -151,7 +151,7 @@ const EditPromotion = ({ data, fetchPromotions, closeDialog }) => {
         </Box>
       </Stack>
 
-      <CButton onClick={handleSave} isLoading={fileUploadLoading || loading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add </CButton>
+      <CButton onClick={handleSave} isLoading={fileUploadLoading || loading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update </CButton>
     </Box>
   )
 }

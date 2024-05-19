@@ -16,7 +16,7 @@ const NewPromotion = ({ fetchPromotions, closeDialog }) => {
   const [payload, setPayload] = useState({
     title: '',
     description: '',
-    productUrl: '',
+    productUrl: 'https://',
     startDate: '',
     endDate: '',
     isActive: true
@@ -102,7 +102,7 @@ const NewPromotion = ({ fetchPromotions, closeDialog }) => {
             <TextField name='endDate' onChange={handleInputChange} value={payload.endDate} size='small' fullWidth type='date' />
           </Box>
         </Stack>
-        <FormControlLabel control={<Switch onChange={(e) => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Show Sign In & Sign Up Page " />
+        <FormControlLabel control={<Switch onChange={(e) => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Active" />
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>

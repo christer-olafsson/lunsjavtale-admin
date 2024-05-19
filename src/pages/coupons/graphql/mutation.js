@@ -8,3 +8,10 @@ export const COUPON_MUTATION = gql`
     }
   }
 `
+export const COUPON_DELETE = gql`
+  mutation CouponDelete ($id: ID!){
+      couponDelete(id:$id){
+      message
+    }
+  }
+`

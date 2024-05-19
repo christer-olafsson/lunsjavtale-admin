@@ -87,7 +87,7 @@ const EditFaq = ({ data, fetchFAQ, closeDialog }) => {
       p: { xs: 0, md: 2 }
     }}>
       <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Add New FAQ's</Typography>
+        <Typography variant='h5'>Edit New FAQ's</Typography>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>
@@ -105,7 +105,7 @@ const EditFaq = ({ data, fetchFAQ, closeDialog }) => {
         <TextField helperText={errors.answer} error={Boolean(errors.answer)} value={payload.answer} onChange={handleInputChange} name='answer' label='Answer' multiline rows={6} />
         {/* <FormControlLabel control={<Switch onChange={(e) => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Show in Home page " /> */}
       </Stack>
-      <CButton isLoading={loading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add </CButton>
+      <CButton isLoading={loading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update </CButton>
 
     </Box>
   )

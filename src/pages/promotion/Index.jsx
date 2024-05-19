@@ -5,20 +5,25 @@ import React, { useEffect, useState } from 'react'
 import CDialog from '../../common/dialog/CDialog'
 import NewPromotion from './NewPromotion'
 import EditPromotion from './EditPromotion'
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { PROMOTIONS } from './graphql/query'
 import LoadingBar from '../../common/loadingBar/LoadingBar'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
+import { PROMOTION_DELETE } from './graphql/mutation'
+import toast from 'react-hot-toast'
+import CButton from '../../common/CButton/CButton'
+import { deleteFile } from '../../utils/deleteFile'
 
 const Promotion = () => {
   const [addPromotionDialogOpen, setAddPromotionDialogOpen] = useState(false);
   const [editPromotionDialogOpen, setEditPromotionDialogOpen] = useState(false);
   const [deletePromotionDialogOpen, setDeletePromotionDialogOpen] = useState(false);
   const [selectedPromotionData, setSelectedPromotionData] = useState('');
-  const [selectedDeletePromotionId, setSelectedDeletePromotionId] = useState('');
+  const [deletePromotionData, setDeletePromotionData] = useState('');
+  const [fileDeleteLoading, setFileDeleteLoading] = useState(false)
   const [promotions, setPromotions] = useState([])
 
-console.log(promotions)
+
   const [fetchPromotions, { loading: promotionLoading, error: promotionErr }] = useLazyQuery(PROMOTIONS, {
     fetchPolicy: "network-only",
     onCompleted: (res) => {
@@ -26,15 +31,36 @@ console.log(promotions)
     }
   })
 
+  const [promotionDelete, { loading: deleteLoading }] = useMutation(PROMOTION_DELETE, {
+    onCompleted: (res) => {
+      fetchPromotions()
+      toast.success(res.promotionDelete.message)
+      setDeletePromotionDialogOpen(false)
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
   function handleEditPromotion(data) {
     setSelectedPromotionData(data)
     setEditPromotionDialogOpen(true)
   }
-  function handleDeletePromotion(id) {
-    setSelectedDeletePromotionId(id)
+  function handleDeletePromotion(data) {
+    setDeletePromotionData(data)
     setDeletePromotionDialogOpen(true)
   }
-  const theme = useTheme()
+
+  const handleDelete = async () => { 
+    setFileDeleteLoading(true)
+    await deleteFile(deletePromotionData.fileId)
+    setFileDeleteLoading(false)
+    promotionDelete({
+      variables: {
+        id: deletePromotionData.id
+      }
+    })
+  }
 
   useEffect(() => {
     fetchPromotions()
@@ -82,7 +108,7 @@ console.log(promotions)
                         ":hover": {
                           bgcolor: '#fff'
                         }
-                      }} onClick={() => handleDeletePromotion(item.node.id)}>
+                      }} onClick={() => handleDeletePromotion(item.node)}>
                         <DeleteOutline fontSize='small' />
                       </IconButton>
                     </Stack>
@@ -90,10 +116,10 @@ console.log(promotions)
                     <Typography sx={{ fontSize: '18px', fontWeight: 600, mb: 1 }}>{item.node.title}</Typography>
                     <Typography sx={{
                       fontSize: '12px',
-                      bgcolor: item.node.isActive ? 'primary.main': 'darkgray',
+                      bgcolor: item.node.isActive ? 'primary.main' : 'darkgray',
                       px: 1, borderRadius: '4px',
                       color: '#fff',
-                      width: 'fit-content',mb:1
+                      width: 'fit-content', mb: 1
                     }}>&#x2022; {item.node.isActive ? 'Active' : 'Not Active'}</Typography>
                     <Typography sx={{ fontSize: '14px', mb: 1 }}>{item.node.description}</Typography>
                     <Typography sx={{ fontSize: '14px', mb: 1 }}>{item.node.productUrl}</Typography>
@@ -101,7 +127,7 @@ console.log(promotions)
                       <Typography><b>Start Date:</b> {item.node.startDate}</Typography>
                       <Typography><b>End Date:</b> {item.node.endDate}</Typography>
                     </Stack>
-                    <Typography><b>Product Url:</b> {item.node.productUrl}</Typography>
+                    <Typography><b>Product Url:</b> <a href={item.node.productUrl} target='blank'>{item.node.productUrl}</a> </Typography>
                   </Box>
 
                   {/*edit */}
@@ -113,7 +139,7 @@ console.log(promotions)
                   }
                   {/* delete */}
                   {
-                    selectedDeletePromotionId === item.node.id &&
+                    deletePromotionData.id === item.node.id &&
                     <CDialog closeDialog={() => setDeletePromotionDialogOpen(false)} maxWidth='sm' openDialog={deletePromotionDialogOpen}>
                       <Box>
                         <img src="/Featured icon.png" alt="" />
@@ -121,7 +147,7 @@ console.log(promotions)
                         <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this promotion? This action cannot be undone.</Typography>
                         <Stack direction='row' gap={2} mt={3}>
                           <Button onClick={() => setDeletePromotionDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-                          <Button fullWidth variant='contained' color='error'>Delete</Button>
+                          <CButton onClick={handleDelete} isLoading={deleteLoading || fileDeleteLoading} style={{width:'100%'}} variant='contained' color='error'>Delete</CButton>
                         </Stack>
                       </Box>
                     </CDialog>

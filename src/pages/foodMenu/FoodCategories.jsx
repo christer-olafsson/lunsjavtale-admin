@@ -200,16 +200,16 @@ const FoodCategories = () => {
                     </Typography>
                       <Typography sx={{fontSize:'12px',fontWeight:500}}>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</Typography>
                     </Stack>
-                    <Stack direction='row' alignItems='center' gap={1}>
+                    {/* <Stack direction='row' alignItems='center' gap={1}>
                       <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
                       <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
                       <span>|</span>
                       <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
-                    </Stack>
+                    </Stack> */}
                     <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
-                      <Typography sx={{ fontSize: '16px' }}>${data.node.priceWithTax}
-                        <i style={{ fontWeight: 400, fontSize: '13px' }}> (Tax)</i> </Typography>
-                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}>${data.node.actualPrice}</Typography>
+                      <Typography sx={{ fontSize: '16px' }}><i style={{fontWeight:600}}>kr </i> {data.node.priceWithTax}
+                        <i style={{ fontWeight: 400, fontSize: '13px' }}> (tax)</i> </Typography>
+                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{fontWeight:600}}>kr </i> {data.node.actualPrice}</Typography>
                     </Stack>
                   </Stack>
                   <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>

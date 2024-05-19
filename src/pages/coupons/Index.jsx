@@ -5,10 +5,13 @@ import DataTable from '../../common/datatable/DataTable';
 import NewCoupon from './NewCoupon';
 import CDialog from '../../common/dialog/CDialog';
 import EditCoupon from './EditCoupon';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { COUPONS } from './graphql/query';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
+import { COUPON_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
+import CButton from '../../common/CButton/CButton';
 
 const Coupons = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
@@ -18,6 +21,7 @@ const Coupons = () => {
   const [editCouponDialogOpen, setEditCouponDialogOpen] = useState(false);
   const [coupons, setCoupons] = useState([]);
   const [editCouponData, setEditCouponData] = useState({})
+  const [deleteCouponData, setDeleteCouponData] = useState({})
 
 
   const [fetchCoupons, { loading: couponsLoading, error: couponsErr }] = useLazyQuery(COUPONS, {
@@ -26,6 +30,17 @@ const Coupons = () => {
       setCoupons(res.coupons.edges.map(item => item.node))
     }
   })
+
+  const [couponDelete, { loading: deleteLoading }] = useMutation(COUPON_DELETE, {
+    onCompleted: (res) => {
+      fetchCoupons()
+      toast.success(res.couponDelete.message)
+      setDeleteDialogOpen(false)
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
 
   const handleEdit = (row) => {
     setEditCouponDialogOpen(true)
@@ -37,9 +52,20 @@ const Coupons = () => {
   };
 
 
-  function handleDelete(row) {
+  function handleDeleteDialog(row) {
     setDeleteDialogOpen(true)
+    setDeleteCouponData(row)
   }
+
+  function handleDelete () {
+    couponDelete({
+      variables:{
+        id: deleteCouponData.id
+      }
+    })
+  }
+
+  
 
   const columns = [
     {
@@ -124,7 +150,7 @@ const Coupons = () => {
       field: 'delete', headerName: '', width: 150,
       renderCell: (params) => {
         return (
-          <IconButton onClick={() => handleDelete(params.row)}>
+          <IconButton onClick={() => handleDeleteDialog(params.row)}>
             <DeleteOutline fontSize='small' />
           </IconButton>
         )
@@ -190,7 +216,7 @@ const Coupons = () => {
           <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this coupon? This action cannot be undone.</Typography>
           <Stack direction='row' gap={2} mt={3}>
             <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-            <Button fullWidth variant='contained' color='error'>Delete</Button>
+            <CButton onClick={handleDelete} isLoading={deleteLoading} style={{width:'100%'}} variant='contained' color='error'>Delete</CButton>
           </Stack>
         </Box>
       </CDialog>

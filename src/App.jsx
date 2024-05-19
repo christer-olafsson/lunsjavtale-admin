@@ -41,7 +41,7 @@ function App() {
     <Routes>
       <Route path='/login' element={token ? <Navigate to='/dashboard' /> : <Login />} />
       <Route element={token ? <Layout /> : <Navigate to='/login' />}>
-        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/' element={<Dashboard />} />
         <Route path='/dashboard/areas' element={<Areas />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />

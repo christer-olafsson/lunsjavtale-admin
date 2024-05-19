@@ -3,8 +3,13 @@ import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuIt
 import DataTable from '../../common/datatable/DataTable';
 import AddSupplier from './AddSupplier';
 import CDialog from '../../common/dialog/CDialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import EditSupplier from './EditSupplier';
+import { VENDORS } from './graphql/query';
+import { useLazyQuery } from '@apollo/client';
+import LoadingBar from '../../common/loadingBar/LoadingBar';
+import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
+import { format } from 'date-fns';
 
 const rows = [
   { id: '987654', supplierName: 'Fcorp - Futures Enterprise', username: 'Supplier C', phone: '(+33)7 75 55 65 33', email: 'deanna.curtis@example.com', joiningDate: 'May 6, 2012', totalRevenue: '32000', status: 'Active' },
@@ -14,11 +19,19 @@ const rows = [
 
 
 const Suppliers = () => {
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
   const [statusFilter, setStatusFilter] = useState('');
   const [addSupplierDialogOpen, setAddSupplierDialogOpen] = useState(false);
   const [editSupplierDialogOpen, setEditSupplierDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [vendorEditData, setVendorEditData] = useState({})
+  const [vendors, setVendors] = useState([])
+
+  const [fetchVendors, { loading, error: vendorsErr }] = useLazyQuery(VENDORS, {
+    fetchPolicy: "network-only",
+    onCompleted: (res) => {
+      setVendors(res.vendors.edges.map(item => item.node))
+    }
+  })
 
   const handleStatusFilterChange = (event) => {
     setStatusFilter(event.target.value);
@@ -26,6 +39,7 @@ const Suppliers = () => {
 
   function handleEdit(row) {
     setEditSupplierDialogOpen(true)
+    setVendorEditData(row)
   }
   function handleDelete(row) {
     setDeleteDialogOpen(true)
@@ -33,7 +47,7 @@ const Suppliers = () => {
 
   const columns = [
     {
-      field: 'supplierName', width: 300,
+      field: 'supplierName', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Supplier Name</Typography>
       ),
@@ -43,15 +57,15 @@ const Suppliers = () => {
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
             <Avatar />
             <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.supplierName}</Typography>
-              <Typography sx={{ fontSize: '13px',}}>{params.row.username}</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.name}</Typography>
+              {/* <Typography sx={{ fontSize: '13px', }}>{params.row.firstName}</Typography> */}
             </Box>
           </Stack>
         )
       }
     },
     {
-      field: 'status', width: 100,
+      field: 'status', width: 150,
       renderHeader: (params) => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
       ),
@@ -60,23 +74,23 @@ const Suppliers = () => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
-              fontSize: { xs: '12px', md: '16px' },
-              color: row.status === 'lock' ? 'red' : 'primary.main ',
-              bgcolor: 'light.main',
-              px: 1, borderRadius: '8px',
-            }}>&#x2022; {row.status}</Typography>
+              fontSize: { xs: '12px', md: '14px' },
+              color: '#fff',
+              bgcolor: row.isBlocked ? 'light.main' : 'primary.main',
+              px: 1, borderRadius: '4px',
+            }}>&#x2022; {row.isBlocked ? 'Blocked' : 'Active'}</Typography>
           </Stack>
         )
       }
     },
     {
-      field: 'phone', headerName: '', width: 200,
+      field: 'phone', headerName: '', width: 170,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Phone</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px'}}>{params.row.phone}</Typography>
+          <Typography sx={{ fontSize: '14px' }}>{params.row.contact}</Typography>
         </Stack>
       )
     },
@@ -98,7 +112,7 @@ const Suppliers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px'}}>{params.row.joiningDate}</Typography>
+          <Typography sx={{ fontSize: '14px' }}>{format(params.row.createdOn, 'dd MMMM yyyy')}</Typography>
         </Stack>
       )
     },
@@ -109,7 +123,7 @@ const Suppliers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>${params.row.totalRevenue}</Typography>
+          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>${params.row.soldAMount}</Typography>
         </Stack>
       )
     },
@@ -122,23 +136,7 @@ const Suppliers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }}>
-            <DeleteForeverOutlined />
-          </IconButton>
-        )
-      },
-    },
-    {
-      field: 'lock', headerName: '', width: 50,
-      renderCell: (params) => {
-        return (
-          <IconButton sx={{
-            borderRadius: '5px',
-            width: { xs: '30px', md: '40px' },
-            height: { xs: '30px', md: '40px' },
-          }}>
-            <LockOutlined sx={{
-              color: params.row.status === 'lock' ? 'red' : 'gray'
-            }} />
+            <DeleteForeverOutlined fontSize='small' />
           </IconButton>
         )
       },
@@ -152,28 +150,26 @@ const Suppliers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }} onClick={() => handleEdit(params.row)}>
-            <ModeEditOutlineOutlined />
+            <ModeEditOutlineOutlined fontSize='small' />
           </IconButton>
         )
       },
     },
   ];
 
-  // useEffect(() => {
-  //   setColumnVisibilityModel({
-  //     paymentInfo: isMobile ? false : true,
-  //     status: isMobile ? false : true,
-  //     deliveryDate: isMobile ? false : true,
-  //   })
-  // }, [isMobile])
+
+  useEffect(() => {
+    fetchVendors()
+  }, [])
+
 
   return (
     <Box maxWidth='xxl'>
       <Stack direction='row' gap={1} alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers</Typography>
-        <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>3 users</Typography>
+        <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>{vendors?.length} users</Typography>
       </Stack>
-      <Stack direction={{xs:'column',md:'row'}} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
@@ -200,20 +196,19 @@ const Suppliers = () => {
                 <MenuItem value={5}>All </MenuItem>
                 <MenuItem value={20}>Active</MenuItem>
                 <MenuItem value={30}>Locked</MenuItem>
-                <MenuItem value={30}>Deleted</MenuItem>
               </Select>
             </FormControl>
           </Box>
         </Stack>
         <Button onClick={() => setAddSupplierDialogOpen(true)} variant='contained' startIcon={<Add />}>Add New Supplier</Button>
       </Stack>
-      {/* edit  */}
-      <CDialog openDialog={editSupplierDialogOpen}>
-        <EditSupplier closeDialog={() => setEditSupplierDialogOpen(false)} />
-      </CDialog>
       {/* add  */}
       <CDialog openDialog={addSupplierDialogOpen}>
-        <AddSupplier closeDialog={() => setAddSupplierDialogOpen(false)} />
+        <AddSupplier fetchVendors={fetchVendors} closeDialog={() => setAddSupplierDialogOpen(false)} />
+      </CDialog>
+      {/* edit  */}
+      <CDialog openDialog={editSupplierDialogOpen}>
+        <EditSupplier fetchVendors={fetchVendors} data={vendorEditData} closeDialog={() => setEditSupplierDialogOpen(false)} />
       </CDialog>
       {/* delete  */}
       <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
@@ -227,12 +222,14 @@ const Suppliers = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={{xs:10,md:3}}>
-        <DataTable
-          columns={columns}
-          rows={rows}
-          columnVisibilityModel={columnVisibilityModel}
-        />
+      <Box mt={{ xs: 10, md: 3 }}>
+        {
+          loading ? <LoadingBar /> : vendorsErr ? <ErrorMsg /> :
+            <DataTable
+              columns={columns}
+              rows={vendors}
+            />
+        }
       </Box>
     </Box>
   )

@@ -209,11 +209,11 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   useEffect(() => {
     setPayload({
       name: data.name,
-      title: data.title,
+      title: data.title ? data.title : '',
       description: data.description,
-      contains: JSON.parse(data.contains),
-      availability: data.availability,
-      discountAvailability: data.discountAvailability
+      contains: data.contains ? JSON.parse(data.contains) : '',
+      availability: data.availability ? data.availability : false,
+      discountAvailability: data.discountAvailability ? data.discountAvailability : false
     })
     setPriceWithTax(data.priceWithTax);
     setPriceWithoutTax(data.actualPrice);
@@ -226,8 +226,6 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     })));
   }, [])
   
-
-
 
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
@@ -416,7 +414,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
           ))}
         </ul>
       )}
-      <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductUpdate} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
+      <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductUpdate} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update</CButton>
       <Button onClick={() => setProductDeleteSecOpen(true)} sx={{ mt: 3 }} color='warning'>Delete this product</Button>
       <Collapse in={productDeleteSecOpen}>
         <Paper elevation={3} sx={{ p: 2 }}>

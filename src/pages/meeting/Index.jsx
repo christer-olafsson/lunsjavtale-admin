@@ -4,14 +4,9 @@ import DataTable from '../../common/datatable/DataTable';
 import NewMeeting from './NewMeeting';
 import CDialog from '../../common/dialog/CDialog';
 import EditMeeting from './EditMeeting';
-import { useState } from 'react';
-
-const rows = [
-  { id: '987', name: 'Phoenix Baker', username: 'phoenix11', email: 'phoenix@untitledui.com', type: 'Remote', meetingDate: '10 Feb, 2023', meetingTime: '3.00pm', startIn: '22hours', status: 'upcoming' },
-  { id: '988', name: 'Lana Steiner', username: 'lana432', email: 'lana@untitledui.com', type: 'Interview', meetingDate: '13 Feb, 2023', meetingTime: '2.00pm', startIn: '16hours', status: 'upcoming' },
-  { id: '999', name: 'Demi Wilkinson', username: 'demi435', email: 'demi232@untitledui.com', type: 'Lively', meetingDate: '10 Jan, 2023', meetingTime: '10.00am', startIn: '00hours', status: 'complete' },
-];
-
+import { useEffect, useState } from 'react';
+import { FOOD_MEETINGS } from './graphql/query';
+import { useLazyQuery } from '@apollo/client';
 
 const Meeting = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
@@ -19,6 +14,15 @@ const Meeting = () => {
   const [createMeetingDialogOpen, setCreateMeetingDialogOpen] = useState(false);
   const [deleteMeetingDialogOpen, setDeleteMeetingDialogOpen] = useState(false);
   const [editMeetingDialogOpen, setEditMeetingDialogOpen] = useState(false);
+  const [meetings, setMeetings] = useState([])
+
+  const [fetchMeeting, { loading: meetingsLoading, error: meetingsErr }] = useLazyQuery(FOOD_MEETINGS, {
+    fetchPolicy: 'network-only',
+    onCompleted: (res) => {
+      setMeetings(res.foodMeetings.edges.map(item => item.node))
+    }
+  })
+  console.log(meetings)
 
   const handleEdit = (row) => {
     setEditMeetingDialogOpen(true)
@@ -45,8 +49,8 @@ const Meeting = () => {
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
             <Avatar src='' />
             <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.name}</Typography>
-              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>@ {params.row.username}</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.companyName}</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>@ {params.row.firstName}</Typography>
             </Box>
           </Stack>
         )
@@ -73,7 +77,7 @@ const Meeting = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography>{params.row.type}</Typography>
+          <Typography>{params.row.meetingType}</Typography>
         </Stack>
       )
     },
@@ -85,8 +89,8 @@ const Meeting = () => {
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
           <Box>
-            <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>{params.row.meetingDate}</Typography>
             <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>{params.row.meetingTime}</Typography>
+            {/* <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>{params.row.meetingTime}</Typography> */}
           </Box>
         </Stack>
       )
@@ -98,7 +102,7 @@ const Meeting = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography>{params.row.startIn}</Typography>
+          {/* <Typography>{params.row.startIn}</Typography> */}
         </Stack>
       )
     },
@@ -116,7 +120,7 @@ const Meeting = () => {
               color: params.row.status === 'upcoming' ? 'primary.main' : 'gray',
               bgcolor: 'light.main',
               px: 1, borderRadius: '8px',
-            }}>&#x2022; {row.status}</Typography>
+            }}>&#x2022; {'Pending'}</Typography>
           </Stack>
         )
       }
@@ -150,6 +154,11 @@ const Meeting = () => {
   //     deliveryDate: isMobile ? false : true,
   //   })
   // }, [isMobile])
+
+  useEffect(() => {
+    fetchMeeting()
+  }, [])
+  
 
   return (
     <Box maxWidth='xxl'>
@@ -204,7 +213,7 @@ const Meeting = () => {
       <Box mt={3}>
         <DataTable
           columns={columns}
-          rows={rows}
+          rows={meetings}
           columnVisibilityModel={columnVisibilityModel}
         />
       </Box>

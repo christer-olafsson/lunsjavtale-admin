@@ -75,7 +75,7 @@ const FoodItem = () => {
   const [singleCategory, setSingleCategory] = useState([]);
 
 
-  const[fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
+  const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
     fetchPolicy: "network-only",
     onCompleted: (data) => {
       setAllCategorys(data?.categories?.edges)
@@ -105,7 +105,7 @@ const FoodItem = () => {
     fetchProducts()
   }, [])
 
-console.log(singleCategory)
+
   return (
     <Box maxWidth='xxl'>
       <Stack direction='row' justifyContent='space-between' mb={2} gap={2}>
@@ -141,25 +141,25 @@ console.log(singleCategory)
           cursor: 'pointer',
           userSelect: 'none'
         }} onClick={() => setCategoryId(null)}>
-          <Typography>All</Typography>
+          <Typography>All {categoryId === null && <i style={{fontSize:'14px'}}>({singleCategory.length})</i>}</Typography>
         </Box>
         {
           // loadingCategory ? <LoadingBar/> : 
-          categoryErr ? <ErrorMsg/> :
-          allCategorys?.map((item) => (
-            <Box sx={{
-              border: '1px solid lightgray',
-              py: 1, px: 2,
-              borderRadius: '8px',
-              bgcolor: categoryId === item.node.id ? 'primary.main' : 'inherit',
-              color: categoryId === item.node.id ? '#fff' : 'inherit',
-              cursor: 'pointer',
-              userSelect: 'none',
-              opacity: !item.node.isActive ? '.4' : '1'
-            }} onClick={() => setCategoryId(item.node.id)} key={item?.node.id}>
-              <Typography>{item?.node.name}</Typography>
-            </Box>
-          ))
+          categoryErr ? <ErrorMsg /> :
+            allCategorys?.map((item) => (
+              <Box sx={{
+                border: '1px solid lightgray',
+                py: 1, px: 2,
+                borderRadius: '8px',
+                bgcolor: categoryId === item.node.id ? 'primary.main' : 'inherit',
+                color: categoryId === item.node.id ? '#fff' : 'inherit',
+                cursor: 'pointer',
+                userSelect: 'none',
+                opacity: !item.node.isActive ? '.4' : '1'
+              }} onClick={() => setCategoryId(item.node.id)} key={item?.node.id}>
+                <Typography>{item?.node.name} {categoryId === item.node.id && <i style={{fontSize:'14px'}}>({singleCategory.length})</i>}</Typography>
+              </Box>
+            ))
         }
         <Box sx={{
           border: '1px solid lightgray',
@@ -175,35 +175,33 @@ console.log(singleCategory)
       </Stack>
       <Stack direction='row' flexWrap='wrap' gap={2}>
         {
-          loadinProducts ? <LoadingBar /> : errProducts ? <ErrorMsg /> :
+          loadinProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
             singleCategory.length === 0 ?
               <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
               singleCategory.map((data, id) => (
                 <Box key={id} sx={{
                   width: { xs: '100%', md: '300px' },
-                  bgcolor:  data.node.availability ? 'light.main' : '#fff',
+                  bgcolor: data.node.availability ? 'light.main' : '#fff',
                   p: { xs: 1, lg: 2.5 },
                   borderRadius: '8px',
-                  border:  '1px solid lightgray' ,
+                  border: '1px solid lightgray',
                   opacity: data.node.availability ? '1' : '.6'
                 }}>
                   <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
                     src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="" />
-                  {/* <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
-                    src={data?.node.attachments.edges[0] ? data?.node.attachments.edges[0].node.fileUrl : '/noImage.png'} alt="" /> */}
                   <Stack>
-                    {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
                     <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>
                     <Stack direction='row' alignItems='center' gap={2}>
-                    <Typography
-                      sx={{ fontSize: '12px', 
-                      bgcolor: data.node.availability ? 'primary.main' : 'darkgray',
-                      color: '#fff',
-                      px:1,borderRadius:'4px',
-                      }}>
-                      {data.node.availability ? 'Available' : 'Not Available'}
-                    </Typography>
-                      <Typography sx={{fontSize:'12px',fontWeight:500}}>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</Typography>
+                      <Typography
+                        sx={{
+                          fontSize: '12px',
+                          bgcolor: data.node.availability ? 'primary.main' : 'darkgray',
+                          color: '#fff',
+                          px: 1, borderRadius: '4px',
+                        }}>
+                        {data.node.availability ? 'Available' : 'Not Available'}
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</Typography>
                     </Stack>
                     {/* <Stack direction='row' alignItems='center' gap={1}>
                       <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
@@ -212,9 +210,9 @@ console.log(singleCategory)
                       <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
                     </Stack> */}
                     <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
-                      <Typography sx={{ fontSize: '16px' }}>${data.node.priceWithTax}
-                        <i style={{ fontWeight: 400, fontSize: '13px' }}> (Tax)</i> </Typography>
-                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}>${data.node.actualPrice}</Typography>
+                      <Typography sx={{ fontSize: '16px' }}><i style={{fontWeight:600}}>kr </i> {data.node.priceWithTax} 
+                        <i style={{ fontWeight: 400, fontSize: '13px' }}> (tax)</i> </Typography>
+                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{fontWeight:600}}>kr </i>{data.node.actualPrice} </Typography>
                     </Stack>
                   </Stack>
                   <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>

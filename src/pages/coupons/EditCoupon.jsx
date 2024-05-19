@@ -275,7 +275,7 @@ const EditCoupon = ({ data, fetchCoupons, closeDialog }) => {
 
       </Stack>
 
-      <CButton isLoading={couponMutationLoading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
+      <CButton isLoading={couponMutationLoading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update</CButton>
     </Box>
   )
 }

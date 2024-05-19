@@ -8,3 +8,12 @@ export const PROMOTION_MUTATION = gql`
     }
   }
 `
+
+export const PROMOTION_DELETE = gql`
+  mutation PromotionDelete ($id: ID!){
+    promotionDelete(id:$id){
+      success
+      message
+    }
+  }
+`

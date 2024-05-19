@@ -133,7 +133,7 @@ const EditBrand = ({ data, fetchBrands, closeDialog }) => {
         </Box>
       </Stack>
 
-      <CButton onClick={handleSave} isLoading={brandMutationLoading || fileUploadLoading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add </CButton>
+      <CButton onClick={handleSave} isLoading={brandMutationLoading || fileUploadLoading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update </CButton>
 
     </Box>
   )

@@ -172,7 +172,7 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
       </FormGroup>
 
       <CButton isLoading={loading || fileUploadLoading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>
-        Save and Add
+        Save and Update
       </CButton>
 
     </Box>

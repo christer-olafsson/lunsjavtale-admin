@@ -63,7 +63,7 @@ const Areas = () => {
 
   const columns = [
     {
-      field: 'areaName', width: 250,
+      field: 'areaName', width: 200,
       renderHeader: (params) => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Area Name</Typography>
       ),
@@ -75,7 +75,7 @@ const Areas = () => {
             {
               row.name ?
                 <Typography sx={{ fontSize: '14px', color: row.isActive ? 'inherit' : 'darkgray' }}>{row.name}</Typography> :
-                <Typography sx={{ fontSize: '12px', color: row.isActive ? 'inherit' : 'darkgray' }}>No Area name provided</Typography>
+                <Typography sx={{ fontSize: '12px', color: row.isActive ? 'inherit' : 'darkgray' }}>Empty</Typography>
             }
           </Stack>
         )
@@ -141,21 +141,21 @@ const Areas = () => {
       }
     },
     {
-      field: 'edit', headerName: '', width: 50,
+      field: 'edit', headerName: '', width: 60,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleEditDialog(params.row)}>
-            <EditOutlined sx={{ color: params.row.isActive ? 'inherit' : 'darkgray' }} />
+            <EditOutlined fontSize='small' sx={{ color: params.row.isActive ? 'inherit' : 'darkgray' }} />
           </IconButton>
         )
       },
     },
     {
-      field: 'delete', headerName: '', width: 50,
+      field: 'delete', headerName: '', width: 60,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>
-            <DeleteOutline sx={{ color: params.row.isActive ? 'inherit' : 'darkgray' }} />
+            <DeleteOutline fontSize='small' sx={{ color: params.row.isActive ? 'inherit' : 'darkgray' }} />
           </IconButton>
         )
       },

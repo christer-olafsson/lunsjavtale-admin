@@ -182,14 +182,14 @@ function Layout() {
       }}>
         <ListBtn
           onClick={handleDrawerClose}
-          link='/dashboard' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
-          selected={pathname === '/dashboard'} />
+          link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
+          selected={pathname === '/'} />
         <ListBtn
           onClick={handleDrawerClose}
           link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
           selected={pathname === '/dashboard/areas'} />
         <ListBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
-          link='/dashboard/areas'
+          link='/dashboard/food-item'
           expandIcon
           expand={expandFoodMenu}
           icon={<LunchDining fontSize='small' />}

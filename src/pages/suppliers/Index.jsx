@@ -55,9 +55,9 @@ const Suppliers = () => {
         const { row } = params;
         return (
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <Avatar />
+            <Avatar src={row.logoUrl} />
             <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.name}</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.name}</Typography>
               {/* <Typography sx={{ fontSize: '13px', }}>{params.row.firstName}</Typography> */}
             </Box>
           </Stack>

@@ -13,6 +13,19 @@ export const VENDORS = gql`
           postCode
           soldAmount
           isBlocked
+          logoUrl
+          fileId
+          users{
+          edges{
+            node{
+              id
+              username
+              firstName
+              lastName
+              role
+            }
+          }
+        }
           # firstName
         }
       }

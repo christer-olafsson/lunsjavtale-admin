@@ -7,3 +7,10 @@ export const VENDOR_CREATION = gql`
     }
   }
 `
+export const VENDOR_UPDATE = gql`
+  mutation VendorUpdate ($input: VendorUpdateMutationInput!){
+    vendorUpdate(input:$input){
+      message
+    }
+  }
+`

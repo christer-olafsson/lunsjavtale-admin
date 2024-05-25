@@ -39,7 +39,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path='/login' element={token ? <Navigate to='/dashboard' /> : <Login />} />
+      <Route path='/login' element={token ? <Navigate to='/' /> : <Login />} />
       <Route element={token ? <Layout /> : <Navigate to='/login' />}>
         <Route path='/' element={<Dashboard />} />
         <Route path='/dashboard/areas' element={<Areas />} />

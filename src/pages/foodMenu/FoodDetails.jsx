@@ -3,7 +3,7 @@ import { LocalOffer, NavigateBefore, West } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Avatar, Box, Button, IconButton, ListItem, ListItemIcon, ListItemText, Rating, Stack, Tab, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, unstable_HistoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { GET_SINGLE_PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
@@ -17,6 +17,8 @@ const FoodDetails = () => {
   const { id } = useParams();
   const theme = useTheme()
 
+  const navigate = useNavigate()
+
   const { loading, error } = useQuery(GET_SINGLE_PRODUCTS, {
     variables: {
       id: id
@@ -25,31 +27,29 @@ const FoodDetails = () => {
       setProduct(res.products.edges[0].node)
     }
   })
-  // console.log(product)
+
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-console.log(product)
+
   return (
     <Box sx={{ minHeight: '1000px' }}>
       {
         loading ? <Loader /> : error ? <ErrorMsg /> :
           <>
 
-            {/* <Stack direction='row' alignItems='center' gap={2} mb={2}>
-              <Link to='/dashboard/food-item'>
-                <IconButton>
-                  <West />
-                </IconButton>
-              </Link>
+            <Stack direction='row' alignItems='center' gap={2} mb={2}>
+              <IconButton onClick={()=> navigate(-1)}>
+                <West />
+              </IconButton>
               <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
-            </Stack> */}
+            </Stack>
             <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
               <Stack direction='row' gap={2}>
                 <Stack sx={{
                   maxHeight: '600px',
-                  mr:4
+                  mr: 4
                 }} flexWrap='wrap' gap={2}>
                   {
                     product?.attachments?.edges.map((item, id) => (
@@ -99,7 +99,7 @@ console.log(product)
                   <Typography sx={{ fontSize: '14px' }}>Save 50% right now</Typography>
                 </Stack> */}
                 <Typography sx={{ fontSize: { xs: '14px', lg: '16px', fontWeight: 600 }, mt: 2 }}>Contains:</Typography>
-                  <Typography>{product.contains && typeof product.contains === 'string' ? JSON.parse(product.contains) : ''}</Typography>
+                <Typography>{product.contains && typeof product.contains === 'string' ? JSON.parse(product.contains) : ''}</Typography>
               </Box>
             </Stack>
             <Box sx={{ width: '100%', mt: 5 }}>

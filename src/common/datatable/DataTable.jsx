@@ -22,8 +22,8 @@ const DataTable = ({ rows, columns, getRowHeight, columnVisibilityModel }) => {
             },
           },
         }}
-        columnVisibilityModel={columnVisibilityModel}
         pageSizeOptions={[10]}
+        columnVisibilityModel={columnVisibilityModel}
         disableRowSelectionOnClick
         disableColumnFilter
         disableColumnMenu

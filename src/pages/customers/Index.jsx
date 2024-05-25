@@ -1,4 +1,4 @@
-import { Add, ApprovalOutlined, BorderColor, DeleteForeverOutlined, DeleteOutlineOutlined, DoneAllOutlined, FmdBadOutlined, LocationOffOutlined, LocationOnOutlined, LockOpenOutlined, LockOutlined, MailOutlined, ModeEditOutlineOutlined, MoreHoriz, Person, PersonOutline, Remove, RemoveDoneOutlined, RoomOutlined, Search, Store, StoreOutlined } from '@mui/icons-material'
+import { Add, ApprovalOutlined, BorderColor, DeleteForeverOutlined, DeleteOutlineOutlined, DoneAllOutlined, FmdBadOutlined, LocationOffOutlined, LocationOnOutlined, LockOpenOutlined, LockOutlined, MailOutlined, ModeEditOutlineOutlined, MoreHoriz, Person, PersonOutline, PriorityHighOutlined, Remove, RemoveDoneOutlined, RoomOutlined, Search, Store, StoreOutlined } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -76,12 +76,17 @@ const Customers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-          {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> : <StoreOutlined />}
+          {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> : 
+          <StoreOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} />}
           <Box >
             <Stack direction='row' alignItems='center'>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.company}</Typography>
-              {!params.row.isValid && <FmdBadOutlined sx={{color: 'red'}} fontSize='small' />}
-              
+              <Typography sx={{
+                fontSize: '14px',
+                fontWeight: 600,
+                color: params.row.isValid ? 'inherit' : 'darkgray'
+              }}>{params.row.company}</Typography>
+              {!params.row.isValid && <PriorityHighOutlined sx={{ color: 'red' }} fontSize='small' />}
+
             </Stack>
             {/* {
               params.row.isValid ?
@@ -111,8 +116,11 @@ const Customers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} gap={1} direction='row' alignItems='center'>
-          <MailOutlined fontSize='small' />
-          <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
+          <MailOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} fontSize='small' />
+          <Typography sx={{ 
+            fontSize: '14px',
+            color: params.row.isValid ? 'inherit' : 'darkgray'
+            }}>{params.row.email}</Typography>
         </Stack>
       )
     },
@@ -127,9 +135,9 @@ const Customers = () => {
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
             <Avatar sx={{ height: '30px', width: '30px' }} src={row.photoUrl ? row.photoUrl : ''} />
             <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.firstName}</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600,color: params.row.isValid ? 'inherit' : 'darkgray' }}>{row.firstName}</Typography>
               {row.username &&
-                <Typography sx={{ fontSize: '12px' }}>@{row.username}</Typography>
+                <Typography sx={{ fontSize: '12px',color: params.row.isValid ? 'inherit' : 'darkgray' }}>@{row.username}</Typography>
               }
             </Box>
           </Stack>
@@ -145,7 +153,7 @@ const Customers = () => {
         const { row } = params;
         return (
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <PersonOutline />
+            <PersonOutline sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} />
             <Typography sx={{ fontSize: '14px', noOfEmployees: '10' }}>{params.row.noOfEmployees}</Typography>
           </Stack>
         )
@@ -203,7 +211,7 @@ const Customers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }}>
-            <DeleteOutlineOutlined fontSize='small' />
+            <DeleteOutlineOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} fontSize='small' />
           </IconButton>
         )
       },
@@ -233,7 +241,7 @@ const Customers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }} onClick={() => handleEdit(params.row)}>
-            <ModeEditOutlineOutlined fontSize='small' />
+            <ModeEditOutlineOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} fontSize='small' />
           </IconButton>
         )
       },
@@ -329,7 +337,7 @@ const Customers = () => {
           <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this company? This action cannot be undone.</Typography>
           <Stack direction='row' gap={2} mt={3}>
             <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-            <CButton isLoading={deleteLoading} onClick={handleCompanyDelete} style={{width:'100%'}} variant='contained' color='error'>Delete</CButton>
+            <CButton isLoading={deleteLoading} onClick={handleCompanyDelete} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
           </Stack>
         </Box>
       </CDialog>

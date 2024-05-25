@@ -188,7 +188,7 @@ const EditCoupon = ({ data, fetchCoupons, closeDialog }) => {
             name='value'
             fullWidth
             type='number'
-            label='Discount Value (1-100%)'
+            label='Discount (%)'
           />
         </Stack>
         <Stack direction='row' gap={2}>

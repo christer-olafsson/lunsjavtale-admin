@@ -72,7 +72,7 @@ const FoodItem = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [allCategorys, setAllCategorys] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-  const [singleCategory, setSingleCategory] = useState([]);
+  const [products, setProducts] = useState([]);
 
 
   const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
@@ -90,7 +90,7 @@ const FoodItem = () => {
     },
     onCompleted: (res) => {
       const data = res.products.edges
-      setSingleCategory(data)
+      setProducts(data)
     },
   });
 
@@ -141,7 +141,7 @@ const FoodItem = () => {
           cursor: 'pointer',
           userSelect: 'none'
         }} onClick={() => setCategoryId(null)}>
-          <Typography>All {categoryId === null && <i style={{fontSize:'14px'}}>({singleCategory.length})</i>}</Typography>
+          <Typography>All {categoryId === null && <i style={{fontSize:'14px'}}>({products.length})</i>}</Typography>
         </Box>
         {
           // loadingCategory ? <LoadingBar/> : 
@@ -157,7 +157,7 @@ const FoodItem = () => {
                 userSelect: 'none',
                 opacity: !item.node.isActive ? '.4' : '1'
               }} onClick={() => setCategoryId(item.node.id)} key={item?.node.id}>
-                <Typography>{item?.node.name} {categoryId === item.node.id && <i style={{fontSize:'14px'}}>({singleCategory.length})</i>}</Typography>
+                <Typography>{item?.node.name} {categoryId === item.node.id && <i style={{fontSize:'14px'}}>({products.length})</i>}</Typography>
               </Box>
             ))
         }
@@ -176,9 +176,9 @@ const FoodItem = () => {
       <Stack direction='row' flexWrap='wrap' gap={2}>
         {
           loadinProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
-            singleCategory.length === 0 ?
+            products.length === 0 ?
               <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
-              singleCategory.map((data, id) => (
+              products.map((data, id) => (
                 <Box key={id} sx={{
                   width: { xs: '100%', md: '300px' },
                   bgcolor: data.node.availability ? 'light.main' : '#fff',

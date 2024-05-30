@@ -45,7 +45,7 @@ function App() {
         <Route path='/dashboard/areas' element={<Areas />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />
-        <Route path='/dashboard/food-details/:id' element={<FoodDetails />} />
+        <Route path='/dashboard/:path/food-details/:id' element={<FoodDetails />} />
         <Route path='/dashboard/orders' element={<Orders />} />
         <Route path='/dashboard/orders/details/:id' element={<OrderDetails />} />
         <Route path='/dashboard/sales-history' element={<SalesHistory />} />

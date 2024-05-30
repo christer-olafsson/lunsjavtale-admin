@@ -1,0 +1,106 @@
+import { gql } from "@apollo/client";
+
+export const ORDERS = gql`
+  query{
+    orders{
+      edges{
+        node{
+          id
+          createdOn
+          isDeleted
+          deletedOn
+          finalPrice
+          status
+          deliveryDate
+          finalPrice
+          orderCarts{
+            edges{
+              node{
+                id
+                quantity
+                priceWithTax
+                totalPriceWithTax
+                orderedQuantity
+                item{
+                  id
+                  priceWithTax
+                  name
+                  attachments{
+                  edges{
+                    node{
+                      fileUrl
+                      isCover
+                    }
+                  }
+                }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+}
+`
+
+export const ORDER = gql`
+  query($id:ID!) {
+    order(id:$id){
+    id
+    createdOn
+    isDeleted
+    deliveryDate
+    finalPrice
+    status
+    orderCarts{
+      edges{
+        node{
+          id
+          cancelled
+          orderedQuantity
+          priceWithTax
+          totalPriceWithTax
+          item{
+            id
+            priceWithTax
+            name
+            attachments{
+              edges{
+                node{
+                  id
+                  fileUrl
+                  isCover
+                }
+              }
+            }
+            category{
+              id
+              name
+            }
+          }
+          users{
+            edges{
+              node{
+                id
+                addedFor{
+                  id
+                  username
+                  email
+                  firstName
+                  lastName
+                  postCode
+                  photoUrl
+                  role
+                  isDeleted
+                  phone
+                  dueAmount
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  }
+`

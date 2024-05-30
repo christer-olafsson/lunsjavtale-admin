@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
 import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, Search, Settings, SpaceDashboard, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
@@ -101,7 +101,10 @@ function Layout() {
   const [drawerItemName, setDrawerItemName] = useState('');
   const [expandFoodMenu, setExpandFoodMenu] = useState(false)
 
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
+  const orderDetailsMatch = useMatch('/dashboard/orders/details/:id')
+  const foodDetailsMatchFromItem = useMatch('/dashboard/food-item/food-details/:id')
+  const foodDetailsMatchFromCategories = useMatch('/dashboard/food-categories/food-details/:id')
 
 
   const [logout, { loading }] = useMutation(LOGOUT, {
@@ -194,21 +197,26 @@ function Layout() {
           expand={expandFoodMenu}
           icon={<LunchDining fontSize='small' />}
           text='Food Menu'
-          selected={pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories'}
+          selected={
+            pathname === '/dashboard/food-item'
+            || pathname === '/dashboard/food-categories'
+            || pathname === foodDetailsMatchFromItem?.pathname
+            || pathname === foodDetailsMatchFromCategories?.pathname
+          }
         />
         <Collapse in={expandFoodMenu} timeout="auto" unmountOnExit>
-          <Box sx={{ ml: 3,mt:1 }}>
+          <Box sx={{ ml: 3, mt: 1 }}>
             <ListBtn onClick={handleDrawerClose} link='/dashboard/food-item' text='Food Item'
-              selected={pathname === '/dashboard/food-item'} />
+              selected={pathname === '/dashboard/food-item' || pathname === foodDetailsMatchFromItem?.pathname} />
             <ListBtn onClick={handleDrawerClose} link='/dashboard/food-categories' text='Food Categories'
-              selected={pathname === '/dashboard/food-categories'} />
+              selected={pathname === '/dashboard/food-categories' || pathname === foodDetailsMatchFromCategories?.pathname} />
           </Box>
         </Collapse>
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/orders'
           icon={<Notifications fontSize='small' />}
           text='Orders'
-          selected={pathname === '/dashboard/orders'}
+          selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/sales-history'

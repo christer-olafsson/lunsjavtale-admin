@@ -214,7 +214,7 @@ const FoodCategories = () => {
                   </Stack>
                   <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>
                     <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Edit Now</Button>
-                    <Link to={`/dashboard/food-details/${data.node.id}`}>
+                    <Link to={`/dashboard/food-categories/food-details/${data.node.id}`}>
                       <Button endIcon={<ArrowRightAlt />}>Details</Button>
                     </Link>
                   </Stack>

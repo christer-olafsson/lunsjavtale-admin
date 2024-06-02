@@ -49,23 +49,8 @@ const UserManagemenet = () => {
 
   return (
     <Box sx={{ minHeight: '600px' }} maxWidth='xxl'>
-      <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>User Management </Typography>
-      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:3}} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
-        <Stack direction='row' gap={2}>
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: '480px',
-            bgcolor: '#fff',
-            width: '100%',
-            border: '1px solid lightgray',
-            borderRadius: '4px',
-          }}>
-            <IconButton><Search /></IconButton>
-            <Input fullWidth disableUnderline placeholder='Search.. ' />
-          </Box>
-        </Stack>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 1, md: 3 }} justifyContent='space-between'>
+        <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>User Management </Typography>
         <Button onClick={() => setAddUserDialogOpen(true)} variant='contained' startIcon={<Add />}>Add User</Button>
         {/* add user */}
         <CDialog openDialog={addUserDialogOpen}>
@@ -73,17 +58,17 @@ const UserManagemenet = () => {
         </CDialog>
       </Stack>
 
-      <Stack direction='row' gap={2} flexWrap='wrap' mt={{xs:10,md:3}}>
+      <Stack direction='row' gap={2} flexWrap='wrap' mt={5}>
         {
           users.map((user, id) => (
             <Paper key={id} elevation={3} sx={{
-              width: {xs:'100%',md:'270px'},
+              width: { xs: '100%', md: '270px' },
               display: 'flex',
               alignItems: 'center',
               gap: 1, p: 2,
               position: 'relative',
               bgcolor: user.status === 'lock' ? '#FEE4E2' : 'none',
-              opacity:  user.status === 'lock' ? '.6' : '1',
+              opacity: user.status === 'lock' ? '.6' : '1',
             }}>
               <Avatar sx={{
                 width: '60px',
@@ -120,7 +105,7 @@ const UserManagemenet = () => {
                 top: 10, right: 10,
                 display: user.status === 'lock' ? 'block' : 'none'
               }}>
-                <Lock sx={{color:'red'}} />
+                <Lock sx={{ color: 'red' }} />
               </Box>
               {/*edit */}
               {

@@ -19,14 +19,13 @@ const Login = () => {
 
   const [loginUser, { loading, error: loginErr }] = useMutation(LOGIN_USER, {
     onCompleted: (res) => {
-      console.log(res)
       if(!res.loginUser.user.isAdmin){
         toast.error('Access Denied');
         return
       }
       localStorage.setItem("token", res.loginUser.access);
       toast.success('Login Success!');
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     },
     onError: (err) => {
       toast.error(err.message)

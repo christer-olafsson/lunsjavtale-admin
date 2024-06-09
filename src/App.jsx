@@ -6,7 +6,7 @@ import FoodCategories from './pages/foodMenu/FoodCategories'
 import FoodDetails from './pages/foodMenu/FoodDetails'
 import FoodItem from './pages/foodMenu/Index'
 import Orders from './pages/orders/Index'
-import SalesHistory from './pages/salesHistory/Index'
+import PaymentsHistory from './pages/paymentsHistory/Index'
 import Customers from './pages/customers/Index'
 import Coupons from './pages/coupons/Index'
 import Invoice from './pages/invoice/Index'
@@ -15,7 +15,7 @@ import Faq from './pages/faq/Index'
 import Promotion from './pages/promotion/Index'
 import Settings from './pages/settings/Index'
 import OrderDetails from './pages/orders/OrderDetails'
-import SalesDetails from './pages/salesHistory/SalesDetails'
+import SalesDetails from './pages/paymentsHistory/SalesDetails'
 import Meeting from './pages/meeting/Index'
 import Login from './pages/login/Login'
 import { useEffect, useState } from 'react'
@@ -48,8 +48,8 @@ function App() {
         <Route path='/dashboard/:path/food-details/:id' element={<FoodDetails />} />
         <Route path='/dashboard/orders' element={<Orders />} />
         <Route path='/dashboard/orders/details/:id' element={<OrderDetails />} />
-        <Route path='/dashboard/sales-history' element={<SalesHistory />} />
-        <Route path='/dashboard/sales-history/details/:id' element={<SalesDetails />} />
+        <Route path='/dashboard/payments-history' element={<PaymentsHistory />} />
+        <Route path='/dashboard/payments-history/details/:id' element={<SalesDetails />} />
         <Route path='/dashboard/customers' element={<Customers />} />
         <Route path='/dashboard/suppliers' element={<Suppliers />} />
         <Route path='/dashboard/meetings' element={<Meeting />} />

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const COUPONS = gql`
-  query{
-    coupons{
+  query($name: String){
+    coupons(name: $name){
       edges{
         node{
           id

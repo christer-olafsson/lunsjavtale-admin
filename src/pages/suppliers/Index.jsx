@@ -6,10 +6,12 @@ import CDialog from '../../common/dialog/CDialog';
 import { useEffect, useState } from 'react';
 import EditSupplier from './EditSupplier';
 import { VENDORS } from './graphql/query';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { format } from 'date-fns';
+import { VENDOR_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
 
 const rows = [
   { id: '987654', supplierName: 'Fcorp - Futures Enterprise', username: 'Supplier C', phone: '(+33)7 75 55 65 33', email: 'deanna.curtis@example.com', joiningDate: 'May 6, 2012', totalRevenue: '32000', status: 'Active' },
@@ -24,6 +26,7 @@ const Suppliers = () => {
   const [editSupplierDialogOpen, setEditSupplierDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [vendorEditData, setVendorEditData] = useState({})
+  const [vendorDeleteId, setVendorDeleteId] = useState('')
   const [vendors, setVendors] = useState([])
 
   const [fetchVendors, { loading, error: vendorsErr }] = useLazyQuery(VENDORS, {
@@ -32,6 +35,25 @@ const Suppliers = () => {
       setVendors(res.vendors.edges.map(item => item.node))
     }
   })
+
+  const [vendorDelete, { loading: deleteLoading }] = useMutation(VENDOR_DELETE, {
+    onCompleted: (res) => {
+      fetchVendors()
+      toast.success(res.vendorDelete.message)
+      setDeleteDialogOpen(false)
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
+  const handleVendorDelete = () => {
+    vendorDelete({
+      variables: {
+        id: vendorDeleteId
+      }
+    })
+  }
 
   const handleStatusFilterChange = (event) => {
     setStatusFilter(event.target.value);
@@ -43,13 +65,14 @@ const Suppliers = () => {
   }
   function handleDelete(row) {
     setDeleteDialogOpen(true)
+    setVendorDeleteId(row.id)
   }
 
   const columns = [
     {
       field: 'supplierName', width: 200,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Supplier Name</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Suppliers</Typography>
       ),
       renderCell: (params) => {
         const { row } = params;
@@ -76,7 +99,7 @@ const Suppliers = () => {
             <Typography sx={{
               fontSize: { xs: '12px', md: '14px' },
               color: '#fff',
-              bgcolor: row.isBlocked ? 'light.main' : 'primary.main',
+              bgcolor: row.isBlocked ? 'darkgray' : 'primary.main',
               px: 1, borderRadius: '4px',
             }}>&#x2022; {row.isBlocked ? 'Blocked' : 'Active'}</Typography>
           </Stack>
@@ -97,7 +120,7 @@ const Suppliers = () => {
     {
       field: 'email', headerName: '', width: 300,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Email Address</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Email</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
@@ -131,7 +154,7 @@ const Suppliers = () => {
       field: 'delete', headerName: '', width: 50,
       renderCell: (params) => {
         return (
-          <IconButton onClick={() => setDeleteDialogOpen(true)} sx={{
+          <IconButton onClick={() => handleDelete(params.row)} sx={{
             borderRadius: '5px',
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
@@ -167,7 +190,9 @@ const Suppliers = () => {
     <Box maxWidth='xxl'>
       <Stack direction='row' gap={1} alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers</Typography>
-        <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>{vendors?.length} users</Typography>
+        <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>
+          {vendors.filter(item => !item.isDeleted).length}
+          users</Typography>
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
@@ -184,20 +209,6 @@ const Suppliers = () => {
           }}>
             <Input fullWidth disableUnderline placeholder='Search.. ' />
             <IconButton><Search /></IconButton>
-          </Box>
-          <Box sx={{ minWidth: 200 }}>
-            <FormControl size='small' fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Status"
-                onChange={handleStatusFilterChange}
-              >
-                <MenuItem value={5}>All </MenuItem>
-                <MenuItem value={20}>Active</MenuItem>
-                <MenuItem value={30}>Locked</MenuItem>
-              </Select>
-            </FormControl>
           </Box>
         </Stack>
         <Button onClick={() => setAddSupplierDialogOpen(true)} variant='contained' startIcon={<Add />}>Add New Supplier</Button>
@@ -218,7 +229,7 @@ const Suppliers = () => {
           <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this supplier? This action cannot be undone.</Typography>
           <Stack direction='row' gap={2} mt={3}>
             <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-            <Button fullWidth variant='contained' color='error'>Delete</Button>
+            <Button disabled={deleteLoading} onClick={handleVendorDelete} fullWidth variant='contained' color='error'>Delete</Button>
           </Stack>
         </Box>
       </CDialog>
@@ -227,7 +238,7 @@ const Suppliers = () => {
           loading ? <LoadingBar /> : vendorsErr ? <ErrorMsg /> :
             <DataTable
               columns={columns}
-              rows={vendors}
+              rows={vendors.filter(item => !item.isDeleted)}
             />
         }
       </Box>

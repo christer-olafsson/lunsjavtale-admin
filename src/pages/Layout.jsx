@@ -219,10 +219,10 @@ function Layout() {
           selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
         />
         <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/sales-history'
+          link='/dashboard/payments-history'
           icon={<History fontSize='small' />}
-          text='Sales History'
-          selected={pathname === '/dashboard/sales-history'}
+          text='Payment-History'
+          selected={pathname === '/dashboard/payments-history'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/customers'
@@ -338,7 +338,7 @@ function Layout() {
                   setOpenEmail(!openEmail),
                   setOpenNotification(false)
                 )} sx={{ color: 'gray.main' }}>
-                  <Badge badgeContent={4} color="error">
+                  <Badge badgeContent={0} color="error">
                     <MailOutline />
                   </Badge>
                 </IconButton>
@@ -403,7 +403,7 @@ function Layout() {
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
               >
-                <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                <Avatar sx={{ width: 32, height: 32 }}>L</Avatar>
               </IconButton>
               <Menu
                 anchorEl={userMenuOpen}
@@ -415,19 +415,15 @@ function Layout() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem sx={{ width: '200px' }} onClick={handleUserMenuClose}>
-                  <ListItemIcon>
-                    <AccountCircle />
-                  </ListItemIcon>
-                  Profile
-                </MenuItem>
+                <Link style={{textDecoration:'none'}} className='link' to='dashboard/settings'>
+                  <MenuItem onClick={handleUserMenuClose}>
+                    <ListItemIcon>
+                      <Settings fontSize="small" />
+                    </ListItemIcon>
+                    Settings
+                  </MenuItem>
+                </Link>
                 <Divider />
-                <MenuItem onClick={handleUserMenuClose}>
-                  <ListItemIcon>
-                    <Settings fontSize="small" />
-                  </ListItemIcon>
-                  Settings
-                </MenuItem>
                 <MenuItem onClick={() => (
                   handleUserMenuClose(),
                   handleLogout()

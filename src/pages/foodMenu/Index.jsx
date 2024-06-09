@@ -1,39 +1,16 @@
 import { Add, ArrowRightAlt, Search } from '@mui/icons-material';
-import { Box, Button, Divider, IconButton, Input, Rating, Stack, Tab, Tabs, Typography, styled, tabClasses, tabsClasses } from '@mui/material';
+import { Box, Button, IconButton, Input, Stack, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import CDialog from '../../common/dialog/CDialog';
 import AddItem from './AddItem';
 import EditItem from './EditItem';
 import { Link } from 'react-router-dom';
-import { GET_ALL_CATEGORY, GET_SINGLE_PRODUCTS } from './graphql/query';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { GET_ALL_CATEGORY, PRODUCTS } from './graphql/query';
+import { useLazyQuery } from '@apollo/client';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
-import LoadingBar from '../../common/loadingBar/LoadingBar';
 
-const TabItem = styled(Tab)(({ theme }) => ({
-  position: "relative",
-  borderRadius: "4px",
-  textAlign: "center",
-  textTransform: 'none',
-  transition: "all .5s",
-  // padding: "5px 10px",
-  // color: "#555555",
-  height: "auto",
-  marginRight: '10px',
-  float: "none",
-  fontSize: "14px",
-  fontWeight: "500",
-  [theme.breakpoints.up("md")]: {
-    minWidth: 120,
-  },
-  [`&.${tabClasses.selected}`]: {
-    // backgroundColor: '#52525B',
-    border: '1px solid lightgray',
-    // color: '#fff',
-  },
-}));
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -60,19 +37,15 @@ CustomTabPanel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-const tabName = [
-  'All', 'Brekfast', 'Lunch', 'Dinner', 'Option'
-]
-
 
 const FoodItem = () => {
-  const [tabIndex, setTabIndex] = useState(0);
   const [productAddDialogOpen, setAddItemDialogOpen] = useState(false)
   const [productEditDialogOpen, setProductEditDialogOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [allCategorys, setAllCategorys] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [searchText, setSearchText] = useState('')
 
 
   const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
@@ -83,10 +56,11 @@ const FoodItem = () => {
     },
   });
 
-  const [fetchProducts, { loading: loadinProducts, error: errProducts }] = useLazyQuery(GET_SINGLE_PRODUCTS, {
+  const [fetchProducts, { loading: loadinProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
     variables: {
-      category: categoryId
+      category: categoryId,
+      title: searchText
     },
     onCompleted: (res) => {
       const data = res.products.edges
@@ -120,7 +94,7 @@ const FoodItem = () => {
           borderRadius: '4px',
           pl: 2,
         }}>
-          <Input fullWidth disableUnderline placeholder='Search' />
+          <Input onChange={e=> setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
           <IconButton><Search /></IconButton>
         </Box>
         <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Items</Button>
@@ -141,7 +115,7 @@ const FoodItem = () => {
           cursor: 'pointer',
           userSelect: 'none'
         }} onClick={() => setCategoryId(null)}>
-          <Typography>All {categoryId === null && <i style={{fontSize:'14px'}}>({products.length})</i>}</Typography>
+          <Typography>All {categoryId === null && <i style={{ fontSize: '14px' }}>({products.length})</i>}</Typography>
         </Box>
         {
           // loadingCategory ? <LoadingBar/> : 
@@ -157,7 +131,7 @@ const FoodItem = () => {
                 userSelect: 'none',
                 opacity: !item.node.isActive ? '.4' : '1'
               }} onClick={() => setCategoryId(item.node.id)} key={item?.node.id}>
-                <Typography>{item?.node.name} {categoryId === item.node.id && <i style={{fontSize:'14px'}}>({products.length})</i>}</Typography>
+                <Typography>{item?.node.name} {categoryId === item.node.id && <i style={{ fontSize: '14px' }}>({products.length})</i>}</Typography>
               </Box>
             ))
         }
@@ -210,9 +184,9 @@ const FoodItem = () => {
                       <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
                     </Stack> */}
                     <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
-                      <Typography sx={{ fontSize: '16px' }}><i style={{fontWeight:600}}>kr </i> {data.node.priceWithTax} 
+                      <Typography sx={{ fontSize: '16px' }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.priceWithTax}
                         <i style={{ fontWeight: 400, fontSize: '13px' }}> (tax)</i> </Typography>
-                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{fontWeight:600}}>kr </i>{data.node.actualPrice} </Typography>
+                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{ fontWeight: 600 }}>kr </i>{data.node.actualPrice} </Typography>
                     </Stack>
                   </Stack>
                   <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>

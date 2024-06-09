@@ -15,6 +15,7 @@ export const VENDORS = gql`
           isBlocked
           logoUrl
           fileId
+          isDeleted
           users{
           edges{
             node{

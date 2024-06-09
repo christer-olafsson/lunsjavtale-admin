@@ -3,6 +3,8 @@ import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuIt
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import DataTable from '../../common/datatable/DataTable';
+import CDialog from '../../common/dialog/CDialog';
+import CreatePayment from './CreatePayment';
 
 const rows = [
   { id: '9843654', customer: 'Atlas Freight', date: 'Feb 09,2024', email: 'deanna.curtis@example.com', location: '6391 Elgin St. Celina, Delaware 10299', total: '200.00', method: 'COD', status: 'Pending', },
@@ -11,9 +13,10 @@ const rows = [
 ];
 
 
-const SalesHistory = () => {
+const PaymentsHistory = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
   const [statusFilter, setStatusFilter] = useState('');
+  const [createPaymentDialogOpen, setCreatePaymentDialogOpen] = useState(false)
 
   const [expandedRow, setExpandedRow] = useState(null);
 
@@ -147,8 +150,9 @@ const SalesHistory = () => {
 
   return (
     <Box maxWidth='xxl'>
-      <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Sales History</Typography>
+      <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Payment History</Typography>
       <Stack direction='row' justifyContent='space-between' mt={3}>
+
         <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
@@ -180,9 +184,11 @@ const SalesHistory = () => {
             </FormControl>
           </Box>
         </Stack>
-        {/* <Box>
-          date range
-        </Box> */}
+        <Button onClick={() => setCreatePaymentDialogOpen(true)} variant='contained'>Create Payment</Button>
+        {/* create payment */}
+        <CDialog openDialog={createPaymentDialogOpen}>
+          <CreatePayment closeDialog={() => setCreatePaymentDialogOpen(false)} />
+        </CDialog>
       </Stack>
       <Box mt={3}>
         <DataTable
@@ -195,4 +201,4 @@ const SalesHistory = () => {
   )
 }
 
-export default SalesHistory
+export default PaymentsHistory

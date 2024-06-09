@@ -22,9 +22,13 @@ const Coupons = () => {
   const [coupons, setCoupons] = useState([]);
   const [editCouponData, setEditCouponData] = useState({})
   const [deleteCouponData, setDeleteCouponData] = useState({})
+  const [searchText, setSearchText] = useState('')
 
 
   const [fetchCoupons, { loading: couponsLoading, error: couponsErr }] = useLazyQuery(COUPONS, {
+    variables: {
+      name: searchText
+    },
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setCoupons(res.coupons.edges.map(item => item.node))
@@ -57,15 +61,15 @@ const Coupons = () => {
     setDeleteCouponData(row)
   }
 
-  function handleDelete () {
+  function handleDelete() {
     couponDelete({
-      variables:{
+      variables: {
         id: deleteCouponData.id
       }
     })
   }
 
-  
+
 
   const columns = [
     {
@@ -78,10 +82,10 @@ const Coupons = () => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
-              fontSize:'14px', 
-              fontWeight:600,
+              fontSize: '14px',
+              fontWeight: 600,
               color: row.isActive ? 'inherit' : 'darkgray'
-              }}>{row.name}</Typography>
+            }}>{row.name}</Typography>
           </Stack>
         )
       }
@@ -93,7 +97,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px',color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.value}%</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.value}%</Typography>
         </Stack>
       )
     },
@@ -104,7 +108,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px',color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.startDate}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.startDate}</Typography>
         </Stack>
       )
     },
@@ -115,7 +119,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px',color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.endDate}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.endDate}</Typography>
         </Stack>
       )
     },
@@ -161,7 +165,7 @@ const Coupons = () => {
   useEffect(() => {
     fetchCoupons()
   }, [])
-  
+
 
   return (
     <Box maxWidth='xxl'>
@@ -179,10 +183,10 @@ const Coupons = () => {
             borderRadius: '4px',
             pl: 2
           }}>
-            <Input fullWidth disableUnderline placeholder='Search.. ' />
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search.. ' />
             <IconButton><Search /></IconButton>
           </Box>
-          <Box sx={{ minWidth: 200 }}>
+          {/* <Box sx={{ minWidth: 200 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -196,7 +200,7 @@ const Coupons = () => {
                 <MenuItem value={30}>Reject </MenuItem>
               </Select>
             </FormControl>
-          </Box>
+          </Box> */}
         </Stack>
         <Button onClick={() => setAddCouponDialogOpen(true)} variant='contained' startIcon={<Add />}>New Coupons</Button>
       </Stack>
@@ -216,7 +220,7 @@ const Coupons = () => {
           <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this coupon? This action cannot be undone.</Typography>
           <Stack direction='row' gap={2} mt={3}>
             <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-            <CButton onClick={handleDelete} isLoading={deleteLoading} style={{width:'100%'}} variant='contained' color='error'>Delete</CButton>
+            <CButton onClick={handleDelete} isLoading={deleteLoading} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
           </Stack>
         </Box>
       </CDialog>

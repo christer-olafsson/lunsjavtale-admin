@@ -32,7 +32,7 @@ const GeneralSettings = () => {
         </Box>
       </Stack>
 
-      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}} mt={4} alignItems='center'>
+      <Stack direction={{xs:'column',md:'row'}} gap={{xs:1,md:6}} alignItems={{xs:'start',md:'center'}} mt={4}>
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Company logo</Typography>
           <Typography sx={{ fontSize: '14px' }}>Update your company logo and then choose where you want it to display.</Typography>

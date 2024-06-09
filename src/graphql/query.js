@@ -53,13 +53,14 @@ export const CHECk_POST_CODE = gql`
 `
 
 export const COMPANIES = gql`
-  query{
-  companies{
+  query($nameEmail: String, $status: String){
+  companies(nameEmail: $nameEmail, status: $status){
     edges{
       node{
         id
         isDeleted
         isBlocked
+        isChecked
         name
         description
         email

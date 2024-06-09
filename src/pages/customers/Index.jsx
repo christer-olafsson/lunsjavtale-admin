@@ -16,7 +16,6 @@ import CButton from '../../common/CButton/CButton';
 
 
 const Customers = () => {
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
   const [statusFilter, setStatusFilter] = useState('');
   const [addCustomerDialogOpen, setAddCustomerDialogOpen] = useState(false);
   const [editCustomerDialogOpen, setEditCustomerDialogOpen] = useState(false);
@@ -24,9 +23,14 @@ const Customers = () => {
   const [companies, setCompanies] = useState([]);
   const [editCustomerData, setEditCustomerData] = useState({})
   const [deleteCompanyId, setDeleteCompanyId] = useState('')
+  const [searchText, setSearchText] = useState('')
 
 
   const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANIES, {
+    variables: {
+      nameEmail: searchText,
+      status: statusFilter === 'all' ? null : statusFilter
+    },
     fetchPolicy: "network-only",
     onCompleted: (res) => {
       setCompanies(res.companies.edges)
@@ -44,10 +48,6 @@ const Customers = () => {
     }
   });
 
-
-  const handleStatusFilterChange = (event) => {
-    setStatusFilter(event.target.value);
-  };
 
   function handleEdit(row) {
     setEditCustomerDialogOpen(true)
@@ -76,15 +76,22 @@ const Customers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-          {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> : 
-          <StoreOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} />}
+          {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> :
+            <StoreOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} />}
           <Box >
             <Stack direction='row' alignItems='center'>
               <Typography sx={{
                 fontSize: '14px',
                 fontWeight: 600,
-                color: params.row.isValid ? 'inherit' : 'darkgray'
-              }}>{params.row.company}</Typography>
+                color: params.row.isValid ? 'inherit' : 'darkgray',
+                display: 'inline-flex',
+                gap: '3px'
+              }}>{params.row.company}
+                {
+                  params.row.isChecked &&
+                  <span style={{ fontSize: '10px', color: 'green' }}>new</span>
+                }
+              </Typography>
               {!params.row.isValid && <PriorityHighOutlined sx={{ color: 'red' }} fontSize='small' />}
 
             </Stack>
@@ -116,11 +123,11 @@ const Customers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} gap={1} direction='row' alignItems='center'>
-          <MailOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} fontSize='small' />
-          <Typography sx={{ 
+          <MailOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
+          <Typography sx={{
             fontSize: '14px',
             color: params.row.isValid ? 'inherit' : 'darkgray'
-            }}>{params.row.email}</Typography>
+          }}>{params.row.email}</Typography>
         </Stack>
       )
     },
@@ -135,9 +142,9 @@ const Customers = () => {
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
             <Avatar sx={{ height: '30px', width: '30px' }} src={row.photoUrl ? row.photoUrl : ''} />
             <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600,color: params.row.isValid ? 'inherit' : 'darkgray' }}>{row.firstName}</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600, color: params.row.isValid ? 'inherit' : 'darkgray' }}>{row.firstName}</Typography>
               {row.username &&
-                <Typography sx={{ fontSize: '12px',color: params.row.isValid ? 'inherit' : 'darkgray' }}>@{row.username}</Typography>
+                <Typography sx={{ fontSize: '12px', color: params.row.isValid ? 'inherit' : 'darkgray' }}>@{row.username}</Typography>
               }
             </Box>
           </Stack>
@@ -153,7 +160,7 @@ const Customers = () => {
         const { row } = params;
         return (
           <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <PersonOutline sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} />
+            <PersonOutline sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} />
             <Typography sx={{ fontSize: '14px', noOfEmployees: '10' }}>{params.row.noOfEmployees}</Typography>
           </Stack>
         )
@@ -211,7 +218,7 @@ const Customers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }}>
-            <DeleteOutlineOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} fontSize='small' />
+            <DeleteOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
           </IconButton>
         )
       },
@@ -241,7 +248,7 @@ const Customers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }} onClick={() => handleEdit(params.row)}>
-            <ModeEditOutlineOutlined sx={{color: params.row.isValid ? 'inherit' : 'darkgray'}} fontSize='small' />
+            <ModeEditOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
           </IconButton>
         )
       },
@@ -265,20 +272,13 @@ const Customers = () => {
     photoUrl: item.node.owner?.photoUrl,
     logoUrl: item.node.logoUrl,
     fileId: item.node.fileId,
-    isValid: item.node.isValid
+    isValid: item.node.isValid,
+    isChecked: item.node.isChecked
   }))
 
   useEffect(() => {
     fetchCompany()
   }, [])
-
-  // useEffect(() => {
-  //   setColumnVisibilityModel({
-  //     paymentInfo: isMobile ? false : true,
-  //     status: isMobile ? false : true,
-  //     deliveryDate: isMobile ? false : true,
-  //   })
-  // }, [isMobile])
 
   return (
     <Box maxWidth='xxl'>
@@ -299,7 +299,7 @@ const Customers = () => {
             borderRadius: '4px',
             pl: 2
           }}>
-            <Input fullWidth disableUnderline placeholder='Search.. ' />
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search.. ' />
             <IconButton><Search /></IconButton>
           </Box>
           <Box sx={{ minWidth: 200 }}>
@@ -308,13 +308,14 @@ const Customers = () => {
               <Select
                 value={statusFilter}
                 label="Status"
-                onChange={handleStatusFilterChange}
+                onChange={e => setStatusFilter(e.target.value)}
               >
-                <MenuItem value={5}>All </MenuItem>
-                <MenuItem value={10}>New</MenuItem>
-                <MenuItem value={20}>Active</MenuItem>
-                <MenuItem value={30}>Locked</MenuItem>
-                <MenuItem value={40}>Unavailable</MenuItem>
+                <MenuItem value={'all'}>All </MenuItem>
+                {/* <MenuItem value={10}>New</MenuItem> */}
+                <MenuItem value={'pending'}>Pending</MenuItem>
+                <MenuItem value={'approved'}>Approved</MenuItem>
+                <MenuItem value={'rejected'}>Rejected</MenuItem>
+                {/* <MenuItem value={40}>Unavailable</MenuItem> */}
               </Select>
             </FormControl>
           </Box>
@@ -347,7 +348,6 @@ const Customers = () => {
             <DataTable
               columns={columns}
               rows={rows}
-              columnVisibilityModel={columnVisibilityModel}
             />
         }
       </Box>

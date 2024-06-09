@@ -22,9 +22,13 @@ const Brand = () => {
   const [deleteBrandFileId, setDeleteBrandFileId] = useState('')
   const [deleteFileLoading, setDeleteFileLoading] = useState(false)
   const [brands, setBrands] = useState([])
+  const [searchText, setSearchText] = useState('')
 
 
   const [fetchBrands, { loading: brandsLoading, error: brandsErr }] = useLazyQuery(SUPPORTED_BRANDS, {
+    variables: {
+      name: searchText
+    },
     fetchPolicy: "network-only",
     onCompleted: (res) => {
       setBrands(res.supportedBrands.edges)
@@ -84,7 +88,7 @@ const Brand = () => {
             borderRadius: '4px',
           }}>
             <IconButton><Search /></IconButton>
-            <Input fullWidth disableUnderline placeholder='Search.. ' />
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search.. ' />
           </Box>
         </Stack>
         <Button onClick={() => setAddNewBrandDialogOpen(true)} variant='contained' startIcon={<Add />}>New Brand</Button>
@@ -104,7 +108,7 @@ const Brand = () => {
                 border: '1px solid lightgray',
                 borderRadius: '8px', p: 1
               }} key={item.node.id}>
-                <Typography sx={{fontWeight:600}} variant='body2'>{item.node.name}</Typography>
+                <Typography sx={{ fontWeight: 600 }} variant='body2'>{item.node.name}</Typography>
                 {/* <Typography sx={{
                   fontSize: '12px',
                   bgcolor: item.node.isActive ? 'primary.main' : 'darkgray',
@@ -117,7 +121,7 @@ const Brand = () => {
                   width: '100%',
                   height: '80px',
                   cursor: 'pointer',
-                  mt:.5
+                  mt: .5
                 }}>
                   <a href={item.node.siteUrl} target='blank'>
                     <img style={{ width: '100%', height: '100%', objectFit: 'cover', }} src={item.node.logoUrl} alt="" />

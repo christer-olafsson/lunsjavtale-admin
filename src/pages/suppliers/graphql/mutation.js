@@ -14,3 +14,10 @@ export const VENDOR_UPDATE = gql`
     }
   }
 `
+export const VENDOR_DELETE = gql`
+  mutation VendorDelete ($id: ID!){
+    vendorDelete(id:$id){
+      message
+    }
+  }
+`

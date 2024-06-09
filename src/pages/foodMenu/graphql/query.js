@@ -87,9 +87,9 @@ export const GET_SINGLE_CATEGORY = gql`
   }
 `
 
-export const GET_SINGLE_PRODUCTS = gql`
-  query Products ($id: ID, $category: String) {
-      products(id:$id, category: $category){
+export const PRODUCTS = gql`
+  query Products ($id: ID, $category: String, $title: String) {
+      products(id:$id, category: $category, title: $title){
         edges{
           node{
           id

@@ -4,7 +4,7 @@ import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Avatar, Box, Button, IconButton, ListItem, ListItemIcon, ListItemText, Rating, Stack, Tab, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { Link, unstable_HistoryRouter, useNavigate, useParams } from 'react-router-dom'
-import { GET_SINGLE_PRODUCTS } from './graphql/query'
+import { PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import { useTheme } from '@emotion/react'
@@ -19,7 +19,7 @@ const FoodDetails = () => {
 
   const navigate = useNavigate()
 
-  const { loading, error } = useQuery(GET_SINGLE_PRODUCTS, {
+  const { loading, error } = useQuery(PRODUCTS, {
     variables: {
       id: id
     },

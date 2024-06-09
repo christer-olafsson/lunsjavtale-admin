@@ -19,12 +19,13 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
     email: '',
     contact: '',
     postCode: '',
+    isBlocked: false
   })
 
   const [vendorUpdate, { loading }] = useMutation(VENDOR_UPDATE, {
     onCompleted: (res) => {
       fetchVendors()
-      toast.success(res.vendorCreation.message)
+      toast.success(res.vendorUpdate.message)
       closeDialog()
     },
     onError: (err) => {
@@ -42,7 +43,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   }
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     if (!payload.name) {
       setErrors({ name: 'Supplier Name Required!' })
       return
@@ -94,7 +95,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       name: data.name,
       email: data.email,
       contact: data.contact,
-      // password: data.password,
+      isBlocked: data.isBlocked,
       postCode: data.postCode ? data.postCode : '',
       // firstName: data.users.edges.find(item => item.node.role === 'vendor')?.node.firstName,
     })
@@ -124,7 +125,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
           </Stack>
           <Stack flex={1} gap={2}>
             <TextField value={payload.email} error={Boolean(errors.email)} helperText={errors.email} onChange={handleInputChange} name='email' label='Email' />
-            {/* <FormControlLabel control={<Switch />} label="Status Lock" /> */}
+            <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })} checked={payload.isBlocked} />} label="Status Lock" />
           </Stack>
         </Stack>
 
@@ -134,19 +135,19 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
         {
           file && <Box sx={{
             flex: 1,
-            position:'relative'
+            position: 'relative'
           }}>
             <Box sx={{
               width: '100%',
               height: '114px'
             }}>
               <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} src={file ? URL.createObjectURL(file) : ''} alt="" />
-            <IconButton onClick={()=> setFile('')} sx={{
-              position:'absolute',
-              top:-30,left:-20
-            }}>
-              <Close/>
-            </IconButton>
+              <IconButton onClick={() => setFile('')} sx={{
+                position: 'absolute',
+                top: -30, left: -20
+              }}>
+                <Close />
+              </IconButton>
             </Box>
           </Box>
         }
@@ -167,7 +168,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
         </Box>
       </Stack>
 
-      <CButton onClick={handleSave} isLoading={loading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update</CButton>
+      <CButton onClick={handleSave} isLoading={loading || fileUploadLoading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update</CButton>
 
     </Box>
   )

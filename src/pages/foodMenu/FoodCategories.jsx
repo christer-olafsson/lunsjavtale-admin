@@ -2,7 +2,7 @@ import { useLazyQuery, useQuery } from '@apollo/client'
 import { Add, ArrowRightAlt, Edit } from '@mui/icons-material'
 import { Box, Button, Divider, IconButton, Rating, Stack, Typography, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { GET_ALL_CATEGORY, GET_SINGLE_CATEGORY, GET_SINGLE_PRODUCTS } from './graphql/query'
+import { GET_ALL_CATEGORY, GET_SINGLE_CATEGORY, PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import CDialog from '../../common/dialog/CDialog'
@@ -33,7 +33,7 @@ const FoodCategories = () => {
     },
   });
 
-  const [fetchProducts,{ loading: loadinProducts, error: errProducts }] = useLazyQuery(GET_SINGLE_PRODUCTS, {
+  const [fetchProducts,{ loading: loadinProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
     variables: {
       category: categoryId

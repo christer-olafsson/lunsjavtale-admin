@@ -93,9 +93,7 @@ const EditPromotion = ({ data, fetchPromotions, closeDialog }) => {
 
 
   return (
-    <Box sx={{
-      p: { xs: 0, md: 2 }
-    }}>
+    <Box>
       <Stack direction='row' justifyContent='space-between' mb={4} alignItems='center'>
         <Typography variant='h5'>Edit Promotional Banner</Typography>
         <IconButton onClick={closeDialog}>

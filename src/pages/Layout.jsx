@@ -11,7 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, Search, Settings, SpaceDashboard, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
@@ -103,6 +103,7 @@ function Layout() {
 
   const { pathname } = useLocation();
   const orderDetailsMatch = useMatch('/dashboard/orders/details/:id')
+  const customerDetailsMatch = useMatch('/dashboard/customers/details/:id')
   const foodDetailsMatchFromItem = useMatch('/dashboard/food-item/food-details/:id')
   const foodDetailsMatchFromCategories = useMatch('/dashboard/food-categories/food-details/:id')
 
@@ -219,16 +220,30 @@ function Layout() {
           selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
         />
         <ListBtn onClick={handleDrawerClose}
+          link='/dashboard/customers'
+          icon={<People fontSize='small' />}
+          text='Customers'
+          selected={pathname === '/dashboard/customers' 
+            // || pathname === customerDetailsMatch?.pathname
+          }
+        />
+        <ListBtn onClick={handleDrawerClose}
+          link='/dashboard/sales-history'
+          icon={<Timeline fontSize='small' />}
+          text='Sales-History'
+          selected={pathname === '/dashboard/sales-history'}
+        />
+        <ListBtn onClick={handleDrawerClose}
           link='/dashboard/payments-history'
           icon={<History fontSize='small' />}
           text='Payment-History'
           selected={pathname === '/dashboard/payments-history'}
         />
         <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/customers'
-          icon={<People fontSize='small' />}
-          text='Customers'
-          selected={pathname === '/dashboard/customers'}
+          link='/dashboard/meetings'
+          icon={<Diversity3 fontSize='small' />}
+          text='Meeting-Schedule'
+          selected={pathname === '/dashboard/meetings'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/suppliers'
@@ -237,10 +252,10 @@ function Layout() {
           selected={pathname === '/dashboard/suppliers'}
         />
         <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/meetings'
-          icon={<Diversity3 fontSize='small' />}
-          text='Meeting-Schedule'
-          selected={pathname === '/dashboard/meetings'}
+          link='/dashboard/withdraw-req'
+          icon={<RequestPageOutlined fontSize='small' />}
+          text='Withdraw-Req'
+          selected={pathname === '/dashboard/withdraw-req'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/coupons'
@@ -415,7 +430,7 @@ function Layout() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <Link style={{textDecoration:'none'}} className='link' to='dashboard/settings'>
+                <Link style={{ textDecoration: 'none' }} className='link' to='dashboard/settings'>
                   <MenuItem onClick={handleUserMenuClose}>
                     <ListItemIcon>
                       <Settings fontSize="small" />

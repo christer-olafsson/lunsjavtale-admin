@@ -8,7 +8,7 @@ import { ADD_NEW_ADMINISTRATOR } from '../graphql/mutation';
 import CButton from '../../../common/CButton/CButton';
 
 
-const AddUser = ({ fetchCompany, closeDialog }) => {
+const AddUser = ({ fetchSystemUsers, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [payload, setPayload] = useState({
     username: '',
@@ -20,7 +20,7 @@ const AddUser = ({ fetchCompany, closeDialog }) => {
 
   const [newAdministrator, { loading }] = useMutation(ADD_NEW_ADMINISTRATOR, {
     onCompleted: (res) => {
-      fetchCompany()
+      fetchSystemUsers()
       toast.success(res.addNewAdministrator.message)
       closeDialog()
     },

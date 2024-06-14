@@ -27,7 +27,7 @@ const FoodDetails = () => {
       setProduct(res.products.edges[0].node)
     }
   })
-
+  console.log(product)
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -40,7 +40,7 @@ const FoodDetails = () => {
           <>
 
             <Stack direction='row' alignItems='center' gap={2} mb={2}>
-              <IconButton onClick={()=> navigate(-1)}>
+              <IconButton onClick={() => navigate(-1)}>
                 <West />
               </IconButton>
               <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
@@ -84,11 +84,33 @@ const FoodDetails = () => {
               <Box sx={{
                 // flex:1
               }}>
+                {
+                  product.vendor &&
+                  <Box sx={{
+                    border: '1px solid coral',
+                    p: 2, borderRadius: '8px'
+                  }} mb={1}>
+                    <Typography
+                      sx={{
+                        fontSize: '12px',
+                        bgcolor: 'coral',
+                        color: '#fff',
+                        px: 1, mb: 1, borderRadius: '4px',
+                        width: 'fit-content'
+                      }}>
+                      Vendor
+                    </Typography>
+                    <Link to={`/dashboard/suppliers/details/${product.vendor.id}`}>
+                      <Typography><b>Name: </b>{product.vendor?.name}</Typography>
+                    </Link>
+                    <Typography><b>Email: </b>{product.vendor?.email}</Typography>
+                  </Box>
+                }
                 <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>{product.name}</Typography>
-                <Stack direction='row' gap={1} mt={2} alignItems='center'>
+                {/* <Stack direction='row' gap={1} mt={2} alignItems='center'>
                   <Rating size='small' sx={{ color: 'primary.main' }} value={4} readOnly />
                   <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>157 Reviews</Typography>
-                </Stack>
+                </Stack> */}
                 <Stack direction='row' gap={4} mt={2} alignItems='flex-end'>
                   <Typography sx={{ fontSize: { xs: '18px', lg: '24px', fontWeight: 600 } }}>${product.priceWithTax}
                     <i style={{ fontWeight: 400, fontSize: '16px' }}> (Incl. Tax)</i> </Typography>
@@ -100,19 +122,20 @@ const FoodDetails = () => {
                 </Stack> */}
                 <Typography sx={{ fontSize: { xs: '14px', lg: '16px', fontWeight: 600 }, mt: 2 }}>Contains:</Typography>
                 <Typography>{product.contains && typeof product.contains === 'string' ? JSON.parse(product.contains) : ''}</Typography>
+
               </Box>
             </Stack>
             <Box sx={{ width: '100%', mt: 5 }}>
               <TabContext value={tabValue}>
                 <Box sx={{ borderBottom: '1px solid lightgray', }}>
                   <TabList onChange={handleTabChange} >
-                    <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Description" value="1" />
-                    <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Reviews" value="2" />
-                    <Tab sx={{ textTransform: 'none' }} label="Support" value="3" />
+                    {/* <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Description" value="1" /> */}
+                    <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Reviews" value="1" />
+                    {/* <Tab sx={{ textTransform: 'none' }} label="Support" value="3" /> */}
                   </TabList>
                 </Box>
-                <TabPanel value="1">Description</TabPanel>
-                <TabPanel value="2">
+                {/* <TabPanel value="1">Description</TabPanel> */}
+                <TabPanel value="1">
                   <Stack gap={5}>
                     {
                       [1, 2, 3].map((item, id) => (

@@ -71,6 +71,7 @@ export const COMPANIES = gql`
         noOfEmployees
         formationDate
         orderedAmount
+        balance
         invoiceAmount
         logoUrl
         fileId

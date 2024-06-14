@@ -1,1 +1,62 @@
 import { gql } from "@apollo/client";
+
+export const COMPANY = gql`
+  query($id: ID){
+  company(id:$id){
+    id
+    name
+    description
+    email
+    contact
+    postCode
+    logoUrl
+    totalEmployee
+    paidAmount
+    orderedAmount
+    balance
+    isBlocked
+    owner{
+      id
+      username
+      email
+      firstName
+      lastName
+      phone
+      photoUrl
+      gender
+      jobTitle
+      dateOfBirth
+      dateJoined
+      address
+    }
+    users{
+      edges{
+        node{
+          id
+          createdOn
+          isDeleted
+          username
+          email
+          firstName
+          lastName
+          phone
+          gender
+          dateOfBirth
+          address
+          photoUrl
+          dueAmount
+          role
+          allergies{
+            edges{
+              node{
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`

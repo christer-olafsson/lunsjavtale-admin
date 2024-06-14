@@ -1,24 +1,34 @@
-import { AccessTime, Add, BorderColor, Delete, DeleteForeverOutlined, DeleteOutline, EditOutlined, LockOpenOutlined, LockOutlined, ModeEditOutlineOutlined, MoreHoriz, MoreVert, Remove, Search } from '@mui/icons-material'
-import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import { AccessTime, Add, ArrowRight, DeleteOutline, DoneOutlineOutlined, EditAttributesOutlined, EditOutlined, LocalPhoneOutlined, LockOutlined, MailOutlined } from '@mui/icons-material'
+import { Avatar, Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import NewMeeting from './NewMeeting';
 import CDialog from '../../common/dialog/CDialog';
-import EditMeeting from './EditMeeting';
+import MeetingAction from './MeetingAction';
 import { useEffect, useState } from 'react';
 import { FOOD_MEETINGS } from './graphql/query';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, format } from 'date-fns';
+import { format } from 'date-fns';
 import { FOOD_MEETING_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import Loader from '../../common/loader/Index';
+import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
+import moment from 'moment-timezone';
+import { Link } from 'react-router-dom';
+import MeetingDetails from './MeetingDetails';
+import EditMeeting from './EditMeeting';
 
 const Meeting = () => {
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
   const [statusFilter, setStatusFilter] = useState('');
   const [createMeetingDialogOpen, setCreateMeetingDialogOpen] = useState(false);
   const [deleteMeetingDialogOpen, setDeleteMeetingDialogOpen] = useState(false);
-  const [editMeetingDialogOpen, setEditMeetingDialogOpen] = useState(false);
+  const [meetingActionDialogOpen, setMeetingActionDialogOpen] = useState(false);
+  const [meetingEditData, setMeetingEditData] = useState({})
+  const [meetingEditDialogOpen, setMeetingEditDialogOpen] = useState(false)
+  const [meetingActionData, setMeetingActionData] = useState({})
   const [foodMeetingDeleteId, setFoodMeetingDeleteId] = useState('')
+  const [meetingDetailsDialogOpen, setMeetingDetailsDialogOpen] = useState(false)
+  const [meetingDetailsData, setMeetingDetailsData] = useState({})
   const [meetings, setMeetings] = useState([])
 
   const [fetchMeeting, { loading: meetingsLoading, error: meetingsErr }] = useLazyQuery(FOOD_MEETINGS, {
@@ -40,10 +50,19 @@ const Meeting = () => {
   });
 
 
-  console.log(meetings)
+  const handleMeetingAction = (row) => {
+    setMeetingActionDialogOpen(true)
+    setMeetingActionData(row)
+  }
 
   const handleEdit = (row) => {
-    setEditMeetingDialogOpen(true)
+    setMeetingEditDialogOpen(true)
+    setMeetingEditData(row)
+  }
+
+  const handleMeetingDetailsDialog = (row) => {
+    setMeetingDetailsDialogOpen(true)
+    setMeetingDetailsData(row)
   }
 
   const handleFilterChange = (event) => {
@@ -65,52 +84,110 @@ const Meeting = () => {
   };
 
 
-  const getTimeUntilMeeting = (meetingDate) => {
-    const now = new Date();
-    const targetDate = new Date(meetingDate);
-    if (targetDate < now) {
-      return 'Time Passed!';
-    }
-    const days = differenceInDays(targetDate, now);
-    const hours = differenceInHours(targetDate, now) % 24;
-    const minutes = differenceInMinutes(targetDate, now) % 60;
-    const seconds = differenceInSeconds(targetDate, now) % 60;
+  function timeUntilNorway(futureDate) {
+    const now = moment();
+    const future = moment.tz(futureDate, "UTC").tz("Europe/Oslo");
 
-    if (days > 0) {
-      return `Start in ${days} day${days > 1 ? 's' : ''}`;
-    } else if (hours > 0) {
-      return `Start in ${hours}hr`;
-    } else if (minutes > 0) {
-      return `Start in ${minutes}min`;
+    const diffInMilliseconds = future.diff(now);
+    if (diffInMilliseconds < 0) {
+      return 'Date passed!';
+    }
+
+    const diffInMinutes = Math.floor(diffInMilliseconds / 60000);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minutes`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hours`;
     } else {
-      return `Start in ${seconds}sec`;
+      return `${diffInDays} days`;
     }
-  };
+  }
 
+  const formatedNorwayTime = (meetingTime) => {
+    const timeZone = 'Europe/Oslo';
+    const zonedDate = moment.tz(meetingTime, timeZone);
+    const formattedTime = zonedDate.format('HH:mm');
+    return formattedTime
+  }
 
+  
   const columns = [
     {
-      field: 'info', width: 250,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Info</Typography>
-      ),
+      field: 'details', width: 80, headerName: '',
       renderCell: (params) => {
-        const { row } = params;
         return (
-          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <Avatar src='' />
-            <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.companyName}</Typography>
-              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{params.row.email}</Typography>
-            </Box>
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+            <IconButton onClick={() => handleMeetingDetailsDialog(params.row)}>
+              <ArrowRight />
+            </IconButton>
           </Stack>
         )
       }
     },
     {
-      field: 'title', width: 250,
-      renderHeader: (params) => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Title</Typography>
+      field: 'info', width: 250,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params;
+        return (
+          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
+            <Avatar src={row.company?.logoUrl ?? ''} />
+            {
+              row.company !== null ?
+                <Stack>
+                  <Link to={`/dashboard/customers/details/${row.company?.id}`}>
+                    <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.company?.name}</Typography>
+                  </Link>
+                  <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{row.company?.email}</Typography>
+                  {
+                    row.company?.phone &&
+                    <Typography sx={{
+                      fontSize: '12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 1,
+                    }}>
+                      <LocalPhoneOutlined sx={{ fontSize: '16px' }} />
+                      {row.company?.phone}
+                    </Typography>
+                  }
+                </Stack> :
+                <Stack>
+                  <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.companyName}</Typography>
+                  <Typography sx={{
+                    fontSize: '12px',
+                    display: 'inline-flex',
+                    fontWeight: 600,
+                    alignItems: 'center',
+                    gap: 1,
+                  }}>
+                    <MailOutlined sx={{ fontSize: '16px' }} />
+                    {row.email}
+                  </Typography>
+                  <Typography sx={{
+                    fontSize: '12px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}>
+                    <LocalPhoneOutlined sx={{ fontSize: '16px' }} />
+                    {row.phone}
+                  </Typography>
+                </Stack>
+            }
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'title', width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Meeting Title</Typography>
       ),
       renderCell: (params) => {
         const { row } = params
@@ -141,24 +218,25 @@ const Meeting = () => {
         <Stack sx={{ height: '100%', }} justifyContent='center'>
           <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.meetingTime, 'yyyy-MM-dd')}</Typography>
           <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
-            <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography>
+            <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
+          {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}
         </Stack>
       )
     },
     {
-      field: 'startIn', headerName: '', width: 200,
+      field: 'startIn', headerName: '', width: 150,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Start In</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography variant='body2'>{getTimeUntilMeeting(params.row.meetingTime)}</Typography>
+          <Typography variant='body2'>{timeUntilNorway(params.row.meetingTime)}</Typography>
         </Stack>
       )
     },
     {
       field: 'status', width: 150,
-      renderHeader: (params) => (
+      renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
       ),
       renderCell: (params) => {
@@ -167,19 +245,51 @@ const Meeting = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
               fontSize: { xs: '12px', md: '16px' },
-              color: params.row.status === 'upcoming' ? 'primary.main' : 'gray',
-              bgcolor: 'light.main',
+              color: '#fff',
+              bgcolor: row.status === 'attended' ? 'primary.main' : row.status === 'postponed' ? 'red' : 'darkgray',
               px: 1, borderRadius: '8px',
-            }}>&#x2022; {'Pending'}</Typography>
+            }}>&#x2022; {row.status}</Typography>
           </Stack>
         )
       }
+    },
+
+    {
+      field: 'lock', headerName: '', width: 70,
+      renderCell: (params) => {
+        return (
+          <IconButton onClick={() => handleDeleteDialog(params.row)}>
+            <Typography sx={{
+              fontSize: '14px',
+              color: '#fff',
+              gap: '5px',
+              display: params.row.company?.isBlocked ? 'inline-flex' : 'none',
+              bgcolor: 'red',
+              px: 1, borderRadius: '4px'
+            }}>
+              {/* <LockOutlined fontSize='small' /> */}
+              Blocked
+            </Typography>
+          </IconButton>
+        )
+      },
+    },
+
+    {
+      field: 'action', headerName: '', width: 50,
+      renderCell: (params) => {
+        return (
+          <IconButton disabled={params.row.status !== 'pending'} onClick={() => handleMeetingAction(params.row)}>
+            <DoneOutlineOutlined />
+          </IconButton>
+        )
+      },
     },
     {
       field: 'edit', headerName: '', width: 50,
       renderCell: (params) => {
         return (
-          <IconButton onClick={() => handleEdit(params.row)}>
+          <IconButton disabled={params.row.status !== 'pending' || params.row.company === null} onClick={() => handleEdit(params.row)}>
             <EditOutlined />
           </IconButton>
         )
@@ -195,15 +305,9 @@ const Meeting = () => {
         )
       },
     },
-  ];
 
-  // useEffect(() => {
-  //   setColumnVisibilityModel({
-  //     paymentInfo: isMobile ? false : true,
-  //     status: isMobile ? false : true,
-  //     deliveryDate: isMobile ? false : true,
-  //   })
-  // }, [isMobile])
+
+  ];
 
   useEffect(() => {
     fetchMeeting()
@@ -223,7 +327,7 @@ const Meeting = () => {
           px: 1
         }}>10 meetings</Typography>
       </Stack>
-      <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Box sx={{ minWidth: 200 }}>
           <FormControl size='small' fullWidth>
             <InputLabel>Filter</InputLabel>
@@ -240,13 +344,21 @@ const Meeting = () => {
         </Box>
         <Button onClick={() => setCreateMeetingDialogOpen(true)} variant='contained' startIcon={<Add />}>Create Meeting</Button>
       </Stack>
-      {/* edit meeting */}
-      <CDialog openDialog={editMeetingDialogOpen}>
-        <EditMeeting closeDialog={() => setEditMeetingDialogOpen(false)} />
+      {/* details meeting */}
+      <CDialog openDialog={meetingDetailsDialogOpen}>
+        <MeetingDetails data={meetingDetailsData} closeDialog={() => setMeetingDetailsDialogOpen(false)} />
       </CDialog>
       {/* new meeting */}
       <CDialog openDialog={createMeetingDialogOpen}>
-        <NewMeeting closeDialog={() => setCreateMeetingDialogOpen(false)} />
+        <NewMeeting fetchMeeting={fetchMeeting} closeDialog={() => setCreateMeetingDialogOpen(false)} />
+      </CDialog>
+      {/* edit meeting */}
+      <CDialog openDialog={meetingEditDialogOpen}>
+        <EditMeeting data={meetingEditData} fetchMeeting={fetchMeeting} closeDialog={() => setMeetingEditDialogOpen(false)} />
+      </CDialog>
+      {/* meeting action */}
+      <CDialog openDialog={meetingActionDialogOpen}>
+        <MeetingAction data={meetingActionData} fetchMeeting={fetchMeeting} closeDialog={() => setMeetingActionDialogOpen(false)} />
       </CDialog>
       {/* delete meeting */}
       <CDialog closeDialog={() => setDeleteMeetingDialogOpen(false)} maxWidth='sm' openDialog={deleteMeetingDialogOpen}>
@@ -260,12 +372,15 @@ const Meeting = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={3}>
-        <DataTable
-          columns={columns}
-          rows={meetings}
-          columnVisibilityModel={columnVisibilityModel}
-        />
+      <Box mt={{xs:10,md:3}}>
+        {
+          meetingsLoading ? <Loader /> : meetingsErr ? <ErrorMsg /> :
+            <DataTable
+              getRowHeight={() => 70}
+              columns={columns}
+              rows={meetings}
+            />
+        }
       </Box>
     </Box>
   )

@@ -102,6 +102,11 @@ export const PRODUCTS = gql`
           isDeleted
           title
           contains
+          vendor{
+            id
+            name
+            email
+          }
           ingredients{
             edges{
               node{

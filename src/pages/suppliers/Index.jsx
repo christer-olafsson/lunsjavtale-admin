@@ -1,4 +1,4 @@
-import { Add, DeleteForeverOutlined, LockOutlined, ModeEditOutlineOutlined, Search } from '@mui/icons-material'
+import { Add, ArrowRightOutlined, DeleteForeverOutlined, LockOutlined, ModeEditOutlineOutlined, Search } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import AddSupplier from './AddSupplier';
@@ -12,6 +12,7 @@ import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { format } from 'date-fns';
 import { VENDOR_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const rows = [
   { id: '987654', supplierName: 'Fcorp - Futures Enterprise', username: 'Supplier C', phone: '(+33)7 75 55 65 33', email: 'deanna.curtis@example.com', joiningDate: 'May 6, 2012', totalRevenue: '32000', status: 'Active' },
@@ -28,6 +29,7 @@ const Suppliers = () => {
   const [vendorEditData, setVendorEditData] = useState({})
   const [vendorDeleteId, setVendorDeleteId] = useState('')
   const [vendors, setVendors] = useState([])
+  const [searchText, setSearchText] = useState('')
 
   const [fetchVendors, { loading, error: vendorsErr }] = useLazyQuery(VENDORS, {
     fetchPolicy: "network-only",
@@ -67,8 +69,23 @@ const Suppliers = () => {
     setDeleteDialogOpen(true)
     setVendorDeleteId(row.id)
   }
-
+console.log(vendors)
   const columns = [
+    {
+      field: 'details', width: 70, headerName: '',
+      renderCell: (params) => {
+        const { row } = params;
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Link to={`/dashboard/suppliers/details/${row.id}`}>
+              <IconButton>
+                <ArrowRightOutlined />
+              </IconButton>
+            </Link>
+          </Stack>
+        )
+      }
+    },
     {
       field: 'supplierName', width: 200,
       renderHeader: () => (

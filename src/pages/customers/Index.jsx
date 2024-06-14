@@ -1,6 +1,6 @@
-import { Add, ApprovalOutlined, BorderColor, DeleteForeverOutlined, DeleteOutlineOutlined, DoneAllOutlined, FmdBadOutlined, LocationOffOutlined, LocationOnOutlined, LockOpenOutlined, LockOutlined, MailOutlined, ModeEditOutlineOutlined, MoreHoriz, Person, PersonOutline, PriorityHighOutlined, Remove, RemoveDoneOutlined, RoomOutlined, Search, Store, StoreOutlined } from '@mui/icons-material'
+import { Add, ApprovalOutlined, BorderColor, DeleteForeverOutlined, DeleteOutlineOutlined, DoneAllOutlined, FmdBadOutlined, KeyboardArrowRight, LocalPhoneOutlined, LocationOffOutlined, LocationOnOutlined, LockOpenOutlined, LockOutlined, MailOutlined, ModeEditOutlineOutlined, MoreHoriz, Person, PersonOutline, PriorityHighOutlined, Remove, RemoveDoneOutlined, RoomOutlined, Search, Store, StoreOutlined } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import DataTable from '../../common/datatable/DataTable';
 import AddCustomer from './AddCustomer';
@@ -67,8 +67,19 @@ const Customers = () => {
   }
 
 
-
   const columns = [
+    {
+      field: 'details', headerName: '', width: 60,
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          <IconButton>
+            <Link to={`/dashboard/customers/details/${params.row.id}`}>
+              <KeyboardArrowRight />
+            </Link>
+          </IconButton>
+        </Stack>
+      )
+    },
     {
       field: 'companyName', headerName: '', width: 200,
       renderHeader: () => (
@@ -95,76 +106,40 @@ const Customers = () => {
               {!params.row.isValid && <PriorityHighOutlined sx={{ color: 'red' }} fontSize='small' />}
 
             </Stack>
-            {/* {
-              params.row.isValid ?
-                <Typography sx={{
-                  fontSize: '12px',
-                  bgcolor: 'primary.main',
-                  px:1,borderRadius:'4px',
-                  color: '#fff',
-                  width: 'fit-content'
-                }}>&#x2022; Available</Typography> :
-                <Typography sx={{
-                  bgcolor: 'darkgray',
-                  px:1,borderRadius:'4px',
-                  color: '#fff',
-                  fontSize: '12px',
-                  width: 'fit-content'
-                }}>&#x2022; Not Available</Typography>
-            } */}
           </Box>
         </Stack>
       )
     },
     {
-      field: 'email', headerName: '', width: 300,
+      field: 'info', headerName: '', width: 300,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Email Address</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Company Info</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} gap={1} direction='row' alignItems='center'>
-          <MailOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
+        <Stack sx={{ height: '100%', ml: '20px' }}>
           <Typography sx={{
             fontSize: '14px',
+            display: 'inline-flex',
+            fontWeight: 600,
+            alignItems: 'center',
+            gap: 1,
             color: params.row.isValid ? 'inherit' : 'darkgray'
-          }}>{params.row.email}</Typography>
+          }}>
+            <MailOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray', fontSize: '16px' }} />
+            {params.row.email}
+          </Typography>
+          <Typography sx={{
+            fontSize: '14px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 1,
+            color: params.row.isValid ? 'inherit' : 'darkgray'
+          }}>
+            <LocalPhoneOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray', fontSize: '16px' }} />
+            {params.row?.contact}
+          </Typography>
         </Stack>
       )
-    },
-    {
-      field: 'ownerName', width: 250,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Owner Name</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <Avatar sx={{ height: '30px', width: '30px' }} src={row.photoUrl ? row.photoUrl : ''} />
-            <Box>
-              <Typography sx={{ fontSize: '14px', fontWeight: 600, color: params.row.isValid ? 'inherit' : 'darkgray' }}>{row.firstName}</Typography>
-              {row.username &&
-                <Typography sx={{ fontSize: '12px', color: params.row.isValid ? 'inherit' : 'darkgray' }}>@{row.username}</Typography>
-              }
-            </Box>
-          </Stack>
-        )
-      }
-    },
-    {
-      field: 'noOfEmployees', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Employees</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <PersonOutline sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} />
-            <Typography sx={{ fontSize: '14px', noOfEmployees: '10' }}>{params.row.noOfEmployees}</Typography>
-          </Stack>
-        )
-      }
     },
     {
       field: 'postCode', width: 150,
@@ -186,6 +161,49 @@ const Customers = () => {
               fontWeight: 600,
               color: row.isValid ? 'primary.main' : 'darkgray'
             }}>{params.row.postCode}</Typography>
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'dueAmount',
+      headerName: '',
+      width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Typography sx={{
+              fontSize: '14px',
+              fontWeight: 600,
+              bgcolor: row.dueAmount === '0.00' ? 'lightgray' : '#F7DCD9',
+              color: row.dueAmount === '0.00' ? 'black' : 'red',
+              borderRadius: '4px',
+              textAlign: 'center',
+              p: .5
+            }}>{row.dueAmount ?? <b>00 </b>} kr</Typography>
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'paidAmount',
+      headerName: '',
+      width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px', ml: 5 } }}>Paid Amount</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Typography sx={{
+              fontSize: '14px',
+              fontWeight: 600,
+            }}>{row.paidAmount ?? <b>00 </b>} kr</Typography>
           </Stack>
         )
       }
@@ -261,19 +279,24 @@ const Customers = () => {
     id: item.node.id,
     company: item.node.name,
     email: item.node.email,
+    ownerEmail: item.node.owner?.email,
     contact: item.node.contact,
     address: item.node.address,
     postCode: item.node.postCode,
     description: item.node.description,
     isBlocked: item.node.isBlocked,
     noOfEmployees: item.node.noOfEmployees,
+    addedEmployees: item.node.users?.edges.length,
     firstName: item.node.owner?.firstName ? item.node.owner?.firstName : '',
     username: item.node.owner?.username,
     photoUrl: item.node.owner?.photoUrl,
     logoUrl: item.node.logoUrl,
     fileId: item.node.fileId,
     isValid: item.node.isValid,
-    isChecked: item.node.isChecked
+    isChecked: item.node.isChecked,
+    dueAmount: item.node.balance,
+    invoiceAmount: item.node.invoiceAmount,
+    paidAmount: item.node.paidAmount,
   }))
 
   useEffect(() => {

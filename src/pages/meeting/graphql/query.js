@@ -10,6 +10,8 @@ export const FOOD_MEETINGS = gql`
         title
         meetingType
         meetingTime
+        status
+        note
         topics {
           edges {
             node {
@@ -36,6 +38,10 @@ export const FOOD_MEETINGS = gql`
           postCode
           status
           noOfEmployees
+          name
+          email
+          logoUrl
+          isBlocked
         }
         firstName
         lastName

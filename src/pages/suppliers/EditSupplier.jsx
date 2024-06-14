@@ -103,9 +103,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
 
 
   return (
-    <Box sx={{
-      p: { xs: 0, md: 2 }
-    }}>
+    <Box>
 
       <Stack direction='row' justifyContent='space-between' mb={4}>
         <Typography variant='h5'>Edit Supplier</Typography>

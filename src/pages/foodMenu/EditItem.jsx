@@ -45,7 +45,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     availability: true,
     discountAvailability: false
   })
-
+console.log(data)
   const handlePriceWithoutTaxChange = (event) => {
     const inputPrice = parseFloat(event.target.value);
     const taxRate = 0.15; // 15% tax rate
@@ -123,7 +123,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
       setAllAllergies(allergiesName)
     }
   });
-  
+
   // set cover image
   const handleSetCoverImgId = (index) => {
     setSelectedCoverImgId(index);
@@ -180,7 +180,8 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
             category: categoryId,
           },
           ingredients: selectedAllergies,
-          attachments: [...productImgFromData, ...attachments]
+          attachments: [...productImgFromData, ...attachments],
+          vendor: data.vendor.id
         }
       })
     }
@@ -205,7 +206,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     },
   });
 
-  
+
   useEffect(() => {
     setPayload({
       name: data.name,
@@ -225,7 +226,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
       isCover: item.node.isCover,
     })));
   }, [])
-  
+
 
   return (
     <Box sx={{ p: { xs: 0, md: 2 } }}>
@@ -238,6 +239,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
 
       <Stack>
         <TextField
+          size='small'
           error={Boolean(inputerr.name)}
           helperText={inputerr.name}
           name='name'
@@ -247,7 +249,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
         />
         <Stack direction='row' gap={2} mb={2} mt={2}>
           <Stack flex={1} gap={2}>
-            <FormControl error={Boolean(inputerr.category)} >
+            <FormControl size='small' error={Boolean(inputerr.category)} >
               <InputLabel>Category</InputLabel>
               <Select
                 value={categoryId}
@@ -261,6 +263,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
               {inputerr.category && <FormHelperText>{inputerr.category}</FormHelperText>}
             </FormControl>
             <TextField
+              size='small'
               type="number"
               value={priceWithoutTax}
               onChange={handlePriceWithoutTaxChange}
@@ -269,6 +272,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
           </Stack>
           <Stack flex={1} gap={2}>
             <TextField
+              size='small'
               name='title'
               value={payload.title}
               onChange={handleInputChange}
@@ -276,6 +280,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
               placeholder='E.g: Todays..'
             />
             <TextField
+              size='small'
               error={Boolean(inputerr.price)}
               type="number"
               value={priceWithTax}
@@ -285,6 +290,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
           </Stack>
         </Stack>
         <Autocomplete
+          size='small'
           freeSolo
           multiple
           options={allAllergies}
@@ -308,6 +314,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
           )}
         />
         <TextField
+          size='small'
           name='contains'
           value={payload.contains}
           onChange={handleInputChange}
@@ -318,6 +325,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
           multiline
         />
         <TextField
+          size='small'
           error={Boolean(inputerr.description)}
           helperText={inputerr.description}
           name='description'
@@ -331,11 +339,11 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
         <Stack direction='row' gap={2} mt={2} alignItems='center'>
           <FormControlLabel
             sx={{ mb: 1, width: 'fit-content' }}
-            control={<Switch checked={payload.availability}
+            control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
             label="Status Available" />
           <FormControlLabel
-            control={<Switch color="warning"
+            control={<Switch size='small' color="warning"
               checked={payload.discountAvailability}
               onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
             label="Discount Active" />
@@ -357,7 +365,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
                   position: 'absolute',
                   content: data.isCover ? '"Cover"' : '""',
                   width: '100%',
-                  pl:1,
+                  pl: 1,
                   color: '#fff',
                   height: '25px', bottom: 0,
                   bgcolor: data.isCover ? 'rgba(0,0,0,.7)' : '',

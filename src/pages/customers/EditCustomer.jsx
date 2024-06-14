@@ -26,7 +26,7 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
     description: '',
     isBlocked: false
   })
- 
+
   const [companyMutation, { loading }] = useMutation(COMPANY_MUTATION, {
     onCompleted: (res) => {
       fetchCompany()
@@ -115,9 +115,7 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
 
 
   return (
-    <Box sx={{
-      p: { xs: 0, md: 2 }
-    }}>
+    <Box>
 
       <Stack direction='row' justifyContent='space-between' mb={4}>
         <Typography variant='h5'>Update Customer</Typography>
@@ -141,21 +139,21 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
           </Stack>
         </Stack>
         <TextField onChange={handleInputChange} value={payload.description} multiline rows={2} name='description' label='Description' />
-        <Stack direction='row' gap={2}>
-          <FormControlLabel
-            control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })}
-              checked={payload.isBlocked} />} label="Status Lock" />
-        </Stack>
+        <FormControlLabel
+          sx={{ py: 2 }}
+          control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })}
+            checked={payload.isBlocked} />} label="Lock"
+        />
 
         {/* img from data */}
         <Stack sx={{ position: 'relative' }} direction='row' alignItems='center' gap={2}>
           <Avatar sx={{ width: { xs: '60px', lg: '96px' }, height: { xs: '60px', lg: '96px' } }}
             src={file ? URL.createObjectURL(file) : logoData.logoUrl ? logoData.logoUrl : ''} />
           <IconButton sx={{ width: '25px', height: '25px', position: 'absolute', top: 0, left: 0, bgcolor: 'light.main' }}
-            onClick={() =>(
+            onClick={() => (
               setFile(''),
               setLogoData({})
-            ) }>
+            )}>
             <Close fontSize='small' />
           </IconButton>
           <Box sx={{

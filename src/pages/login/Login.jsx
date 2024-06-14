@@ -37,6 +37,8 @@ const Login = () => {
     setPayloadError({ ...payloadError, [e.target.name]: '' });
     setPayload({ ...payload, [e.target.name]: e.target.value })
   }
+
+
   const handleLogin = () => {
     if (!payload.email) {
       setPayloadError({ ...payloadError, email: 'Please enter email!' });
@@ -48,6 +50,12 @@ const Login = () => {
     }
     if (loginErr) toast.error('SomeThing went wrong!')
     loginUser({ variables: payload })
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin()
+    }
   }
 
 
@@ -171,9 +179,11 @@ const Login = () => {
                 fullWidth
                 label="Email"
                 variant="outlined"
+                onKeyDown={handleKeyPress}
               />
               <TextField
                 sx={{ mb: 2 }}
+                onKeyDown={handleKeyPress}
                 variant="outlined"
                 type={passwordVisibility ? "text" : "password"}
                 name="password"

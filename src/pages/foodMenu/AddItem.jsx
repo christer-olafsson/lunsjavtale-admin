@@ -1,16 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useMutation, useQuery } from '@apollo/client';
-import { Add, ArrowDropDown, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
+import { Autocomplete, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
 import { GET_ALL_CATEGORY } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
-import Loader from '../../common/loader/Index';
-import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
 import { PRODUCT_MUTATION } from './graphql/mutation';
+import { VENDORS } from '../suppliers/graphql/query';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -26,6 +25,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [imgUploadLoading, setImgUploadLoading] = useState(false)
   const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [selectedCoverImgId, setSelectedCoverImgId] = useState(0)
+  const [vendors, setVendors] = useState([])
+  const [selectedVendorId, setSelectedVendorId] = useState('')
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -42,42 +43,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     availability: true,
     discountAvailability: false
   })
-
-  const handlePriceWithoutTaxChange = (event) => {
-    const inputPrice = parseFloat(event.target.value);
-    const taxRate = 0.15; // 15% tax rate
-    const taxAmount = inputPrice * taxRate;
-    const priceWithTax = inputPrice + taxAmount;
-    setPriceWithTax(Math.round(priceWithTax * 100) / 100);
-    setPriceWithoutTax(inputPrice);
-  };
-
-  // const handleTaxRateChange = (event) => {
-  //   const newTaxRate = parseFloat(event.target.value);
-  //   setTaxRate(newTaxRate);
-  // };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPayload({ ...payload, [name]: value });
-  };
-
-
-  // select allergies
-  const handleAutoCompleteChange = (event, value) => {
-    setSelectedAllergies(value)
-  }
-
-  // added mutiple image
-  const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files).slice(0, 5);
-    setSelectedFiles(files);
-  };
-  const handleFileDeselect = (index) => {
-    const updatedFiles = [...selectedFiles];
-    updatedFiles.splice(index, 1);
-    setSelectedFiles(updatedFiles);
-  };
 
   // product create
   const [productMutation, { loading: productMutationLoading }] = useMutation(PRODUCT_MUTATION, {
@@ -112,6 +77,58 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     },
   });
 
+  // vendors
+  useQuery(VENDORS, {
+    onCompleted: (res) => {
+      setVendors(res.vendors.edges.map(item => ({
+        id: item.node.id,
+        name: item.node.name,
+        email: item.node.email
+      })))
+    }
+  })
+
+  const handlePriceWithoutTaxChange = (event) => {
+    const inputPrice = parseFloat(event.target.value);
+    const taxRate = 0.15; // 15% tax rate
+    const taxAmount = inputPrice * taxRate;
+    const priceWithTax = inputPrice + taxAmount;
+    setPriceWithTax(Math.round(priceWithTax * 100) / 100);
+    setPriceWithoutTax(inputPrice);
+  };
+
+  // const handleTaxRateChange = (event) => {
+  //   const newTaxRate = parseFloat(event.target.value);
+  //   setTaxRate(newTaxRate);
+  // };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPayload({ ...payload, [name]: value });
+  };
+
+
+  // select allergies
+  const handleAllergiesChange = (event, value) => {
+    setSelectedAllergies(value)
+  }
+
+  // select vendor
+  const handleVendorChange = (event, value) => {
+    setSelectedVendorId(value.id)
+  }
+
+  // added mutiple image
+  const handleFileSelect = (event) => {
+    const files = Array.from(event.target.files).slice(0, 5);
+    setSelectedFiles(files);
+  };
+  const handleFileDeselect = (index) => {
+    const updatedFiles = [...selectedFiles];
+    updatedFiles.splice(index, 1);
+    setSelectedFiles(updatedFiles);
+  };
+
 
   const handleProductSave = async () => {
     if (!payload.name) {
@@ -138,7 +155,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     if (selectedFiles) {
       setImgUploadLoading(true)
       const res = await uploadMultiFile(selectedFiles, 'products');
-      attachments = res.map((item,id) => ({
+      attachments = res.map((item, id) => ({
         fileUrl: item.secure_url,
         fileId: item.public_id,
         isCover: selectedCoverImgId === id ? true : false
@@ -153,6 +170,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           taxPercent: 15,
           priceWithTax: priceWithTax.toString(),
           category: categoryId,
+          vendor: selectedVendorId
         },
         ingredients: selectedAllergies,
         attachments
@@ -172,6 +190,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
 
       <Stack>
         <TextField
+          size='small'
           error={Boolean(inputerr.name || errors.name)}
           helperText={inputerr.name || errors.name}
           name='name'
@@ -181,7 +200,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         />
         <Stack direction='row' gap={2} mb={2} mt={2}>
           <Stack flex={1} gap={2}>
-            <FormControl error={Boolean(inputerr.category)} >
+            <FormControl size='small' error={Boolean(inputerr.category)} >
               <InputLabel>Category</InputLabel>
               <Select
                 value={categoryId}
@@ -195,6 +214,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               {inputerr.category && <FormHelperText>{inputerr.category}</FormHelperText>}
             </FormControl>
             <TextField
+              size='small'
               type="number"
               value={priceWithoutTax}
               onChange={handlePriceWithoutTaxChange}
@@ -204,6 +224,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           </Stack>
           <Stack flex={1} gap={2}>
             <TextField
+              size='small'
               name='title'
               value={payload.title}
               onChange={handleInputChange}
@@ -211,6 +232,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               placeholder='E.g: Todays..'
             />
             <TextField
+              size='small'
               error={Boolean(inputerr.price || errors.priceWithTax)}
               value={priceWithTax ? priceWithTax : ''}
               InputProps={{ readOnly: true }}
@@ -221,11 +243,39 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
 
         </Stack>
         <Autocomplete
+          sx={{ mb: 2 }}
+          size='small'
+          options={vendors}
+          disableCloseOnSelect
+          onChange={handleVendorChange}
+          getOptionLabel={(option) => option.name}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              <Stack>
+                <Typography>{option.name}</Typography>
+                <Typography sx={{fontSize:'12px'}}>{option.email}</Typography>
+              </Stack>
+              
+              
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Added for (Vendor)" />
+          )}
+        />
+        <Autocomplete
+          size='small'
           freeSolo
           multiple
           options={allAllergies}
           disableCloseOnSelect
-          onChange={handleAutoCompleteChange}
+          onChange={handleAllergiesChange}
           getOptionLabel={(option) => option}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
@@ -243,6 +293,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           )}
         />
         <TextField
+          size='small'
           name='contains'
           value={payload.contains}
           onChange={handleInputChange}
@@ -253,6 +304,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           multiline
         />
         <TextField
+          size='small'
           error={Boolean(inputerr.description)}
           helperText={inputerr.description}
           name='description'
@@ -265,15 +317,15 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         />
         <Stack direction='row' gap={2} mt={2} alignItems='center'>
           <FormControlLabel
-            sx={{ mb: 1, width: 'fit-content' }}
-            control={<Switch checked={payload.availability}
+            sx={{ width: 'fit-content' }}
+            control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
-            label="Status Available" />
+            label="Available" />
           <FormControlLabel
-            control={<Switch color="warning"
+            control={<Switch size='small' color="warning"
               checked={payload.discountAvailability}
               onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
-            label="Discount Active" />
+            label="Discount" />
         </Stack>
 
         {/* selected image */}
@@ -293,7 +345,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
                   content: selectedCoverImgId === index ? '"Cover"' : '""',
                   width: '100%',
                   color: '#fff',
-                  pl:1,
+                  pl: 1,
                   height: '25px', bottom: 0,
                   bgcolor: selectedCoverImgId === index ? 'rgba(0,0,0,.7)' : '',
                   // border: '2px solid green',

@@ -27,9 +27,78 @@ export const VENDORS = gql`
             }
           }
         }
-          # firstName
         }
       }
    }
+}
+`
+
+export const VENDOR = gql`
+  query($id:ID){
+  vendor(id:$id){
+    id
+    createdOn
+    name
+    email
+    contact
+    postCode
+    logoUrl
+    formationDate
+    socialMediaLinks
+    soldAmount
+    withdrawnAmount
+    balance
+    products{
+      edges{
+        node{
+          id
+          createdOn
+          actualPrice
+          taxPercent
+          priceWithTax
+          name
+          title
+          description
+          contains
+          availability
+          discountAvailability
+          # productRatings
+          attachments{
+            edges{
+              node{
+                id
+                fileUrl
+                isCover
+              }
+            }
+          }
+          ingredients{
+            edges{
+              node{
+                id
+                name
+                isDeleted
+              }
+            }
+          }
+          category{
+            id
+            name
+            isActive
+          }
+        }
+      }
+    }
+    owner{
+      id
+      username
+      email
+      phone
+      photoUrl
+      postCode
+      dateJoined
+      dueAmount 
+    }
+  }
 }
 `

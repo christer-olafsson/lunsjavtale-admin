@@ -22,6 +22,10 @@ import { useEffect, useState } from 'react'
 import InvoiceDetails from './pages/invoice/InvoiceDetails'
 import Suppliers from './pages/suppliers/Index'
 import Areas from './pages/postCode/Index'
+import CustomerDetails from './pages/customers/CustomerDetails'
+import SalesHistory from './pages/salesHistory/Index'
+import SupplierDetails from './pages/suppliers/SupplierDetails'
+import WithdrawReq from './pages/withdraw-req/Index'
 
 
 function App() {
@@ -48,10 +52,14 @@ function App() {
         <Route path='/dashboard/:path/food-details/:id' element={<FoodDetails />} />
         <Route path='/dashboard/orders' element={<Orders />} />
         <Route path='/dashboard/orders/details/:id' element={<OrderDetails />} />
+        <Route path='/dashboard/sales-history' element={<SalesHistory />} />
         <Route path='/dashboard/payments-history' element={<PaymentsHistory />} />
         <Route path='/dashboard/payments-history/details/:id' element={<SalesDetails />} />
         <Route path='/dashboard/customers' element={<Customers />} />
+        <Route path='/dashboard/customers/details/:id' element={<CustomerDetails />} />
         <Route path='/dashboard/suppliers' element={<Suppliers />} />
+        <Route path='/dashboard/suppliers/details/:id' element={<SupplierDetails />} />
+        <Route path='/dashboard/withdraw-req' element={<WithdrawReq />} />
         <Route path='/dashboard/meetings' element={<Meeting />} />
         <Route path='/dashboard/coupons' element={<Coupons />} />
         <Route path='/dashboard/invoice' element={<Invoice />} />

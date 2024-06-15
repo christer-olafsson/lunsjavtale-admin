@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
 import { PRODUCT_DELETE, PRODUCT_MUTATION } from './graphql/mutation';
 import { deleteMultiFile } from '../../utils/deleteFile';
+import { VENDORS } from '../suppliers/graphql/query';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -30,6 +31,8 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const [deletedImgId, setDeletedImgId] = useState([]);
   const [productDeleteSecOpen, setProductDeleteSecOpen] = useState(false)
   const [selectedCoverImgId, setSelectedCoverImgId] = useState(null);
+  const [vendors, setVendors] = useState([])
+  const [selectedVendor, setSelectedVendor] = useState('')
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -43,9 +46,9 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     description: '',
     contains: '',
     availability: true,
-    discountAvailability: false
+    // discountAvailability: false
   })
-console.log(data)
+
   const handlePriceWithoutTaxChange = (event) => {
     const inputPrice = parseFloat(event.target.value);
     const taxRate = 0.15; // 15% tax rate
@@ -124,6 +127,18 @@ console.log(data)
     }
   });
 
+  // vendors
+  useQuery(VENDORS, {
+    onCompleted: (res) => {
+      setVendors(res.vendors.edges.map(item => ({
+        id: item.node.id,
+        name: item.node.name,
+        email: item.node.email
+      })))
+    }
+  })
+
+
   // set cover image
   const handleSetCoverImgId = (index) => {
     setSelectedCoverImgId(index);
@@ -178,10 +193,10 @@ console.log(data)
             taxPercent: 15,
             priceWithTax: priceWithTax.toString(),
             category: categoryId,
+            vendor: selectedVendor?.id
           },
           ingredients: selectedAllergies,
           attachments: [...productImgFromData, ...attachments],
-          vendor: data.vendor.id
         }
       })
     }
@@ -225,11 +240,12 @@ console.log(data)
       fileId: item.node.fileId,
       isCover: item.node.isCover,
     })));
+    setSelectedVendor(data.vendor ? data.vendor : '')
   }, [])
 
 
   return (
-    <Box sx={{ p: { xs: 0, md: 2 } }}>
+    <Box>
       <Stack direction='row' justifyContent='space-between' mb={4}>
         <Typography variant='h5'>Update Items</Typography>
         <IconButton onClick={closeDialog}>
@@ -289,6 +305,35 @@ console.log(data)
             />
           </Stack>
         </Stack>
+        {/* all vendors */}
+        <Autocomplete
+          sx={{ mb: 2 }}
+          size='small'
+          value={selectedVendor ? selectedVendor : null}
+          options={vendors}
+          onChange={(_, value) => setSelectedVendor(value)}
+          getOptionLabel={(option) => option.name}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              {/* <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              /> */}
+              <Stack>
+                <Typography>{option.name}</Typography>
+                <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+              </Stack>
+
+
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Added for (Vendor)" />
+          )}
+        />
+        {/* all allAllergies */}
         <Autocomplete
           size='small'
           freeSolo
@@ -336,17 +381,17 @@ console.log(data)
           rows={4}
           multiline
         />
-        <Stack direction='row' gap={2} mt={2} alignItems='center'>
+        <Stack direction='row' gap={2} my={3} alignItems='center'>
           <FormControlLabel
             sx={{ mb: 1, width: 'fit-content' }}
             control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
-            label="Status Available" />
-          <FormControlLabel
+            label="Available" />
+          {/* <FormControlLabel
             control={<Switch size='small' color="warning"
               checked={payload.discountAvailability}
               onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
-            label="Discount Active" />
+            label="Discount Active" /> */}
         </Stack>
 
         {/* Product image from api */}

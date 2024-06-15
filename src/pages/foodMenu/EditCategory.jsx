@@ -105,9 +105,7 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
   }, [data])
 
   return (
-    <Box sx={{
-      p: { xs: 0, md: 2 }
-    }}>
+    <Box>
       <Stack direction='row' justifyContent='space-between'>
         <Typography variant='h5'>Edit Categories</Typography>
         <IconButton onClick={closeDialog}>

@@ -19,7 +19,7 @@ export const CATEGORY_DELETE = gql`
 `
 
 export const PRODUCT_MUTATION = gql`
-  mutation ProductMutation ($input: ProductInput, $ingredients: [String], $attachments: [ProductAttachmentInput]!){
+  mutation ProductMutation ($input: ProductInput!, $ingredients: [String], $attachments: [ProductAttachmentInput]!){
     productMutation(input:$input,ingredients:$ingredients,attachments: $attachments){
       success
       message

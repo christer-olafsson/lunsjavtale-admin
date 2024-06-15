@@ -55,7 +55,8 @@ CustomTabPanel.propTypes = {
 };
 
 const tabName = [
-  'General Settings', 'User Management', 'Payment Settings ', 'Notification Settings ',
+  'General Settings', 'User Management', 
+  // 'Payment Settings ', 'Notification Settings ',
 ]
 
 const SettingTab = () => {
@@ -94,8 +95,8 @@ const SettingTab = () => {
       <Box maxWidth='lg' sx={{ p: { xs: 1, lg: 3 } }}>
         <CustomTabPanel value={tabIndex} index={0}><GeneralSettings /></CustomTabPanel>
         <CustomTabPanel value={tabIndex} index={1}><UserManagemenet /></CustomTabPanel>
-        <CustomTabPanel value={tabIndex} index={2}><PaymentSettings /></CustomTabPanel>
-        <CustomTabPanel value={tabIndex} index={3}><NotificationSettings /></CustomTabPanel>
+        {/* <CustomTabPanel value={tabIndex} index={2}><PaymentSettings /></CustomTabPanel> */}
+        {/* <CustomTabPanel value={tabIndex} index={3}><NotificationSettings /></CustomTabPanel> */}
       </Box>
 
     </Paper>

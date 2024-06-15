@@ -71,9 +71,7 @@ const AddCategory = ({ fetchCategory, closeDialog }) => {
 
 
   return (
-    <Box sx={{
-      p: { xs: 0, md: 2 }
-    }}>
+    <Box>
       <Stack direction='row' justifyContent='space-between'>
         <Typography variant='h5'>Add Categories</Typography>
         <IconButton onClick={closeDialog}>

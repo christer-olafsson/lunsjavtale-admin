@@ -1,67 +1,39 @@
 import { Add, DeleteOutline, EditOutlined, ErrorOutline, Lock, MoreVert, Search } from '@mui/icons-material'
-import { Avatar, Box, Button, IconButton, Input, Menu, MenuItem, Paper, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Button, IconButton, Paper, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import CDialog from '../../../common/dialog/CDialog'
 import AddUser from './AddUser'
 import EditUser from './EditUser'
 import { SYSTEM_USERS } from '../graphql/query'
-import { useLazyQuery, useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import Loader from '../../../common/loader/Index'
 import ErrorMsg from '../../../common/ErrorMsg/ErrorMsg'
 
-const users = [
-  {
-    name: 'Savannah Nguyen',
-    username: 'johnmaina',
-    role: 'admin'
-  },
-  {
-    name: 'Cody Fisher',
-    username: 'sylviaawuor',
-    role: 'Products',
-    status: 'available'
-  },
-  {
-    name: 'Jane Cooper',
-    username: 'jamo254',
-    role: 'Warehouse',
-    status: 'lock'
-  },
-  {
-    name: 'Guy Hawkins',
-    username: 'cynthia',
-    role: 'Inventory',
-    status: 'available'
-  },
-]
 
 const UserManagemenet = () => {
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
   const [editUserDialogOpen, setEditUserDialogOpen] = useState(false);
-  const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
-  const [selectedDeleteUserId, setSelectedDeleteUserId] = useState('');
   const [systemUsers, setSystemUsers] = useState([])
 
   const [fetchSystemUsers, { loading, error }] = useLazyQuery(SYSTEM_USERS, {
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
-      setSystemUsers(res.systemUsers.edges.map(item => item.node));
+      setSystemUsers(res.systemUsers.edges.map(item => item.node).filter(user => !user.isDeleted));
     }
   });
+
 
   function handleEditUser(id) {
     setSelectedUserId(id)
     setEditUserDialogOpen(true)
   }
-  function handleDeleteUser(id) {
-    setSelectedDeleteUserId(id)
-    setDeleteUserDialogOpen(true)
-  }
+
+
   useEffect(() => {
     fetchSystemUsers()
   }, [])
-  
+
 
   return (
     <Box sx={{ minHeight: '600px' }} maxWidth='xxl'>
@@ -112,14 +84,9 @@ const UserManagemenet = () => {
                 }}>
                   {
                     user.role !== 'admin' &&
-                    <Stack direction='row'>
-                      <IconButton onClick={() => handleEditUser(id)}>
-                        <EditOutlined fontSize='small' />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteUser(id)}>
-                        <DeleteOutline fontSize='small' />
-                      </IconButton>
-                    </Stack>
+                    <IconButton onClick={() => handleEditUser(id)}>
+                      <EditOutlined fontSize='small' />
+                    </IconButton>
                   }
                 </Box>
                 <Box sx={{
@@ -136,21 +103,7 @@ const UserManagemenet = () => {
                     <EditUser fetchSystemUsers={fetchSystemUsers} data={user} closeDialog={() => setEditUserDialogOpen(false)} />
                   </CDialog>
                 }
-                {/* delete */}
-                {
-                  selectedDeleteUserId === id &&
-                  <CDialog closeDialog={() => setDeleteUserDialogOpen(false)} maxWidth='sm' openDialog={deleteUserDialogOpen}>
-                    <Box>
-                      <ErrorOutline fontSize='large' sx={{ color: 'red' }} />
-                      <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Delete this User?</Typography>
-                      <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this user? This action cannot be undone.</Typography>
-                      <Stack direction='row' gap={2} mt={3}>
-                        <Button onClick={() => setDeleteUserDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-                        <Button fullWidth variant='contained' color='error'>Delete</Button>
-                      </Stack>
-                    </Box>
-                  </CDialog>
-                }
+
               </Paper>
             ))
         }

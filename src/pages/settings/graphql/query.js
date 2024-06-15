@@ -13,6 +13,7 @@ export const SYSTEM_USERS = gql`
         role
         password
         isSuperuser
+        isDeleted
       }
     }
   }

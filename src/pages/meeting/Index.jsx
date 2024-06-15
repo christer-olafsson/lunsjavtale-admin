@@ -113,7 +113,7 @@ const Meeting = () => {
     return formattedTime
   }
 
-  
+console.log(meetings)
   const columns = [
     {
       field: 'details', width: 80, headerName: '',
@@ -245,8 +245,8 @@ const Meeting = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
               fontSize: { xs: '12px', md: '16px' },
-              color: '#fff',
-              bgcolor: row.status === 'attended' ? 'primary.main' : row.status === 'postponed' ? 'red' : 'darkgray',
+              color: row.status === 'attended' ? '#fff' : row.status === 'postponed' ? '#fff' : 'black',
+              bgcolor: row.status === 'attended' ? 'primary.main' : row.status === 'postponed' ? 'red' : 'yellow',
               px: 1, borderRadius: '8px',
             }}>&#x2022; {row.status}</Typography>
           </Stack>
@@ -255,7 +255,7 @@ const Meeting = () => {
     },
 
     {
-      field: 'lock', headerName: '', width: 70,
+      field: 'lock', headerName: '', width: 100,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>
@@ -280,7 +280,9 @@ const Meeting = () => {
       renderCell: (params) => {
         return (
           <IconButton disabled={params.row.status !== 'pending'} onClick={() => handleMeetingAction(params.row)}>
-            <DoneOutlineOutlined />
+            <DoneOutlineOutlined sx={{
+              color: params.row.status === 'pending' ? 'coral' : 'inherit',
+            }} />
           </IconButton>
         )
       },
@@ -290,7 +292,7 @@ const Meeting = () => {
       renderCell: (params) => {
         return (
           <IconButton disabled={params.row.status !== 'pending' || params.row.company === null} onClick={() => handleEdit(params.row)}>
-            <EditOutlined />
+            <EditOutlined sx={{ color: params.row.status === 'pending' ? 'coral' : 'gray' }} />
           </IconButton>
         )
       },
@@ -300,7 +302,7 @@ const Meeting = () => {
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>
-            <DeleteOutline />
+            <DeleteOutline sx={{ color: 'coral' }} />
           </IconButton>
         )
       },
@@ -372,7 +374,7 @@ const Meeting = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={{xs:10,md:3}}>
+      <Box mt={{ xs: 10, md: 3 }}>
         {
           meetingsLoading ? <Loader /> : meetingsErr ? <ErrorMsg /> :
             <DataTable

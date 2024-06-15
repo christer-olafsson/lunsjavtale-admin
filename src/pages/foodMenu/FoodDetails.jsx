@@ -125,16 +125,16 @@ const FoodDetails = () => {
 
               </Box>
             </Stack>
-            <Box sx={{ width: '100%', mt: 5 }}>
+            {/* <Box sx={{ width: '100%', mt: 5 }}>
               <TabContext value={tabValue}>
                 <Box sx={{ borderBottom: '1px solid lightgray', }}>
                   <TabList onChange={handleTabChange} >
-                    {/* <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Description" value="1" /> */}
+                    <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Description" value="1" />
                     <Tab sx={{ textTransform: 'none', mr: { xs: 0, md: 10 } }} label="Reviews" value="1" />
-                    {/* <Tab sx={{ textTransform: 'none' }} label="Support" value="3" /> */}
+                    <Tab sx={{ textTransform: 'none' }} label="Support" value="3" />
                   </TabList>
                 </Box>
-                {/* <TabPanel value="1">Description</TabPanel> */}
+                <TabPanel value="1">Description</TabPanel>
                 <TabPanel value="1">
                   <Stack gap={5}>
                     {
@@ -156,7 +156,7 @@ const FoodDetails = () => {
                 </TabPanel>
                 <TabPanel value="3">Item Three</TabPanel>
               </TabContext>
-            </Box>
+            </Box> */}
           </>
       }
     </Box>

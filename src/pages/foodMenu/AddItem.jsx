@@ -26,7 +26,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [selectedAllergies, setSelectedAllergies] = useState([]);
   const [selectedCoverImgId, setSelectedCoverImgId] = useState(0)
   const [vendors, setVendors] = useState([])
-  const [selectedVendorId, setSelectedVendorId] = useState('')
+  const [selectedVendor, setSelectedVendor] = useState('')
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -41,7 +41,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     description: '',
     contains: '',
     availability: true,
-    discountAvailability: false
+    // discountAvailability: false
   })
 
   // product create
@@ -113,11 +113,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     setSelectedAllergies(value)
   }
 
-  // select vendor
-  const handleVendorChange = (event, value) => {
-    setSelectedVendorId(value.id)
-  }
-
   // added mutiple image
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files).slice(0, 5);
@@ -170,7 +165,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           taxPercent: 15,
           priceWithTax: priceWithTax.toString(),
           category: categoryId,
-          vendor: selectedVendorId
+          vendor: selectedVendor.id
         },
         ingredients: selectedAllergies,
         attachments
@@ -180,7 +175,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
 
 
   return (
-    <Box sx={{ p: { xs: 0, md: 2 } }}>
+    <Box>
       <Stack direction='row' justifyContent='space-between' mb={4}>
         <Typography variant='h5'>Add New Items</Typography>
         <IconButton onClick={closeDialog}>
@@ -242,33 +237,28 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           </Stack>
 
         </Stack>
+        {/* all vendors */}
         <Autocomplete
           sx={{ mb: 2 }}
           size='small'
           options={vendors}
-          disableCloseOnSelect
-          onChange={handleVendorChange}
+          onChange={(_, value) => setSelectedVendor(value)}
           getOptionLabel={(option) => option.name}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-              />
               <Stack>
                 <Typography>{option.name}</Typography>
-                <Typography sx={{fontSize:'12px'}}>{option.email}</Typography>
+                <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
               </Stack>
-              
-              
+
+
             </li>
           )}
           renderInput={(params) => (
             <TextField {...params} label="Added for (Vendor)" />
           )}
         />
+        {/* all allAllergies */}
         <Autocomplete
           size='small'
           freeSolo
@@ -315,17 +305,17 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           rows={4}
           multiline
         />
-        <Stack direction='row' gap={2} mt={2} alignItems='center'>
+        <Stack direction='row' gap={2} my={3} alignItems='center'>
           <FormControlLabel
             sx={{ width: 'fit-content' }}
             control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
             label="Available" />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Switch size='small' color="warning"
               checked={payload.discountAvailability}
               onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
-            label="Discount" />
+            label="Discount" /> */}
         </Stack>
 
         {/* selected image */}
@@ -381,14 +371,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           </Box>
         </Stack>
       </Stack>
-
-      {/* {errors.length > 0 && (
-        <ul style={{ color: 'red', fontSize: '13px', padding: '10px' }}>
-          {errors.map((err, id) => (
-            <li key={id}>{err}</li>
-          ))}
-        </ul>
-      )} */}
       <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductSave} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
     </Box>
 

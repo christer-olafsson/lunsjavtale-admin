@@ -113,7 +113,7 @@ const Meeting = () => {
     return formattedTime
   }
 
-console.log(meetings)
+
   const columns = [
     {
       field: 'details', width: 80, headerName: '',
@@ -210,6 +210,20 @@ console.log(meetings)
       )
     },
     {
+      field: 'Created On', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Created On</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', }} justifyContent='center'>
+          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
+          <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
+            <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
+          {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}
+        </Stack>
+      )
+    },
+    {
       field: 'meeting-time', headerName: '', width: 150,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Meeting time</Typography>
@@ -235,7 +249,7 @@ console.log(meetings)
       )
     },
     {
-      field: 'status', width: 150,
+      field: 'status', width: 120,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
       ),
@@ -291,14 +305,17 @@ console.log(meetings)
       field: 'edit', headerName: '', width: 50,
       renderCell: (params) => {
         return (
-          <IconButton disabled={params.row.status !== 'pending' || params.row.company === null} onClick={() => handleEdit(params.row)}>
+          <IconButton
+            disabled={params.row.status !== 'pending' || params.row.company === null}
+            onClick={() => handleEdit(params.row)}
+          >
             <EditOutlined sx={{ color: params.row.status === 'pending' ? 'coral' : 'gray' }} />
           </IconButton>
         )
       },
     },
     {
-      field: 'delete', headerName: '', width: 150,
+      field: 'delete', headerName: '', width: 80,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>
@@ -307,7 +324,17 @@ console.log(meetings)
         )
       },
     },
-
+    {
+      field: 'note', headerName: '', flex: 1,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Note</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          <Typography variant='body2'>{params.row.note}</Typography>
+        </Stack>
+      )
+    },
 
   ];
 

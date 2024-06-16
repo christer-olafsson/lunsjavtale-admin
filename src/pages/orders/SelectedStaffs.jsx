@@ -68,32 +68,6 @@ const SelectedStaffs = ({ users, closeDialog }) => {
         )
       }
     },
-
-    {
-      field: 'action',
-      headerName: '',
-      width: 150,
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', display: params.row.role === 'company-owner' ? 'none' : 'flex' }} direction='row' gap={2} alignItems='center'>
-          {/* <IconButton sx={{
-            bgcolor: 'light.main',
-            borderRadius: '5px',
-            width: '40px',
-            height: '40px',
-          }} >
-            <ModeEdit fontSize='small' />
-          </IconButton> */}
-          <IconButton sx={{
-            border: '1px solid lightgray',
-            borderRadius: '5px',
-            width: '40px',
-            height: '40px',
-          }}>
-            <Close fontSize='small' />
-          </IconButton>
-        </Stack>
-      ),
-    },
   ];
 
   const rows = users?.map(item => {
@@ -121,16 +95,7 @@ const SelectedStaffs = ({ users, closeDialog }) => {
 
   return (
     <Box>
-      <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Selected Staffs</Typography>
-        <IconButton onClick={closeDialog}>
-          <Close />
-        </IconButton>
-      </Stack>
-      <Stack direction='row' justifyContent='space-between' mb={3}>
-        <Box />
-        <Button variant='contained' startIcon={<Add />}>Add Staff</Button>
-      </Stack>
+      <Typography variant='h5' my={3}>Selected Staffs</Typography>
 
       <Box>
         <DataTable

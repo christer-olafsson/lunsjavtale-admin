@@ -263,12 +263,12 @@ function Layout() {
           text='Coupons'
           selected={pathname === '/dashboard/coupons'}
         />
-        <ListBtn onClick={handleDrawerClose}
+        {/* <ListBtn onClick={handleDrawerClose}
           link='/dashboard/invoice'
           icon={<Description fontSize='small' />}
           text='Invoice'
           selected={pathname === '/dashboard/invoice'}
-        />
+        /> */}
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/brand'
           icon={<Business fontSize='small' />}

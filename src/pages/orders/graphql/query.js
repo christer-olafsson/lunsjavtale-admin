@@ -13,6 +13,20 @@ export const ORDERS = gql`
           status
           deliveryDate
           finalPrice
+          company{
+            id
+            name
+            email
+            contact
+            postCode
+            isBlocked
+            status
+            logoUrl
+            orderedAmount
+            invoiceAmount
+            paidAmount
+            balance
+          }
           orderCarts{
             edges{
               node{
@@ -52,6 +66,49 @@ export const ORDER = gql`
     deliveryDate
     finalPrice
     status
+    createdOn
+    isDeleted
+    paymentType
+    companyAllowance
+    shippingCharge
+    dueAmount
+    discountAmount
+    paidAmount
+    isFullPaid
+    billingAddress{
+      id
+      firstName
+      lastName
+      address
+      sector
+      country
+      phone
+    }
+    shippingAddress{
+      id
+      address
+      postCode
+      city
+      state
+      fullName
+      phone
+      instruction
+    }
+    company{
+      id
+      name
+      email
+      contact
+      postCode
+      allowancePercentage
+      isBlocked
+      status
+      logoUrl
+      noOfEmployees
+      orderedAmount
+      invoiceAmount
+      paidAmount
+    }
     orderCarts{
       edges{
         node{

@@ -1,5 +1,5 @@
 import { ArrowRight, BorderColor, Search, TrendingFlat } from '@mui/icons-material'
-import { Box, Button, IconButton, Input, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import { Avatar, Box, Button, IconButton, Input, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
@@ -13,9 +13,9 @@ const Orders = () => {
   const [orders, setOrders] = useState([])
 
   const navigate = useNavigate()
-
+  console.log(orders)
   const { loading, error: orderErr } = useQuery(ORDERS, {
-    fetchPolicy:'cache-and-network',
+    fetchPolicy: 'cache-and-network',
     // notifyOnNetworkStatusChange: true,
     // variables: {
     //   addedFor: '141'
@@ -32,12 +32,34 @@ const Orders = () => {
 
   const columns = [
     {
-      field: 'details', headerName: '', width: 150,
+      field: 'details', headerName: '', width: 70,
       renderCell: (params) => (
         <Link to={`/dashboard/orders/details/${params.row.id}`}>
-          <Button endIcon={<ArrowRight />} size='small'>Details</Button>
+          <IconButton>
+            <ArrowRight />
+          </IconButton>
         </Link>
       ),
+    },
+    {
+      field: 'company', width: 300,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params;
+        return (
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
+            <Avatar src={row.company.logoUrl ?? ''} />
+            <Box>
+              <Link to={`/dashboard/customers/details/${row.company.id}`}>
+                <Typography>{row.company?.name}</Typography>
+              </Link>
+              <Typography>{row.company?.email}</Typography>
+            </Box>
+          </Stack>
+        )
+      }
     },
     {
       field: 'orderDate', width: 200,
@@ -47,11 +69,12 @@ const Orders = () => {
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.orderDate, 'yyyy-MM-dd')}</Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
           </Stack>
         )
       }
     },
+
     {
       field: 'deliveryDate', headerName: 'Prce', width: 200,
       renderHeader: () => (
@@ -60,31 +83,11 @@ const Orders = () => {
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            {format(params.row.deliveryDate, 'yyyy-MM-dd')}
+            {params.row.deliveryDate}
           </Typography>
         </Stack>
       )
     },
-
-    // {
-    //   field: 'orderDetails', width: 250,
-    //   renderHeader: () => (
-    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Details</Typography>
-    //   ),
-    //   renderCell: (params) => {
-    //     const { row } = params;
-    //     return (
-    //       <Stack direction='row' gap={2}>
-    //         <img style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px', padding: '5px' }} src={row.fileUrl ?? ''} alt="" />
-    //         <Box>
-    //           <Typography sx={{ fontSize: { xs: '14px', md: '16px' }, fontWeight: 600 }}>{row.name}</Typography>
-    //           <Typography sx={{ fontSize: { xs: '12px', md: '14px' } }}>kr {row.priceWithTax} <b>x{row.quantity}</b> </Typography>
-    //         </Box>
-    //       </Stack>
-    //     )
-    //   }
-    // },
-    // { field: 'paymentInfo', headerName: 'Payment Info', width: 150 },
     {
       field: 'totalPrice', headerName: '', width: 200,
       renderHeader: () => (
@@ -94,7 +97,7 @@ const Orders = () => {
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
             <span style={{ fontWeight: 400 }}>kr </span>
-            {params.row.totalPrice}
+            {params.row.finalPrice}
           </Typography>
         </Stack>
       )
@@ -136,22 +139,6 @@ const Orders = () => {
     // },
   ];
 
-  const rows = orders.map(item => {
-    const orderCart = item.orderCarts.edges[0]?.node
-    return {
-      id: item.id,
-      orderDate: item.createdOn,
-      // name: orderCart.item.name,
-      // quantity: orderCart.quantity,
-      // priceWithTax: orderCart.priceWithTax,
-      totalPrice: item.finalPrice,
-      status: item.status,
-      deliveryDate: item.deliveryDate,
-      // fileUrl: orderCart.item.attachments.edges.find(item => item.node.isCover)?.node.fileUrl,
-    }
-  })
-
-
   return (
     <Box maxWidth='xxl'>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>
@@ -176,7 +163,7 @@ const Orders = () => {
           loading ? <Loader /> : orderErr ? <ErrorMsg /> :
             <DataTable
               columns={columns}
-              rows={rows}
+              rows={orders}
             />
         }
       </Box>

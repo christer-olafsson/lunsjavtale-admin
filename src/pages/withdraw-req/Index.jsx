@@ -134,7 +134,10 @@ const WithdrawReq = () => {
                 : row.status === 'accepted' ? 'lightgreen'
                   : row.status === 'completed' ? 'green'
                     : 'red',
-              color: row.status === 'pending' ? 'dark' : row.status === 'accepted' ? 'dark' : row.status === 'completed' ? '#fff' : '#fff',
+              color: row.status === 'pending' ?
+                'dark' : row.status === 'accepted' ?
+                  'dark' : row.status === 'completed' ?
+                    '#fff' : '#fff',
               px: 1, borderRadius: '8px',
             }}>&#x2022; {row.status}</Typography>
           </Stack>
@@ -157,13 +160,13 @@ const WithdrawReq = () => {
       },
     },
     {
-      field: 'note', headerName: '', flex:1,
+      field: 'note', headerName: '', flex: 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Note</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontWeight: 600 }} > {params.row.note} duifgauidya duigauilwd ha8ud  wdhaiuda dayd adey8a yd8aud8yao</Typography>
+          <Typography sx={{ fontWeight: 600 }} > {params.row.note}</Typography>
         </Stack >
       )
     },

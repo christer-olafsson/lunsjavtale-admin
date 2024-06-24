@@ -1,25 +1,23 @@
 import { ArrowRight, BorderColor, Search, TrendingFlat } from '@mui/icons-material'
 import { Avatar, Box, Button, IconButton, Input, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useEffect, useState } from 'react';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { ORDERS } from './graphql/query';
 import { format } from 'date-fns';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
+import CDialog from '../../common/dialog/CDialog';
+import UpdateOrder from './UpdateOrder';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
+  const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
+  const [orderUpdateData, setOrderUpdateData] = useState({})
 
-  const navigate = useNavigate()
-  console.log(orders)
-  const { loading, error: orderErr } = useQuery(ORDERS, {
-    fetchPolicy: 'cache-and-network',
-    // notifyOnNetworkStatusChange: true,
-    // variables: {
-    //   addedFor: '141'
-    // },
+  const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
+    fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setOrders(res.orders.edges.map(item => item.node));
     }
@@ -27,7 +25,8 @@ const Orders = () => {
 
 
   function handleEdit(row) {
-    navigate(`/dashboard/orders/edit/${row.id}`)
+    setOrderUpdateDialogOpen(true)
+    setOrderUpdateData(row)
   }
 
   const columns = [
@@ -89,7 +88,7 @@ const Orders = () => {
       )
     },
     {
-      field: 'totalPrice', headerName: '', width: 200,
+      field: 'totalPrice', headerName: '', width: 150,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Total Price</Typography>
       ),
@@ -103,41 +102,61 @@ const Orders = () => {
       )
     },
     {
-      field: 'status', headerName: 'Status', width: 250,
+      field: 'status', headerName: 'Status', width: 150,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),
-      renderCell: (params) => (
-        <Box sx={{
-          display: 'inline-flex',
-          padding: '4px 12px',
-          bgcolor: params.row.status === 'Placed' ? '#40A578' : '#E9EDFF',
-          color: params.row.status === 'Placed' ? '#fff' : 'inherit',
-          borderRadius: '4px',
-        }}>
-          <Typography variant='body2'>{params.row.status}</Typography>
-        </Box>
-      ),
+      renderCell: (params) => {
+        const { row } = params
+        return (
+          <Box sx={{
+            display: 'inline-flex',
+            padding: '4px 12px',
+            bgcolor: row.status === 'Cancelled'
+              ? 'red'
+              : row.status === 'Confirmed'
+                ? 'lightgreen'
+                : row.status === 'Delivered'
+                  ? 'green'
+                  : 'yellow',
+            color: row.status === 'Placed' ? 'dark' : '#fff',
+            borderRadius: '4px',
+          }}>
+            <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.status}</Typography>
+          </Box>
+        )
+      }
     },
-    // {
-    //   field: 'action', headerName: 'Action', width: 150,
-    //   renderHeader: () => (
-    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Action</Typography>
-    //   ),
-    //   renderCell: (params) => {
-    //     return (
-    //       <IconButton sx={{
-    //         bgcolor: 'light.main',
-    //         borderRadius: '5px',
-    //         width: { xs: '30px', md: '40px' },
-    //         height: { xs: '30px', md: '40px' },
-    //       }} onClick={() => handleEdit(params.row)}>
-    //         <BorderColor fontSize='small' />
-    //       </IconButton>
-    //     )
-    //   },
-    // },
+    {
+      field: 'action', headerName: 'Action', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Action</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params;
+        return (
+          <IconButton
+          disabled={
+            row.status === 'Cancelled'
+            || row.status === 'Delivered'
+          }
+          sx={{
+            bgcolor: 'light.main',
+            borderRadius: '5px',
+            width: { xs: '30px', md: '40px' },
+            height: { xs: '30px', md: '40px' },
+          }} onClick={() => handleEdit(params.row)}>
+            <BorderColor fontSize='small' />
+          </IconButton>
+        )
+      },
+    },
   ];
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
 
   return (
     <Box maxWidth='xxl'>
@@ -158,6 +177,10 @@ const Orders = () => {
           <IconButton><Search /></IconButton>
         </Box>
       </Stack>
+      {/* update order */}
+      <CDialog openDialog={orderUpdateDialogOpen}>
+        <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
+      </CDialog>
       <Box mt={3}>
         {
           loading ? <Loader /> : orderErr ? <ErrorMsg /> :

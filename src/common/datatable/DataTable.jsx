@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import React from 'react'
 
-const DataTable = ({ rows, columns, getRowHeight, columnVisibilityModel }) => {
+const DataTable = ({ rows,getRowId, columns, getRowHeight, columnVisibilityModel }) => {
   return (
     <Box
       sx={{
@@ -15,6 +15,7 @@ const DataTable = ({ rows, columns, getRowHeight, columnVisibilityModel }) => {
         rows={rows}
         columns={columns}
         getRowHeight={getRowHeight}
+        getRowId={getRowId}
         // initialState={{
         //   pagination: {
         //     paginationModel: {

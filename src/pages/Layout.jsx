@@ -345,7 +345,7 @@ function Layout() {
             display: 'flex',
             alignItems: 'center'
           }}>
-            <ClickAwayListener onClickAway={() => setOpenEmail(false)}>
+            {/* <ClickAwayListener onClickAway={() => setOpenEmail(false)}>
               <Box sx={{
                 position: 'relative'
               }}>
@@ -375,7 +375,7 @@ function Layout() {
                   </Box>
                 </Collapse>
               </Box>
-            </ClickAwayListener>
+            </ClickAwayListener> */}
 
             <ClickAwayListener onClickAway={() => setOpenNotification(false)}>
               <Box sx={{

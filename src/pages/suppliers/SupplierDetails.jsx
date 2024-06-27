@@ -11,7 +11,7 @@ import SupplierProductCard from './SupplierProductCard'
 
 const SupplierDetails = () => {
   const [vendor, setVendor] = useState({})
-console.log(vendor)
+
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -46,7 +46,8 @@ console.log(vendor)
                       height: '100px',
                       objectFit: 'cover',
                       borderRadius: '4px',
-                    }} src={vendor.logoUrl ? vendor.logoUrl : "/noImage.png"} alt="" />
+                    }} src={vendor.logoUrl ? vendor?.logoUrl : "/noImage.png"} alt=""
+                    />
                     <Box>
                       {
                         vendor?.isDeleted &&

@@ -7,10 +7,12 @@ export const SALES_HISTORIES = gql`
       node{
         id
         createdOn
+        updatedOn
         quantity
         priceWithTax
         totalPriceWithTax
         orderedQuantity
+        dueAmount
         vendor{
           id
           name

@@ -12,13 +12,13 @@ import DataTable from '../../common/datatable/DataTable';
 const SalesHistory = () => {
   const [salesHistories, setSalesHistories] = useState([])
 
-  console.log(salesHistories)
+
   const { loading, error: salesHistoryErr } = useQuery(SALES_HISTORIES, {
     onCompleted: (res) => {
       setSalesHistories(res.salesHistories.edges.map(item => item.node));
     }
   });
-
+  console.log(salesHistories)
   const columns = [
     {
       field: 'supplier', width: 250,
@@ -28,7 +28,9 @@ const SalesHistory = () => {
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography >{params.row.vendor.name}</Typography>
+            <Link to={`/dashboard/suppliers/details/${params.row.vendor.id}`}>
+              <Typography >{params.row.vendor.name}</Typography>
+            </Link>
             <Typography sx={{ fontSize: '12px' }}>{params.row.vendor.email}</Typography>
           </Stack>
         )
@@ -67,7 +69,19 @@ const SalesHistory = () => {
         )
       }
     },
-
+    {
+      field: 'orderDate', width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Date</Typography>
+      ),
+      renderCell: (params) => {
+        return (
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
+          </Stack>
+        )
+      }
+    },
     {
       field: 'quentity', width: 120,
       renderHeader: () => (
@@ -90,6 +104,19 @@ const SalesHistory = () => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.totalPriceWithTax} kr</Typography>
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'dueAmount', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
+      ),
+      renderCell: (params) => {
+        return (
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+            <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{params.row.dueAmount} kr</Typography>
           </Stack>
         )
       }

@@ -69,7 +69,7 @@ const Suppliers = () => {
     setDeleteDialogOpen(true)
     setVendorDeleteId(row.id)
   }
-console.log(vendors)
+
   const columns = [
     {
       field: 'details', width: 70, headerName: '',

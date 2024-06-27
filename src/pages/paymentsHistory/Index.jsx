@@ -21,7 +21,7 @@ const PaymentsHistory = () => {
       setOrderPayments(res.orderPayments.edges.map(item => item.node));
     }
   });
-console.log(orderPayments)
+ 
   const columns = [
 
     {
@@ -82,6 +82,19 @@ console.log(orderPayments)
           <Typography sx={{ fontSize: '14px', color: '#fff', fontWeight: 600, bgcolor: 'green', px: 2, borderRadius: '4px' }}>
             <span style={{ fontWeight: 400, }}>kr </span>
             {params.row.paidAmount}
+          </Typography>
+        </Stack>
+      )
+    },
+    {
+      field: 'status', headerName: '', width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontWeight: 600 }}>
+            {params.row.status}
           </Typography>
         </Stack>
       )

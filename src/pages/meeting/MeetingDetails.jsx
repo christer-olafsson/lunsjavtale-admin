@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
 
 const MeetingDetails = ({ data, closeDialog }) => {
-  console.log(data)
+
   return (
     <Box>
       <Stack direction='row' justifyContent='space-between' mb={2}>

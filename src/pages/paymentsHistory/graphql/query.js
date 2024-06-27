@@ -10,6 +10,7 @@ export const ORDER_PAYMENTS = gql`
         paymentInfo
         paidAmount
         paymentType
+        status
         paymentFor{
           id
           username

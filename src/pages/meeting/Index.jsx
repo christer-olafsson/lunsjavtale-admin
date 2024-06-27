@@ -249,7 +249,7 @@ const Meeting = () => {
       )
     },
     {
-      field: 'status', width: 120,
+      field: 'status', width: 150,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
       ),

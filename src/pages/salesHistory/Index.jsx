@@ -18,7 +18,7 @@ const SalesHistory = () => {
       setSalesHistories(res.salesHistories.edges.map(item => item.node));
     }
   });
-  console.log(salesHistories)
+  
   const columns = [
     {
       field: 'supplier', width: 250,

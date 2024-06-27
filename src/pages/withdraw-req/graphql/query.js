@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const WITHDRAW_REQ = gql`
-  query($vendorTitle: String){
-  withdrawRequests(vendorTitle: $vendorTitle){
+  query($vendorTitle: String, $status: String){
+  withdrawRequests(vendorTitle: $vendorTitle, status: $status){
     edges{
       node{
         id

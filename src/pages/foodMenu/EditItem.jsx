@@ -130,7 +130,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   // vendors
   useQuery(VENDORS, {
     onCompleted: (res) => {
-      setVendors(res.vendors.edges.map(item => ({
+      setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => ({
         id: item.node.id,
         name: item.node.name,
         email: item.node.email

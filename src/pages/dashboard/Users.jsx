@@ -17,7 +17,7 @@ const Users = ({ data }) => {
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>System Users</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%',py:.5 }} direction='row' gap={1} alignItems='center'>
+        <Stack sx={{ height: '100%', py: .5 }} direction='row' gap={1} alignItems='center'>
           <Avatar />
           <Stack>
             <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{(params.row.firstName ?? '') + ' ' + (params.row.lastName ?? '')}</Typography>
@@ -53,7 +53,7 @@ const Users = ({ data }) => {
 
       <Box mt={3}>
         <DataGrid
-          getRowHeight={() => 'auto'}
+          autoHeight
           initialState={{
             pagination: {
               paginationModel: {

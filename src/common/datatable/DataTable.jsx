@@ -16,14 +16,14 @@ const DataTable = ({ rows,getRowId, columns, getRowHeight, columnVisibilityModel
         columns={columns}
         getRowHeight={getRowHeight}
         getRowId={getRowId}
-        // initialState={{
-        //   pagination: {
-        //     paginationModel: {
-        //       pageSize: 10,
-        //     },
-        //   },
-        // }}
-        // pageSizeOptions={[10]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
+            },
+          },
+        }}
+        pageSizeOptions={[10]}
         columnVisibilityModel={columnVisibilityModel}
         disableRowSelectionOnClick
         disableColumnFilter

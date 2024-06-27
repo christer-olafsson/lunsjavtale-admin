@@ -40,7 +40,6 @@ const Dashboard = () => {
       setData(res.adminDashboard.data)
     }
   });
-  console.log(data)
 
   return (
     <Box maxWidth='xxl'>

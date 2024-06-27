@@ -15,8 +15,12 @@ const Orders = () => {
   const [orders, setOrders] = useState([])
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
+  const [searchText, setSearchText] = useState('')
 
   const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
+    variables: {
+      companyNameEmail: searchText
+    },
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setOrders(res.orders.edges.map(item => item.node));
@@ -31,13 +35,16 @@ const Orders = () => {
 
   const columns = [
     {
-      field: 'details', headerName: '', width: 70,
+      field: 'id', headerName: '', width: 70,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
+      ),
       renderCell: (params) => (
-        <Link to={`/dashboard/orders/details/${params.row.id}`}>
-          <IconButton>
-            <ArrowRight />
-          </IconButton>
-        </Link>
+        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+          <Link to={`/dashboard/orders/details/${params.row.id}`}>
+            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{params.row.id}</Typography>
+          </Link>
+        </Stack>
       ),
     },
     {
@@ -102,7 +109,21 @@ const Orders = () => {
       )
     },
     {
-      field: 'status', headerName: 'Status', width: 150,
+      field: 'paidAmount', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Paid Amount</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
+            <span style={{ fontWeight: 400 }}>kr </span>
+            {params.row.paidAmount}
+          </Typography>
+        </Stack>
+      )
+    },
+    {
+      field: 'status', headerName: 'Status', width: 180,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),
@@ -111,7 +132,7 @@ const Orders = () => {
         return (
           <Box sx={{
             display: 'inline-flex',
-            padding: '4px 12px',
+            padding: '1px 12px',
             bgcolor: row.status === 'Cancelled'
               ? 'red'
               : row.status === 'Confirmed'
@@ -119,7 +140,7 @@ const Orders = () => {
                 : row.status === 'Delivered'
                   ? 'green'
                   : 'yellow',
-            color: row.status === 'Placed' ? 'dark' : '#fff',
+            color: row.status === 'Placed' ? 'dark' : row.status === 'Payment-pending' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.status}</Typography>
@@ -136,16 +157,16 @@ const Orders = () => {
         const { row } = params;
         return (
           <IconButton
-          disabled={
-            row.status === 'Cancelled'
-            || row.status === 'Delivered'
-          }
-          sx={{
-            bgcolor: 'light.main',
-            borderRadius: '5px',
-            width: { xs: '30px', md: '40px' },
-            height: { xs: '30px', md: '40px' },
-          }} onClick={() => handleEdit(params.row)}>
+            disabled={
+              row.status === 'Cancelled'
+              || row.status === 'Delivered'
+            }
+            sx={{
+              bgcolor: 'light.main',
+              borderRadius: '5px',
+              width: { xs: '30px', md: '40px' },
+              height: { xs: '30px', md: '40px' },
+            }} onClick={() => handleEdit(params.row)}>
             <BorderColor fontSize='small' />
           </IconButton>
         )
@@ -173,7 +194,7 @@ const Orders = () => {
           borderRadius: '4px',
           pl: 2
         }}>
-          <Input fullWidth disableUnderline placeholder='Search Order Id' />
+          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Customer Name or Email' />
           <IconButton><Search /></IconButton>
         </Box>
       </Stack>

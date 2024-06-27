@@ -115,8 +115,8 @@ console.log(vendors)
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
               fontSize: { xs: '12px', md: '14px' },
-              color: '#fff',
-              bgcolor: row.isBlocked ? 'darkgray' : 'primary.main',
+              bgcolor: row.isBlocked ? 'lightgray' : 'primary.main',
+              color: row.isBlocked ? 'red' : '#fff',
               px: 1, borderRadius: '4px',
             }}>&#x2022; {row.isBlocked ? 'Blocked' : 'Active'}</Typography>
           </Stack>

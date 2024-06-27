@@ -63,7 +63,7 @@ const FoodItem = () => {
       title: searchText
     },
     onCompleted: (res) => {
-      const data = res.products.edges
+      const data = res.products.edges.filter(item => !item.node.vendor?.isDeleted).map(item => item)
       setProducts(data)
     },
   });

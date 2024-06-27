@@ -21,7 +21,7 @@ const PaymentsHistory = () => {
       setOrderPayments(res.orderPayments.edges.map(item => item.node));
     }
   });
-
+console.log(orderPayments)
   const columns = [
 
     {

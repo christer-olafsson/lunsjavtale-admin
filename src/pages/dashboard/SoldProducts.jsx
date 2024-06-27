@@ -62,6 +62,7 @@ const SoldProducts = ({ data }) => {
 
       <Box mt={3}>
         <DataGrid
+          autoHeight
           initialState={{
             pagination: {
               paginationModel: {

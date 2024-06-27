@@ -17,7 +17,7 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
   const [companies, setCompanies] = useState([]);
   const [users, setUsers] = useState([])
   const [payload, setPayload] = useState({
-    company: '',
+    company: {},
     paymentFor: '',
     paidAmount: '',
     note: '',
@@ -36,7 +36,7 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
 
   const { loading: usersLoading } = useQuery(USERS, {
     variables: {
-      company: payload.company
+      company: payload.company?.id
     },
     onCompleted: (res) => {
       setUsers(res.users.edges.map(item => ({
@@ -57,7 +57,6 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
       closeDialog()
     },
     onError: (err) => {
-      toast.error(err.message)
       toast.error(err.message)
       if (err.graphQLErrors && err.graphQLErrors.length > 0) {
         const graphqlError = err.graphQLErrors[0];
@@ -82,7 +81,9 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
     createPayment({
       variables: {
         input: {
-          ...payload
+          ...payload,
+          company: payload.company.id,
+          paymentFor: payload.paymentFor.id
         }
       }
     })
@@ -104,7 +105,7 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
         sx={{ mb: 2 }}
         options={companies}
         loading={companiesLoading}
-        onChange={(_, value) => setPayload({ ...payload, company: value.id })}
+        onChange={(_, value) => setPayload({ ...payload, company: value })}
         getOptionLabel={(option) => option.email}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
@@ -127,7 +128,7 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
         sx={{ mb: 2 }}
         options={users}
         loading={usersLoading}
-        onChange={(_, value) => setPayload({ ...payload, paymentFor: value.id })}
+        onChange={(_, value) => setPayload({ ...payload, paymentFor: value })}
         getOptionLabel={(option) => option.email}
         renderOption={(props, option, { selected }) => (
           <li {...props}>

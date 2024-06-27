@@ -52,13 +52,13 @@ const RecentCustomers = ({ data }) => {
       <Stack direction='row' justifyContent='space-between'>
         <Typography variant='h5'>Recent Customers</Typography>
         <Link to='/dashboard/customers'>
-          <Button endIcon={<KeyboardArrowRight />}>See All Customers</Button>
+          <Button sx={{whiteSpace:'nowrap'}} endIcon={<KeyboardArrowRight />}>All Customers</Button>
         </Link>
       </Stack>
 
       <Box mt={3}>
         <DataGrid
-          getRowHeight={() => 'auto'}
+          autoHeight
           initialState={{
             pagination: {
               paginationModel: {

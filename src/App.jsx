@@ -26,6 +26,7 @@ import CustomerDetails from './pages/customers/CustomerDetails'
 import SalesHistory from './pages/salesHistory/Index'
 import SupplierDetails from './pages/suppliers/SupplierDetails'
 import WithdrawReq from './pages/withdraw-req/Index'
+import Notifications from './pages/notification/Notifications'
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
       <Route path='/login' element={token ? <Navigate to='/' /> : <Login />} />
       <Route element={token ? <Layout /> : <Navigate to='/login' />}>
         <Route path='/' element={<Dashboard />} />
+        <Route path='/dashboard/notifications' element={<Notifications />} />
         <Route path='/dashboard/areas' element={<Areas />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />

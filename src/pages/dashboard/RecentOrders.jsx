@@ -62,7 +62,7 @@ const RecentOrders = ({ data }) => {
         return (
           <Box sx={{
             display: 'inline-flex',
-            padding: '4px 12px',
+            padding: '1px 12px',
             bgcolor: row.status === 'Cancelled'
               ? 'red'
               : row.status === 'Confirmed'
@@ -70,7 +70,7 @@ const RecentOrders = ({ data }) => {
                 : row.status === 'Delivered'
                   ? 'green'
                   : 'yellow',
-            color: row.status === 'Placed' ? 'dark' : '#fff',
+            color: row.status === 'Placed' ? 'dark' : row.status === 'Payment-pending' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.status}</Typography>
@@ -102,7 +102,7 @@ const RecentOrders = ({ data }) => {
       p: 2, borderRadius: '8px'
     }}>
       <Stack direction='row' justifyContent='space-between'>
-        <Typography variant='h5'>Recent Order</Typography>
+        <Typography variant='h5'>Recent Orders</Typography>
         <Link to='/dashboard/orders'>
           <Button endIcon={<KeyboardArrowRight />}>See All Orders</Button>
         </Link>
@@ -110,6 +110,7 @@ const RecentOrders = ({ data }) => {
 
       <Box mt={3}>
         <DataGrid
+          autoHeight
           initialState={{
             pagination: {
               paginationModel: {

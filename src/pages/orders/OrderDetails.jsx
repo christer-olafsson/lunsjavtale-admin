@@ -1,7 +1,7 @@
 import { Add, ArrowBack, ArrowDropDown, BorderColor, Search } from '@mui/icons-material';
 import { Avatar, Box, Button, Chip, Collapse, Divider, IconButton, Input, Rating, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ORDER } from './graphql/query';
 import { useQuery } from '@apollo/client';
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from '@mui/lab'
@@ -14,11 +14,8 @@ import { format } from 'date-fns';
 
 const OrderDetails = () => {
   const [order, setOrder] = useState([]);
-  const [ratingCount, setRatingCount] = useState(5);
   const [selectedStaffDetailsId, setSelectedStaffDetailsId] = useState('')
 
-
-  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('md'))
 
   const { id } = useParams()
 
@@ -112,6 +109,15 @@ const OrderDetails = () => {
                             <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{data?.node.item.name}</Typography>
                             <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
                             <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
+                            {
+                              data?.node.item.vendor &&
+                              <Stack direction='row' gap={1}>
+                                <Typography>Supplier: </Typography>
+                                <Link to={`/dashboard/suppliers/details/${data?.node.item.vendor?.id}`}>
+                                  {data?.node.item.vendor?.name}
+                                </Link>
+                              </Stack>
+                            }
                           </Box>
                         </Stack>
                         <Stack gap={.5} mr={2}>

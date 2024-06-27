@@ -95,19 +95,28 @@ const SalesHistory = () => {
       }
     },
     {
-      field: 'orderStatus', width: 150,
+      field: 'status', headerName: 'Status', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Status</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),
       renderCell: (params) => {
+        const { row } = params
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{
-              fontSize: '14px',
-              bgcolor: 'lightgray',
-              px: 1, borderRadius: '4px'
-            }}>{params.row.order.status}</Typography>
-          </Stack>
+          <Box sx={{
+            display: 'inline-flex',
+            padding: '1px 12px',
+            bgcolor: row.order.status === 'Cancelled'
+              ? 'red'
+              : row.order.status === 'Confirmed'
+                ? 'lightgreen'
+                : row.order.status === 'Delivered'
+                  ? 'green'
+                  : 'yellow',
+            color: row.order.status === 'Placed' ? 'dark' : '#fff',
+            borderRadius: '4px',
+          }}>
+            <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.order.status}</Typography>
+          </Box>
         )
       }
     },

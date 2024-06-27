@@ -11,11 +11,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
-import { useMutation } from '@apollo/client';
+import { useMutation ,useQuery} from '@apollo/client';
+import { ADMIN_NOTIFICATIONS, UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/query';
+import SmallNotification from './notification/SmallNotification';
+
 
 const drawerWidth = 264;
 
@@ -98,8 +101,8 @@ function Layout() {
   const [userMenuOpen, setUsermenuOpen] = useState(null);
   const [openEmail, setOpenEmail] = useState(false)
   const [openNotification, setOpenNotification] = useState(false);
-  const [drawerItemName, setDrawerItemName] = useState('');
   const [expandFoodMenu, setExpandFoodMenu] = useState(false)
+  const [unreadNotifications, setUnreadNotifications] = useState([])
 
   const { pathname } = useLocation();
   const orderDetailsMatch = useMatch('/dashboard/orders/details/:id')
@@ -107,6 +110,11 @@ function Layout() {
   const foodDetailsMatchFromItem = useMatch('/dashboard/food-item/food-details/:id')
   const foodDetailsMatchFromCategories = useMatch('/dashboard/food-categories/food-details/:id')
 
+  useQuery(UNREAD_ADMIN_NOTIFICATIONCOUNT, {
+    onCompleted: (res) => {
+      setUnreadNotifications(res.unreadAdminNotificationCount)
+    }
+  });
 
   const [logout, { loading }] = useMutation(LOGOUT, {
     onCompleted: (res) => {
@@ -190,6 +198,10 @@ function Layout() {
           selected={pathname === '/'} />
         <ListBtn
           onClick={handleDrawerClose}
+          link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
+          selected={pathname === '/dashboard/notifications'} />
+        <ListBtn
+          onClick={handleDrawerClose}
           link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
           selected={pathname === '/dashboard/areas'} />
         <ListBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
@@ -215,7 +227,7 @@ function Layout() {
         </Collapse>
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/orders'
-          icon={<Notifications fontSize='small' />}
+          icon={<ShoppingCartCheckoutOutlined fontSize='small' />}
           text='Orders'
           selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
         />
@@ -230,7 +242,7 @@ function Layout() {
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/sales-history'
           icon={<Timeline fontSize='small' />}
-          text='Sales-History'
+          text='Suppliers-Sales'
           selected={pathname === '/dashboard/sales-history'}
         />
         <ListBtn onClick={handleDrawerClose}
@@ -343,7 +355,7 @@ function Layout() {
           /> */}
           <Box sx={{
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
           }}>
             {/* <ClickAwayListener onClickAway={() => setOpenEmail(false)}>
               <Box sx={{
@@ -377,6 +389,7 @@ function Layout() {
               </Box>
             </ClickAwayListener> */}
 
+            {/* small notification */}
             <ClickAwayListener onClickAway={() => setOpenNotification(false)}>
               <Box sx={{
                 position: 'relative'
@@ -384,28 +397,17 @@ function Layout() {
                 <IconButton onClick={() => (
                   setOpenNotification(!openNotification),
                   setOpenEmail(false)
-                )} sx={{ color: 'gray.main' }} color="inherit"
+                )} sx={{ color: 'darkgray' }} color="inherit"
                 >
-                  <Badge badgeContent={0} color="error">
-                    <NotificationsNone />
+                  <Badge badgeContent={unreadNotifications} color="error">
+                    <NotificationsNone sx={{ fontSize: '30px' }} />
                   </Badge>
                 </IconButton>
                 <Collapse sx={{
                   position: 'absolute',
-                  right: { xs: -35, md: 0 },
-                  top: 55,
+                  right: 0,
                 }} in={openNotification}>
-                  <Box sx={{
-                    width: { xs: '90vw', sm: '300px', md: '350px' },
-                    maxHeight: '500px',
-                    overflowY: 'auto',
-                    zIndex: 99999,
-                    bgcolor: '#fff',
-                    border: '1px solid gray',
-                    borderRadius: '8px', p: '10px 20px',
-                  }}>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ipsam asperiores quasi dolor, recusandae sequi ducimus nam labore impedit quam?</p>
-                  </Box>
+                  <SmallNotification onClose={() => setOpenNotification(false)} />
                 </Collapse>
               </Box>
             </ClickAwayListener>

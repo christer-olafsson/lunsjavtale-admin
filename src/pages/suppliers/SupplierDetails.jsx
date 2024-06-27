@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { LockOutlined, West } from '@mui/icons-material'
-import { Box, Divider, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Chip, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import Loader from '../../common/loader/Index'
@@ -11,7 +11,7 @@ import SupplierProductCard from './SupplierProductCard'
 
 const SupplierDetails = () => {
   const [vendor, setVendor] = useState({})
-
+console.log(vendor)
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -48,6 +48,10 @@ const SupplierDetails = () => {
                       borderRadius: '4px',
                     }} src={vendor.logoUrl ? vendor.logoUrl : "/noImage.png"} alt="" />
                     <Box>
+                      {
+                        vendor?.isDeleted &&
+                        <Chip label='Deleted' color='warning' />
+                      }
                       {
                         vendor.createdOn &&
                         <Typography>Joined: <b>{format(vendor?.createdOn, 'yyyy-MM-dd')}</b> </Typography>

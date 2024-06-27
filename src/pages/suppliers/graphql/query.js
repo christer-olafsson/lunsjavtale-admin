@@ -48,6 +48,7 @@ export const VENDOR = gql`
     soldAmount
     withdrawnAmount
     balance
+    isDeleted
     products{
       edges{
         node{

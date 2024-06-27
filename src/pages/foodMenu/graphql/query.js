@@ -106,6 +106,7 @@ export const PRODUCTS = gql`
             id
             name
             email
+            isDeleted
           }
           ingredients{
             edges{

@@ -19,7 +19,7 @@ const Login = () => {
 
   const [loginUser, { loading, error: loginErr }] = useMutation(LOGIN_USER, {
     onCompleted: (res) => {
-      if(!res.loginUser.user.isAdmin){
+      if (!res.loginUser.user.isAdmin) {
         toast.error('Access Denied');
         return
       }
@@ -116,15 +116,25 @@ const Login = () => {
   return (
     <Container sx={{
       width: '100%',
-      height: { xs: '100%', lg: '100vh' },
+      height: '100vh',
+      backgroundImage: 'url(/loginbg.jpg)',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover',
       display: 'flex',
+      backgroundPosition: 'top',
+      // background: 'linear-gradient(to right, #FAFFD1, #63883B)',
       flexDirection: { xs: 'column', lg: 'row' },
       alignItems: 'center',
       justifyContent: 'center',
       gap: 5,
       py: { xs: 5, lg: 0 },
     }} maxWidth='xxl'>
-      <Stack alignItems='center' sx={{ width: { xs: '100%', md: '50%' } }}>
+      <Stack alignItems='center'
+        sx={{
+          // bgcolor: '#fff',
+          // p: 5,
+          // borderRadius: '8px'
+        }}>
         {
           forgotePassSecOpen ? (
             <Stack sx={{
@@ -209,10 +219,10 @@ const Login = () => {
                 }}
               />
               <Stack direction='row' justifyContent='space-between'>
-                <FormControlLabel control={<Checkbox />} label="Remember me" />
+                {/* <FormControlLabel control={<Checkbox />} label="Remember me" /> */}
                 <Typography onClick={() => setForgotePassSecOpen(true)} sx={{ fontSize: '15px', alignSelf: 'center', color: 'primary.main ', cursor: 'pointer' }}>Forgot password?</Typography>
               </Stack>
-              <CButton style={{ mt: 1 }} onClick={handleLogin} isLoading={loading} variant='contained'> Sign In</CButton>
+              <CButton style={{ mt: 1 }} onClick={handleLogin} color='primary' isLoading={loading} variant='contained'> Sign In</CButton>
             </Stack>
           )
         }

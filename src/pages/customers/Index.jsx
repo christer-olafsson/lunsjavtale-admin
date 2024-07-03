@@ -322,7 +322,7 @@ const Customers = () => {
             borderRadius: '4px',
             pl: 2
           }}>
-            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search.. ' />
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
             <IconButton><Search /></IconButton>
           </Box>
           <Box sx={{ minWidth: 200 }}>
@@ -334,11 +334,8 @@ const Customers = () => {
                 onChange={e => setStatusFilter(e.target.value)}
               >
                 <MenuItem value={'all'}>All </MenuItem>
-                {/* <MenuItem value={10}>New</MenuItem> */}
-                <MenuItem value={'pending'}>Pending</MenuItem>
-                <MenuItem value={'approved'}>Approved</MenuItem>
-                <MenuItem value={'rejected'}>Rejected</MenuItem>
-                {/* <MenuItem value={40}>Unavailable</MenuItem> */}
+                <MenuItem value={'active'}>Active</MenuItem>
+                <MenuItem value={'Locked'}>Locked</MenuItem>
               </Select>
             </FormControl>
           </Box>

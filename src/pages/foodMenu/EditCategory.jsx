@@ -15,7 +15,7 @@ import CDialog from '../../common/dialog/CDialog';
 const EditCategory = ({ fetchCategory, data, closeDialog }) => {
   const [file, setFile] = useState(null)
   const [errors, setErrors] = useState({});
-  const [isActive, setIsActive] = useState(null);
+  const [isActive, setIsActive] = useState(false);
   const [nameErr, setNameErr] = useState('')
   const [fileUploadLoading, setFileUploadLoading] = useState(false);
   const [deleteBtnOn, setDeleteBtnOn] = useState(false);
@@ -101,7 +101,7 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
       name: data.node.name,
       description: data.node.description
     })
-    setIsActive(data.node.isActive)
+    setIsActive(data.node.isActive ?? false)
   }, [data])
 
   return (

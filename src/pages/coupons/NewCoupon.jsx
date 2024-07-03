@@ -48,15 +48,12 @@ const NewCoupon = ({ fetchCoupons, closeDialog }) => {
     }
   });
 
-  const { loading: loadingCompany, error: companyErr } = useQuery(COMPANIES, {
+  const { loading: loadingCompany } = useQuery(COMPANIES, {
     onCompleted: (res) => {
-      setCompanies(res.companies.edges.map(item => ({
+      setCompanies(res.companies.edges.filter(item => !item.node.isBlocked).map(item => ({
         id: item.node.id,
         name: item.node.name,
         email: item.node.email,
-        owner: item.node.owner,
-        isValid: item.node.isValid,
-        isBlocked: item.node.isBlocked
       })))
     },
   });
@@ -193,6 +190,7 @@ const NewCoupon = ({ fetchCoupons, closeDialog }) => {
         <Autocomplete
           multiple
           options={companies}
+          loading={loadingCompany}
           disableCloseOnSelect
           onChange={(event, value) => setPayload({ ...payload, addedFor: value.map(i => i.id) })}
           getOptionLabel={(option) => (option.name)}
@@ -215,7 +213,7 @@ const NewCoupon = ({ fetchCoupons, closeDialog }) => {
           )}
         />
 
-        <Stack direction='row' justifyContent='space-between' alignItems='center'>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' alignItems={{ xs: 'start', md: 'center' }}>
           <Box>
             <Typography variant='body2'>Start Date</Typography>
             <TextField

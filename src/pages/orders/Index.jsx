@@ -1,5 +1,5 @@
 import { ArrowRight, BorderColor, Search, TrendingFlat } from '@mui/icons-material'
-import { Avatar, Box, Button, IconButton, Input, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useLazyQuery, useQuery } from '@apollo/client';
@@ -10,16 +10,22 @@ import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
 import CDialog from '../../common/dialog/CDialog';
 import UpdateOrder from './UpdateOrder';
+import ApplyCoupon from './ApplyCoupon';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
   const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState('');
+  const [couponRowData, setCouponRowData] = useState({})
+  const [couponDialogOpen, setCouponDialogOpen] = useState(false)
+
 
   const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
     variables: {
-      companyNameEmail: searchText
+      companyNameEmail: searchText,
+      status: statusFilter === 'all' ? '' : statusFilter
     },
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
@@ -31,6 +37,11 @@ const Orders = () => {
   function handleEdit(row) {
     setOrderUpdateDialogOpen(true)
     setOrderUpdateData(row)
+  }
+
+  function handleCoupon(row) {
+    setCouponRowData(row)
+    setCouponDialogOpen(true)
   }
 
   const columns = [
@@ -68,31 +79,18 @@ const Orders = () => {
       }
     },
     {
-      field: 'orderDate', width: 200,
+      field: 'Date', width: 250,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Date</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Date</Typography>
       ),
       renderCell: (params) => {
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'yyyy-MM-dd')}</b> </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{params.row.deliveryDate}</b> </Typography>
           </Stack>
         )
       }
-    },
-
-    {
-      field: 'deliveryDate', headerName: 'Prce', width: 200,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Delivery Date</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            {params.row.deliveryDate}
-          </Typography>
-        </Stack>
-      )
     },
     {
       field: 'totalPrice', headerName: '', width: 150,
@@ -123,16 +121,17 @@ const Orders = () => {
       )
     },
     {
-      field: 'status', headerName: 'Status', width: 180,
+      field: 'status', headerName: 'Status', width: 250,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
       renderCell: (params) => {
         const { row } = params
         return (
           <Box sx={{
+            ml: 5,
             display: 'inline-flex',
-            padding: '1px 12px',
+            padding: '3px 12px',
             bgcolor: row.status === 'Cancelled'
               ? 'red'
               : row.status === 'Confirmed'
@@ -140,15 +139,49 @@ const Orders = () => {
                 : row.status === 'Delivered'
                   ? 'green'
                   : 'yellow',
-            color: row.status === 'Placed' 
-            ? 'dark' : row.status === 'Payment-pending'
-            ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',
+            color: row.status === 'Placed'
+              ? 'dark' : row.status === 'Payment-pending'
+                ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 600 }} variant='body2'>{row.status}</Typography>
           </Box>
         )
       }
+    },
+    {
+      field: 'Coupon', headerName: 'Action', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Coupon</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params;
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            {
+              row.coupon ?
+                <Typography variant='body2' sx={{
+                  fontWeight: 600,
+                  bgcolor: 'coral',
+                  color: '#fff',
+                  borderRadius: '4px',
+                  px: 1,
+                  width: 'fit-content'
+                }}>{row.coupon.name}</Typography> :
+                <Button
+                  sx={{ width: 'fit-content' }}
+                  disabled={
+                    row.status === 'Cancelled'
+                    || row.status === 'Delivered'
+                    || row.coupon !== null
+                  }
+                  onClick={() => handleCoupon(params.row)}>
+                  Apply
+                </Button>
+            }
+          </Stack>
+        )
+      },
     },
     {
       field: 'action', headerName: 'Action', width: 150,
@@ -183,23 +216,53 @@ const Orders = () => {
 
   return (
     <Box maxWidth='xxl'>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>
+      <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
+        <Typography sx={{
+          fontSize: '12px',
+          fontWeight: 600,
+          bgcolor: 'light.main',
+          borderRadius: '4px',
+          color: 'primary.main',
+          px: 1
+        }}>({orders?.length})</Typography>
+      </Stack>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          maxWidth: '480px',
+          maxWidth: '300px',
           bgcolor: '#fff',
           width: '100%',
           border: '1px solid lightgray',
           borderRadius: '4px',
           pl: 2
         }}>
-          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Customer Name or Email' />
+          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
           <IconButton><Search /></IconButton>
         </Box>
+        <Box sx={{ minWidth: 200 }}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={e => setStatusFilter(e.target.value)}
+            >
+              <MenuItem value={'all'}>All </MenuItem>
+              <MenuItem value={'Placed'}>Placed</MenuItem>
+              <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
+              <MenuItem value={'Delivered'}>Delivered</MenuItem>
+              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Stack>
+      {/* apply coupon */}
+      <CDialog openDialog={couponDialogOpen}>
+        <ApplyCoupon fetchOrders={fetchOrders} data={couponRowData} closeDialog={() => setCouponDialogOpen(false)} />
+      </CDialog>
       {/* update order */}
       <CDialog openDialog={orderUpdateDialogOpen}>
         <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
@@ -208,6 +271,7 @@ const Orders = () => {
         {
           loading ? <Loader /> : orderErr ? <ErrorMsg /> :
             <DataTable
+              rowHeight={70}
               columns={columns}
               rows={orders}
             />

@@ -7,3 +7,11 @@ export const ORDER_STATUS_UPDATE = gql`
     }
   }
 `
+
+export const APPLY_COUPON = gql`
+  mutation ApplyCoupon ($orderId: Float, $coupon: String){
+    applyCoupon(orderId: $orderId,coupon:$coupon){
+      message
+    }
+  }
+`

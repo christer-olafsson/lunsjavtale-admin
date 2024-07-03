@@ -21,7 +21,7 @@ const PaymentsHistory = () => {
       setOrderPayments(res.orderPayments.edges.map(item => item.node));
     }
   });
- 
+
   const columns = [
 
     {
@@ -109,7 +109,17 @@ const PaymentsHistory = () => {
   return (
     <Box maxWidth='xxl'>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>
-        <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Payment History</Typography>
+        <Stack direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Payment History</Typography>
+          <Typography sx={{
+            fontSize: '12px',
+            fontWeight: 600,
+            bgcolor: 'light.main',
+            borderRadius: '4px',
+            color: 'primary.main',
+            px: 1
+          }}>({orderPayments?.length})</Typography>
+        </Stack>
         <Button onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>
       <CDialog openDialog={openCreatePaymentDialog}>

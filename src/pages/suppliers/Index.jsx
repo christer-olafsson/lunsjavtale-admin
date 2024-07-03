@@ -32,9 +32,12 @@ const Suppliers = () => {
   const [searchText, setSearchText] = useState('')
 
   const [fetchVendors, { loading, error: vendorsErr }] = useLazyQuery(VENDORS, {
+    variables: {
+      name: searchText
+    },
     fetchPolicy: "network-only",
     onCompleted: (res) => {
-      setVendors(res.vendors.edges.map(item => item.node))
+      setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => item.node))
     }
   })
 
@@ -205,11 +208,11 @@ const Suppliers = () => {
 
   return (
     <Box maxWidth='xxl'>
-      <Stack direction='row' gap={1} alignItems='center'>
+      <Stack direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers</Typography>
         <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>
-          {vendors.filter(item => !item.isDeleted).length}
-          users</Typography>
+          ({vendors.length})
+        </Typography>
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Stack direction='row' gap={2}>
@@ -224,7 +227,7 @@ const Suppliers = () => {
             borderRadius: '4px',
             pl: 2
           }}>
-            <Input fullWidth disableUnderline placeholder='Search.. ' />
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search.. ' />
             <IconButton><Search /></IconButton>
           </Box>
         </Stack>
@@ -255,7 +258,7 @@ const Suppliers = () => {
           loading ? <LoadingBar /> : vendorsErr ? <ErrorMsg /> :
             <DataTable
               columns={columns}
-              rows={vendors.filter(item => !item.isDeleted)}
+              rows={vendors}
             />
         }
       </Box>

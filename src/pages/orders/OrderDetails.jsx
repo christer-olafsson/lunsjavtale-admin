@@ -16,7 +16,6 @@ const OrderDetails = () => {
   const [order, setOrder] = useState([]);
   const [selectedStaffDetailsId, setSelectedStaffDetailsId] = useState('')
 
-
   const { id } = useParams()
 
   const { loading, error: orderErr } = useQuery(ORDER, {
@@ -63,6 +62,10 @@ const OrderDetails = () => {
             <Typography><b>Company Allowance: </b> {order?.companyAllowance}%</Typography>
             <Typography><b>Due Amount: {order?.dueAmount}</b> kr</Typography>
             <Typography><b>Paid Amount: {order?.paidAmount}</b> kr</Typography>
+            {
+              order?.coupon &&
+              <Typography sx={{ bgcolor: 'yellow', width: 'fit-content' }}><b>Coupon: {order?.coupon?.name}</b></Typography>
+            }
             <Typography><b>Total Price: {order?.finalPrice}</b> kr</Typography>
             <Stack>
               <Chip label={`Status: ${order?.status}`} color='primary' variant='outlined' />

@@ -41,7 +41,7 @@ const CustomerDetails = () => {
               {
                 loadingCompany ? <Loader /> : companyErr ? <ErrorMsg /> :
                   <Box>
-                    <Stack direction='row' justifyContent='space-between'>
+                    <Stack direction={{xs: 'column',lg: 'row'}} justifyContent='space-between'>
                       <Stack direction='row' gap={2} mb={5} alignItems='center'>
                         <img style={{
                           width: '100px',

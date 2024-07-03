@@ -27,7 +27,6 @@ const FoodDetails = () => {
       setProduct(res.products.edges[0].node)
     }
   })
-  console.log(product)
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -46,10 +45,9 @@ const FoodDetails = () => {
               <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
             </Stack>
             <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
-              <Stack direction='row' gap={2}>
-                <Stack sx={{
+              <Stack direction={{ xs: 'column-reverse', md: 'row' }} gap={2}>
+                <Stack direction={{ xs: 'row', md: 'column' }} sx={{
                   maxHeight: '600px',
-                  mr: 4
                 }} flexWrap='wrap' gap={2}>
                   {
                     product?.attachments?.edges.map((item, id) => (
@@ -72,7 +70,7 @@ const FoodDetails = () => {
                     <Box key={id} sx={{
                       // flex:1,
                       width: { xs: '100%', lg: '457px' },
-                      height: '560px',
+                      height: { xs: '400px', md: '560px' },
                       display: selectedImg === id ? 'block' : 'none '
                     }}>
                       <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
@@ -81,49 +79,43 @@ const FoodDetails = () => {
                   ))
                 }
               </Stack>
-              <Box sx={{
-                // flex:1
-              }}>
-                {
-                  product.vendor &&
-                  <Box sx={{
-                    border: '1px solid coral',
-                    p: 2, borderRadius: '8px'
-                  }} mb={1}>
-                    <Typography
-                      sx={{
-                        fontSize: '12px',
-                        bgcolor: 'coral',
-                        color: '#fff',
-                        px: 1, mb: 1, borderRadius: '4px',
-                        width: 'fit-content'
-                      }}>
-                      Vendor
-                    </Typography>
-                    <Link to={`/dashboard/suppliers/details/${product.vendor.id}`}>
-                      <Typography><b>Name: </b>{product.vendor?.name}</Typography>
-                    </Link>
-                    <Typography><b>Email: </b>{product.vendor?.email}</Typography>
-                  </Box>
-                }
+              <Stack gap={1.5}>
                 <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>{product.name}</Typography>
-                {/* <Stack direction='row' gap={1} mt={2} alignItems='center'>
-                  <Rating size='small' sx={{ color: 'primary.main' }} value={4} readOnly />
-                  <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>157 Reviews</Typography>
+                {/* <Stack direction='row' gap={1} alignItems='center'>
+                  <Rating size='small' sx={{ color: 'primary.main' }} value={5} readOnly />
+                  <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>3 Reviews</Typography>
                 </Stack> */}
-                <Stack direction='row' gap={4} mt={2} alignItems='flex-end'>
-                  <Typography sx={{ fontSize: { xs: '18px', lg: '24px', fontWeight: 600 } }}>${product.priceWithTax}
-                    <i style={{ fontWeight: 400, fontSize: '16px' }}> (Incl. Tax)</i> </Typography>
-                  <Typography sx={{ fontSize: { xs: '18px', lg: '16px', fontWeight: 600, color: '#848995' } }}>${product.actualPrice}</Typography>
-                </Stack>
+                <Typography sx={{ fontSize: { xs: '18px', lg: '24px', fontWeight: 600 } }}>
+                  <i style={{ fontWeight: 400 }}>kr </i>
+                  {product.priceWithTax}<i style={{ fontWeight: 400, fontSize: '16px' }}> (Incl. Tax)</i>
+                </Typography>
+
                 {/* <Stack direction='row' gap={2} mt={2}>
                   <LocalOffer fontSize='small' />
                   <Typography sx={{ fontSize: '14px' }}>Save 50% right now</Typography>
                 </Stack> */}
-                <Typography sx={{ fontSize: { xs: '14px', lg: '16px', fontWeight: 600 }, mt: 2 }}>Contains:</Typography>
-                <Typography>{product.contains && typeof product.contains === 'string' ? JSON.parse(product.contains) : ''}</Typography>
-
-              </Box>
+                <Box>
+                  <Typography sx={{ fontSize: { xs: '14px', lg: '16px' }, fontWeight: 600 }}> <i>Description:</i> </Typography>
+                  <Typography sx={{ fontSize: { xs: '14px', lg: '16px' } }}>{product?.description}</Typography>
+                </Box>
+                <Box>
+                  <Typography sx={{ fontSize: { xs: '14px', lg: '16px' }, fontWeight: 600 }}> <i>Contains:</i> </Typography>
+                  <Typography sx={{ fontSize: { xs: '14px', lg: '16px' } }}>{product.contains && typeof product.contains === 'string' ? JSON.parse(product.contains) : ''}</Typography>
+                </Box>
+                {
+                  product?.ingredients?.edges.length > 0 &&
+                  <Box>
+                    <Typography sx={{ fontSize: { xs: '14px', lg: '16px' }, fontWeight: 600 }}> <i>Allergies: </i> </Typography>
+                    <ul>
+                      {
+                        product?.ingredients?.edges.map(item => (
+                          <li style={{ fontSize: '14px' }} key={item.node.id}>{item.node.name}</li>
+                        ))
+                      }
+                    </ul>
+                  </Box>
+                }
+              </Stack>
             </Stack>
             {/* <Box sx={{ width: '100%', mt: 5 }}>
               <TabContext value={tabValue}>

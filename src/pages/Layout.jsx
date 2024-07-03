@@ -35,7 +35,7 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
         overflow: 'hidden',
         // mb: 1,
         cursor: 'pointer',
-        color: selected ? 'primary.main' : 'gray',
+        color: selected ? 'primary.main' : '#95A2B0',
         bgcolor: selected ? 'light.main' : '',
         ...style,
         position: 'relative',
@@ -159,8 +159,8 @@ function Layout() {
       flexDirection: 'column',
       // justifyContent: 'center',
       alignItems: 'center',
-      // bgcolor: '#F1F3F6',
-      // height: '100%',
+      bgcolor: '#1E293B',
+      height: '100%',
     }}>
       <Toolbar sx={{
         display: 'flex',

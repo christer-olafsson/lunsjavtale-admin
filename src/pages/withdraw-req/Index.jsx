@@ -21,7 +21,7 @@ const WithdrawReq = () => {
   const [fetchWithdrawReq, { loading: WithdrawReqLoading, error: WithdrawReqErr }] = useLazyQuery(WITHDRAW_REQ, {
     variables: {
       vendorTitle: searchText,
-      status
+      status: status === 'all' ? '' : status
     },
     fetchPolicy: "network-only",
     onCompleted: (res) => {
@@ -221,10 +221,11 @@ const WithdrawReq = () => {
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
+                value={status}
                 label="Status"
                 onChange={e => setStatus(e.target.value)}
               >
-                <MenuItem value={''}>All </MenuItem>
+                <MenuItem value={'all'}>All </MenuItem>
                 <MenuItem value={'accepted'}>Accepted </MenuItem>
                 <MenuItem value={'cancelled'}>Cancelled</MenuItem>
                 <MenuItem value={'completed'}>Completed</MenuItem>

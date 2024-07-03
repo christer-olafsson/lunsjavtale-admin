@@ -18,7 +18,7 @@ const SalesHistory = () => {
       setSalesHistories(res.salesHistories.edges.map(item => item.node));
     }
   });
-  
+
   const columns = [
     {
       field: 'supplier', width: 250,
@@ -155,21 +155,17 @@ const SalesHistory = () => {
   return (
     <Box maxWidth='xxl'>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>
-        <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers Sales History</Typography>
-        {/* <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          maxWidth: '480px',
-          bgcolor: '#fff',
-          width: '100%',
-          border: '1px solid lightgray',
-          borderRadius: '4px',
-          pl: 2
-        }}>
-          <Input fullWidth disableUnderline placeholder='Search Order Id' />
-          <IconButton><Search /></IconButton>
-        </Box> */}
+        <Stack direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers Sales History</Typography>
+          <Typography sx={{
+            fontSize: '12px',
+            fontWeight: 600,
+            bgcolor: 'light.main',
+            borderRadius: '4px',
+            color: 'primary.main',
+            px: 1
+          }}>({salesHistories?.length})</Typography>
+        </Stack>
       </Stack>
       <Box mt={3}>
         {

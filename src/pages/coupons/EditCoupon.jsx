@@ -47,15 +47,12 @@ const EditCoupon = ({ data, fetchCoupons, closeDialog }) => {
     }
   });
 
-  const { loading: loadingCompany, error: companyErr } = useQuery(COMPANIES, {
+  useQuery(COMPANIES, {
     onCompleted: (res) => {
-      setCompanies(res.companies.edges.map(item => ({
+      setCompanies(res.companies.edges.filter(item => !item.node.isBlocked).map(item => ({
         id: item.node.id,
         name: item.node.name,
         email: item.node.email,
-        // owner: item.node.owner,
-        isValid: item.node.isValid,
-        isBlocked: item.node.isBlocked
       })))
     },
   });
@@ -110,9 +107,6 @@ const EditCoupon = ({ data, fetchCoupons, closeDialog }) => {
         id: item.node.id,
         name: item.node.name,
         email: item.node.email,
-        // owner: item.node.owner,
-        isValid: item.node.isValid,
-        isBlocked: item.node.isBlocked
       })) : []
     })
   }, [data])
@@ -219,7 +213,7 @@ const EditCoupon = ({ data, fetchCoupons, closeDialog }) => {
           options={companies}
           value={payload.addedFor}
           disableCloseOnSelect
-          onChange={(event, value) => setPayload({ ...payload, addedFor: value})}
+          onChange={(event, value) => setPayload({ ...payload, addedFor: value })}
           getOptionLabel={(option) => (option.name)}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
@@ -240,7 +234,7 @@ const EditCoupon = ({ data, fetchCoupons, closeDialog }) => {
           )}
         />
 
-        <Stack direction='row' justifyContent='space-between' alignItems='center'>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' alignItems={{ xs: 'start', md: 'center' }}>
           <Box>
             <Typography variant='body2'>Start Date</Typography>
             <TextField

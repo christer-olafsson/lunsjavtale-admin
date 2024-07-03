@@ -345,7 +345,7 @@ const Meeting = () => {
 
   return (
     <Box maxWidth='xxl'>
-      <Stack direction='row' gap={2} alignItems='center'>
+      <Stack direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Meetings</Typography>
         <Typography sx={{
           fontSize: '12px',
@@ -354,7 +354,7 @@ const Meeting = () => {
           borderRadius: '4px',
           color: 'primary.main',
           px: 1
-        }}>10 meetings</Typography>
+        }}>({meetings?.length})</Typography>
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Box sx={{ minWidth: 200 }}>

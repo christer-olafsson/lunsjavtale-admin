@@ -265,7 +265,7 @@ function Layout() {
           text='Meeting-Schedule'
           selected={pathname === '/dashboard/meetings'}
         />
-        <ListBtn onClick={() => (handleDrawerClose(), setExpandSuppliers(!expandSuppliers))}
+        <ListBtn onClick={() => setExpandSuppliers(!expandSuppliers)}
           icon={<HolidayVillage fontSize='small' />}
           text='Suppliers'
           expandIcon

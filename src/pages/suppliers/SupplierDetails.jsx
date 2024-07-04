@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { LockOutlined, West } from '@mui/icons-material'
+import { Lock, LockOutlined, West } from '@mui/icons-material'
 import { Box, Chip, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
@@ -23,7 +23,7 @@ const SupplierDetails = () => {
       setVendor(res.vendor)
     },
   });
-
+  console.log(vendor)
   return (
     <Box maxWidth='xl'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>
@@ -54,10 +54,14 @@ const SupplierDetails = () => {
                         <Chip label='Deleted' color='warning' />
                       }
                       {
+                        vendor?.isBlocked &&
+                        <LockOutlined color='warning' />
+                      }
+                      {
                         vendor.createdOn &&
                         <Typography>Joined: <b>{format(vendor?.createdOn, 'yyyy-MM-dd')}</b> </Typography>
                       }
-                      <Typography sx={{ display: 'inline-flex', gap: 1 }}>Company: <b>{vendor?.name}</b> <LockOutlined sx={{
+                      <Typography sx={{ display: 'inline-flex', gap: 1 }}>Name: <b>{vendor?.name}</b> <LockOutlined sx={{
                         display: vendor.isBlocked ? 'block' : 'none',
                         color: 'red'
                       }} /> </Typography>

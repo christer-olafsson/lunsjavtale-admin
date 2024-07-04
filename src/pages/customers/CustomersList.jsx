@@ -115,6 +115,7 @@ const CustomersList = ({ data }) => {
             },
           },
         }}
+        disableRowSelectionOnClick
         pageSizeOptions={[10]}
         autoHeight
         disableColumnFilter

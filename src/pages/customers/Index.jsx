@@ -219,10 +219,10 @@ const Customers = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
               fontSize: { xs: '12px', md: '16px' },
-              color: row.isBlocked ? 'red' : 'primary.main ',
-              bgcolor: 'light.main',
-              px: 1, borderRadius: '8px',
-            }}>&#x2022; {row.isBlocked ? 'Lock' : 'Active'}</Typography>
+              color: '#fff',
+              bgcolor: row.isBlocked ? 'red' : 'green',
+              px: 1, borderRadius: '4px',
+            }}>{row.isBlocked ? 'Locked' : 'Active'}</Typography>
           </Stack>
         )
       }

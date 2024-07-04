@@ -49,6 +49,9 @@ export const VENDOR = gql`
     withdrawnAmount
     balance
     isDeleted
+    name
+    contact
+    isBlocked
     products{
       edges{
         node{

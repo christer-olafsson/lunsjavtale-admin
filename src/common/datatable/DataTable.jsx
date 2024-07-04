@@ -7,7 +7,7 @@ const DataTable = ({ rows,getRowId, rowHeight,columns, getRowHeight, columnVisib
   return (
     <Box
       sx={{
-        height: '650px',
+        minHeight: '650px',
         width: '100%',
       }}
     >

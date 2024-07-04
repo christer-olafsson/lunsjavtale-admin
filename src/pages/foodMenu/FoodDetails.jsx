@@ -27,7 +27,7 @@ const FoodDetails = () => {
       setProduct(res.products.edges[0].node)
     }
   })
-
+  console.log(product)
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -89,6 +89,19 @@ const FoodDetails = () => {
                   <i style={{ fontWeight: 400 }}>kr </i>
                   {product.priceWithTax}<i style={{ fontWeight: 400, fontSize: '16px' }}> (Incl. Tax)</i>
                 </Typography>
+                {
+                  product?.vendor &&
+                  <Stack sx={{
+                    border: '1px solid coral',
+                    p: 2, borderRadius: '8px',
+                    width: 'fit-content'
+                  }}>
+                    <Typography sx={{ fontWeight: 600 }}>Supplier:</Typography>
+                    <Link to={`/dashboard/suppliers/details/${product.vendor.id}`}>
+                      {product?.vendor.name}
+                    </Link>
+                  </Stack>
+                }
 
                 {/* <Stack direction='row' gap={2} mt={2}>
                   <LocalOffer fontSize='small' />

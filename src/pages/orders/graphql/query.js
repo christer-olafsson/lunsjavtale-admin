@@ -134,6 +134,14 @@ export const ORDER = gql`
             id
             priceWithTax
             name
+            ingredients(isDeleted: false){
+              edges{
+                node{
+                  id
+                  name
+                }
+              }
+            }
             attachments{
               edges{
                 node{

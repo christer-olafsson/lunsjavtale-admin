@@ -11,18 +11,18 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, Diversity3, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, FiberManualRecord, FiberManualRecordOutlined, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
-import { useMutation ,useQuery} from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ADMIN_NOTIFICATIONS, UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/query';
 import SmallNotification from './notification/SmallNotification';
 
 
 const drawerWidth = 264;
 
-const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expand }) => {
+const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expand, subItem }) => {
   return (
     <Link onClick={onClick} className='link' to={link}>
       <Box sx={{
@@ -51,7 +51,10 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
         }
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {icon}
+          {subItem ?
+            <FiberManualRecord sx={{ fontSize: '13px' }} /> :
+            icon
+          }
           <Typography sx={{
             color: 'gray',
             fontSize: '15px',
@@ -102,6 +105,7 @@ function Layout() {
   const [openEmail, setOpenEmail] = useState(false)
   const [openNotification, setOpenNotification] = useState(false);
   const [expandFoodMenu, setExpandFoodMenu] = useState(false)
+  const [expandSuppliers, setExpandSuppliers] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState([])
 
   const { pathname } = useLocation();
@@ -205,24 +209,33 @@ function Layout() {
           link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
           selected={pathname === '/dashboard/areas'} />
         <ListBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
-          link='/dashboard/food-item'
           expandIcon
-          expand={expandFoodMenu}
+          expand={expandFoodMenu || pathname === '/dashboard/food-item'}
           icon={<LunchDining fontSize='small' />}
           text='Food Menu'
-          selected={
-            pathname === '/dashboard/food-item'
-            || pathname === '/dashboard/food-categories'
-            || pathname === foodDetailsMatchFromItem?.pathname
-            || pathname === foodDetailsMatchFromCategories?.pathname
-          }
+        // selected={
+        //   pathname === '/dashboard/food-item'
+        //   || pathname === '/dashboard/food-categories'
+        //   || pathname === foodDetailsMatchFromItem?.pathname
+        //   || pathname === foodDetailsMatchFromCategories?.pathname
+        // }
         />
         <Collapse in={expandFoodMenu} timeout="auto" unmountOnExit>
-          <Box sx={{ ml: 3, mt: 1 }}>
-            <ListBtn onClick={handleDrawerClose} link='/dashboard/food-item' text='Food Item'
-              selected={pathname === '/dashboard/food-item' || pathname === foodDetailsMatchFromItem?.pathname} />
-            <ListBtn onClick={handleDrawerClose} link='/dashboard/food-categories' text='Food Categories'
-              selected={pathname === '/dashboard/food-categories' || pathname === foodDetailsMatchFromCategories?.pathname} />
+          <Box sx={{ ml: 3 }}>
+            <ListBtn
+              onClick={handleDrawerClose}
+              link='/dashboard/food-item'
+              text='Food Item'
+              subItem
+              selected={pathname === '/dashboard/food-item' || pathname === foodDetailsMatchFromItem?.pathname}
+            />
+            <ListBtn
+              onClick={handleDrawerClose}
+              link='/dashboard/food-categories'
+              text='Food Categories'
+              selected={pathname === '/dashboard/food-categories' || pathname === foodDetailsMatchFromCategories?.pathname}
+              subItem
+            />
           </Box>
         </Collapse>
         <ListBtn onClick={handleDrawerClose}
@@ -235,16 +248,11 @@ function Layout() {
           link='/dashboard/customers'
           icon={<People fontSize='small' />}
           text='Customers'
-          selected={pathname === '/dashboard/customers' 
+          selected={pathname === '/dashboard/customers'
             // || pathname === customerDetailsMatch?.pathname
           }
         />
-        <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/sales-history'
-          icon={<Timeline fontSize='small' />}
-          text='Suppliers-Sales'
-          selected={pathname === '/dashboard/sales-history'}
-        />
+
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/payments-history'
           icon={<History fontSize='small' />}
@@ -257,18 +265,40 @@ function Layout() {
           text='Meeting-Schedule'
           selected={pathname === '/dashboard/meetings'}
         />
-        <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/suppliers'
+        <ListBtn onClick={() => (handleDrawerClose(), setExpandSuppliers(!expandSuppliers))}
           icon={<HolidayVillage fontSize='small' />}
           text='Suppliers'
-          selected={pathname === '/dashboard/suppliers'}
+          expandIcon
+          expand={expandSuppliers}
+        // selected={pathname === '/dashboard/suppliers'}
         />
-        <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/withdraw-req'
-          icon={<RequestPageOutlined fontSize='small' />}
-          text='Withdraw-Req'
-          selected={pathname === '/dashboard/withdraw-req'}
-        />
+        {
+          <Collapse in={expandSuppliers}>
+            <Box sx={{ ml: 3 }}>
+              <ListBtn
+                onClick={handleDrawerClose}
+                link='/dashboard/suppliers'
+                text='All Suppliers'
+                subItem
+                selected={pathname === '/dashboard/suppliers'}
+              />
+              <ListBtn
+                onClick={handleDrawerClose}
+                link='/dashboard/sales-history'
+                text='Sales-History'
+                subItem
+                selected={pathname === '/dashboard/sales-history'}
+              />
+              <ListBtn
+                onClick={handleDrawerClose}
+                link='/dashboard/withdraw-req'
+                text='Withdraw-Req'
+                subItem
+                selected={pathname === '/dashboard/withdraw-req'}
+              />
+            </Box>
+          </Collapse>
+        }
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/coupons'
           icon={<Discount fontSize='small' />}

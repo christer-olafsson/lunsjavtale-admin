@@ -1,13 +1,11 @@
-import { Add, ArrowBack, ArrowDropDown, BorderColor, Search } from '@mui/icons-material';
-import { Avatar, Box, Button, Chip, Collapse, Divider, IconButton, Input, Rating, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
-import React, { useEffect, useState } from 'react'
+import { Add, ArrowBack, ArrowDropDown } from '@mui/icons-material';
+import { Avatar, Box, Button, Chip, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ORDER } from './graphql/query';
 import { useQuery } from '@apollo/client';
-import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from '@mui/lab'
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
-import CDialog from '../../common/dialog/CDialog';
 import SelectedStaffs from './SelectedStaffs';
 import { format } from 'date-fns';
 
@@ -35,7 +33,7 @@ const OrderDetails = () => {
 
     }
   }
-
+  console.log(order)
   const navigate = useNavigate()
 
   return (
@@ -112,6 +110,14 @@ const OrderDetails = () => {
                             <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{data?.node.item.name}</Typography>
                             <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
                             <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
+                            {
+                              data?.node.item.ingredients?.edges &&
+                              data?.node.item.ingredients?.edges.map(item => (
+                                <ul key={item.node.id}>
+                                  <li>{item.node.name}</li>
+                                </ul>
+                              ))
+                            }
                             {
                               data?.node.item.vendor &&
                               <Stack direction='row' gap={1}>

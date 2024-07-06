@@ -1,6 +1,6 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { Add, ArrowRightAlt, Edit } from '@mui/icons-material'
-import { Box, Button, Divider, IconButton, Rating, Stack, Typography, useTheme } from '@mui/material'
+import { Add, ArrowRightAlt, Edit, Error, Search } from '@mui/icons-material'
+import { Box, Button, Divider, FormControl, IconButton, Input, InputLabel, MenuItem, Rating, Select, Stack, Typography, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { GET_ALL_CATEGORY, GET_SINGLE_CATEGORY, PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
@@ -19,6 +19,8 @@ const FoodCategories = () => {
   const [allCategorys, setAllCategorys] = useState([]);
   const [singleCategory, setSingleCategory] = useState([]);
   const [editCategoryData, setEditCategoryData] = useState({})
+  const [searchText, setSearchText] = useState('')
+  const [status, setStatus] = useState('');
 
   const [productEditDialogOpen, setProductEditDialogOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -36,7 +38,10 @@ const FoodCategories = () => {
   const [fetchProducts, { loading: loadinProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
     variables: {
-      category: categoryId
+      category: categoryId,
+      title: searchText,
+      availability: status === 'available' ? true : status === 'not-available' ? false : null,
+      isVendorProduct: status === 'vendors' ? true : null
     },
     onCompleted: (res) => {
       const data = res.products.edges.filter(item => !item.node.vendor?.isDeleted).map(item => item)
@@ -62,7 +67,37 @@ const FoodCategories = () => {
   return (
     <Box>
       <Stack direction='row' justifyContent='space-between'>
-        <Box />
+        <Stack direction='row' gap={2}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: '480px',
+            bgcolor: '#fff',
+            width: '100%',
+            border: '1px solid lightgray',
+            borderRadius: '4px',
+            pl: 2,
+          }}>
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
+            <IconButton><Search /></IconButton>
+          </Box>
+          <Box sx={{ minWidth: 200 }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={status}
+                label="Status"
+                onChange={e => setStatus(e.target.value)}
+              >
+                <MenuItem value={'all'}>All </MenuItem>
+                <MenuItem value={'available'}>Available</MenuItem>
+                <MenuItem value={'not-available'}>Not Available</MenuItem>
+                <MenuItem value={'vendors'}>Vendors</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Stack>
         <Button onClick={() => setAddCategoryOpen(true)} startIcon={<Add />} variant='contained'>New Categories</Button>
       </Stack>
       {/* add category */}
@@ -110,6 +145,7 @@ const FoodCategories = () => {
                   cursor: 'pointer',
                   border: item.node.isActive ? `1px solid ${theme.palette.primary.main}` : ''
                 }} direction='row' gap={2} alignItems='center'>
+
                   <img style={{
                     opacity: !item.node.isActive ? '.4' : '.8',
                     width: '50px',
@@ -178,13 +214,26 @@ const FoodCategories = () => {
               singleCategory.map((data, id) => (
                 <Box key={id} sx={{
                   width: { xs: '100%', md: '300px' },
-                  bgcolor: data.node.availability ? 'light.main' : '#fff',
+                  boxShadow: data.node.availability ? 2 : 0,
                   p: { xs: 1, lg: 2.5 },
                   borderRadius: '8px',
                   border: data.node.vendor ? '1px solid coral' : '1px solid lightgray',
-                  opacity: data.node.availability ? '1' : '.6'
+                  position: 'relative'
                 }}>
-                  <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
+                  {
+                    !data.node.availability &&
+                    <Error sx={{
+                      position: 'absolute',
+                      m: 1,
+                      color: '#fff',
+                      fontSize: '3rem',
+                      zIndex: 2,
+                    }} />
+                  }
+                  <img style={{
+                    opacity: data.node.availability ? '1' : '.3'
+                    , width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px'
+                  }}
                     src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="" />
                   <Stack>
                     {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}

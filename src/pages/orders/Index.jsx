@@ -1,8 +1,8 @@
-import { ArrowRight, BorderColor, Search, TrendingFlat } from '@mui/icons-material'
+import { ArrowRight, BorderColor, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ORDERS } from './graphql/query';
 import { format } from 'date-fns';
 import Loader from '../../common/loader/Index';
@@ -11,6 +11,9 @@ import DataTable from '../../common/datatable/DataTable';
 import CDialog from '../../common/dialog/CDialog';
 import UpdateOrder from './UpdateOrder';
 import ApplyCoupon from './ApplyCoupon';
+import CButton from '../../common/CButton/CButton';
+import toast from 'react-hot-toast';
+import { ORDER_HISTORY_DELETE } from './graphql/mutation';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
@@ -20,6 +23,8 @@ const Orders = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [couponRowData, setCouponRowData] = useState({})
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
+  const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
+  const [deleteOrderId, setDeleteOrderId] = useState('')
 
 
   const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
@@ -33,6 +38,17 @@ const Orders = () => {
     }
   });
 
+  const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
+    onCompleted: (res) => {
+      fetchOrders()
+      toast.success(res.orderHistoryDelete.message)
+      setDeleteOrderDialogOpen(false)
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
 
   function handleEdit(row) {
     setOrderUpdateDialogOpen(true)
@@ -42,6 +58,19 @@ const Orders = () => {
   function handleCoupon(row) {
     setCouponRowData(row)
     setCouponDialogOpen(true)
+  }
+
+  function handleDeleteDialog(row) {
+    setDeleteOrderDialogOpen(true)
+    setDeleteOrderId(row.id)
+  }
+
+  function handleOrderDelete() {
+    orderHistoryDelete({
+      variables: {
+        id: deleteOrderId
+      }
+    })
   }
 
   const columns = [
@@ -184,7 +213,7 @@ const Orders = () => {
       },
     },
     {
-      field: 'action', headerName: 'Action', width: 150,
+      field: 'action', headerName: 'Action', width: 70,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Action</Typography>
       ),
@@ -202,7 +231,17 @@ const Orders = () => {
               width: { xs: '30px', md: '40px' },
               height: { xs: '30px', md: '40px' },
             }} onClick={() => handleEdit(params.row)}>
-            <BorderColor fontSize='small' />
+            <EditOutlined fontSize='small' />
+          </IconButton>
+        )
+      },
+    },
+    {
+      field: 'delete', headerName: '', width: 60,
+      renderCell: (params) => {
+        return (
+          <IconButton onClick={() => handleDeleteDialog(params.row)}>
+            <DeleteOutline fontSize='small' />
           </IconButton>
         )
       },
@@ -266,6 +305,18 @@ const Orders = () => {
       {/* update order */}
       <CDialog openDialog={orderUpdateDialogOpen}>
         <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
+      </CDialog>
+       {/* delete Order */}
+       <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>
+        <Box>
+          <img src="/Featured icon.png" alt="" />
+          <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Confirm Delete ?</Typography>
+          <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this order history? This action cannot be undone.</Typography>
+          <Stack direction='row' gap={2} mt={3}>
+            <CButton onClick={() => setDeleteOrderDialogOpen(false)} style={{ width: '100%' }} variant='outlined'>Cancel</CButton>
+            <CButton isLoading={deleteLoading} onClick={handleOrderDelete} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
+          </Stack>
+        </Box>
       </CDialog>
       <Box mt={3}>
         {

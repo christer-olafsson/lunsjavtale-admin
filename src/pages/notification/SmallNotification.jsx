@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { QueryBuilder } from '@mui/icons-material'
 import { Box, Button, Stack, Typography } from '@mui/material'
-import { ADMIN_NOTIFICATIONS } from './query';
+import { ADMIN_NOTIFICATIONS } from './graphql/query';
 import { useState } from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { Link } from 'react-router-dom';

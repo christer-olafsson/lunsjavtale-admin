@@ -52,6 +52,19 @@ export const VENDOR = gql`
     name
     contact
     isBlocked
+    owner{
+    id
+    firstName
+    lastName
+    address
+    gender
+    dateOfBirth
+    about
+    phone
+    email
+    username
+    
+  }
     products{
       edges{
         node{

@@ -1,5 +1,5 @@
 import { ArrowRight, BorderColor, Search, TrendingFlat } from '@mui/icons-material'
-import { Avatar, Box, Button, IconButton, Input, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
@@ -11,9 +11,14 @@ import DataTable from '../../common/datatable/DataTable';
 
 const SalesHistory = () => {
   const [salesHistories, setSalesHistories] = useState([])
+  const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState('');
 
 
   const { loading, error: salesHistoryErr } = useQuery(SALES_HISTORIES, {
+    variables: {
+      supplierNameEmail: searchText
+    },
     onCompleted: (res) => {
       setSalesHistories(res.salesHistories.edges.map(item => item.node));
     }
@@ -139,7 +144,7 @@ const SalesHistory = () => {
                 : row.order.status === 'Delivered'
                   ? 'green'
                   : 'yellow',
-            color: row.order.status === 'Placed' ? 'dark' : '#fff',
+            color: row.order.status === 'Placed' ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.order.status}</Typography>
@@ -166,6 +171,36 @@ const SalesHistory = () => {
             px: 1
           }}>({salesHistories?.length})</Typography>
         </Stack>
+      </Stack>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          maxWidth: '480px',
+          bgcolor: '#fff',
+          width: '100%',
+          border: '1px solid lightgray',
+          borderRadius: '4px',
+          pl: 2,
+        }}>
+          <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
+          <IconButton><Search /></IconButton>
+        </Box>
+        <Box sx={{ minWidth: 200 }}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={e => setStatusFilter(e.target.value)}
+            >
+              <MenuItem value={'all'}>All </MenuItem>
+              <MenuItem value={'active'}>Active</MenuItem>
+              <MenuItem value={'rejected'}>rejected</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Stack>
       <Box mt={3}>
         {

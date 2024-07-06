@@ -1,5 +1,5 @@
-import { Add, ArrowRightAlt, Search } from '@mui/icons-material';
-import { Box, Button, IconButton, Input, Stack, Typography } from '@mui/material';
+import { Add, ArrowRightAlt, Error, Search } from '@mui/icons-material';
+import { Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import CDialog from '../../common/dialog/CDialog';
@@ -46,6 +46,7 @@ const FoodItem = () => {
   const [categoryId, setCategoryId] = useState(null);
   const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState('')
+  const [status, setStatus] = useState('');
 
 
   const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
@@ -60,7 +61,9 @@ const FoodItem = () => {
     fetchPolicy: "network-only",
     variables: {
       category: categoryId,
-      title: searchText
+      title: searchText,
+      availability: status === 'available' ? true : status === 'not-available' ? false : null,
+      isVendorProduct: status === 'vendors' ? true : null
     },
     onCompleted: (res) => {
       const data = res.products.edges.filter(item => !item.node.vendor?.isDeleted).map(item => item)
@@ -82,21 +85,38 @@ const FoodItem = () => {
 
   return (
     <Box maxWidth='xxl'>
-      <Stack direction='row' justifyContent='space-between' mb={2} gap={2}>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          maxWidth: '480px',
-          bgcolor: '#fff',
-          width: '100%',
-          border: '1px solid lightgray',
-          borderRadius: '4px',
-          pl: 2,
-        }}>
-          <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
-          <IconButton><Search /></IconButton>
-        </Box>
+      <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between' mb={2} gap={2}>
+        <Stack direction='row' gap={2}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: '480px',
+            bgcolor: '#fff',
+            width: '100%',
+            border: '1px solid lightgray',
+            borderRadius: '4px',
+            pl: 2,
+          }}>
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
+            <IconButton><Search /></IconButton>
+          </Box>
+          <Box sx={{ minWidth: 200 }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={status}
+                label="Status"
+                onChange={e => setStatus(e.target.value)}
+              >
+                <MenuItem value={'all'}>All </MenuItem>
+                <MenuItem value={'available'}>Available</MenuItem>
+                <MenuItem value={'not-available'}>Not Available</MenuItem>
+                <MenuItem value={'vendors'}>Vendors</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Stack>
         <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Items</Button>
       </Stack>
       {/* product add dialog */}
@@ -155,13 +175,31 @@ const FoodItem = () => {
               products.map((data, id) => (
                 <Box key={id} sx={{
                   width: { xs: '100%', md: '300px' },
-                  bgcolor: data.node.availability ? 'light.main' : '#fff',
+                  // bgcolor: data.node.availability ? 'light.main' : '#fff',
                   p: { xs: 1, lg: 2.5 },
                   borderRadius: '8px',
                   border: data.node.vendor ? '1px solid coral' : '1px solid lightgray',
-                  opacity: data.node.availability ? '1' : '.6'
+                  boxShadow: data.node.availability ? 2 : 0,
+                  position: 'relative'
                 }}>
-                  <img style={{ width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px' }}
+                  {
+                    !data.node.availability &&
+                    <Error sx={{
+                      position: 'absolute',
+                      m: 1,
+                      color: '#fff',
+                      fontSize: '3rem',
+                      zIndex: 2,
+                    }} />
+                  }
+
+                  <img style={{
+                    width: '100%',
+                    height: '138px',
+                    objectFit: 'cover',
+                    borderRadius: '4px',
+                    opacity: data.node.availability ? '1' : '.6',
+                  }}
                     src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="" />
                   <Stack>
                     <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>

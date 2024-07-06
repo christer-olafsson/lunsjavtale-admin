@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import React from 'react'
 
-const DataTable = ({ rows,getRowId, rowHeight,columns, getRowHeight, columnVisibilityModel }) => {
+const DataTable = ({ rows,getRowId, rowHeight,columns, getRowHeight, columnVisibilityModel,checkboxSelection,onRowSelectionModelChange }) => {
   return (
     <Box
       sx={{
@@ -25,6 +25,8 @@ const DataTable = ({ rows,getRowId, rowHeight,columns, getRowHeight, columnVisib
           },
         }}
         pageSizeOptions={[10]}
+        checkboxSelection={checkboxSelection}
+        onRowSelectionModelChange={onRowSelectionModelChange}
         columnVisibilityModel={columnVisibilityModel}
         disableRowSelectionOnClick
         disableColumnFilter

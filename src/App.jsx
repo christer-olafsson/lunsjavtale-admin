@@ -27,6 +27,7 @@ import SalesHistory from './pages/salesHistory/Index'
 import SupplierDetails from './pages/suppliers/SupplierDetails'
 import WithdrawReq from './pages/withdraw-req/Index'
 import Notifications from './pages/notification/Notifications'
+import StaffDetails from './pages/customers/StaffDetails'
 
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
         <Route path='/dashboard/payments-history/details/:id' element={<SalesDetails />} />
         <Route path='/dashboard/customers' element={<Customers />} />
         <Route path='/dashboard/customers/details/:id' element={<CustomerDetails />} />
+        <Route path='/dashboard/customers/staff/details/:id' element={<StaffDetails />} />
         <Route path='/dashboard/suppliers' element={<Suppliers />} />
         <Route path='/dashboard/suppliers/details/:id' element={<SupplierDetails />} />
         <Route path='/dashboard/withdraw-req' element={<WithdrawReq />} />

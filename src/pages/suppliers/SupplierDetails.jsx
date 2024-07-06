@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { Lock, LockOutlined, West } from '@mui/icons-material'
-import { Box, Chip, Divider, IconButton, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Chip, Divider, IconButton, Stack, Typography } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import Loader from '../../common/loader/Index'
@@ -23,7 +23,7 @@ const SupplierDetails = () => {
       setVendor(res.vendor)
     },
   });
-  console.log(vendor)
+ 
   return (
     <Box maxWidth='xl'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>
@@ -46,7 +46,7 @@ const SupplierDetails = () => {
                       height: '100px',
                       objectFit: 'cover',
                       borderRadius: '4px',
-                    }} src={vendor.logoUrl ? vendor?.logoUrl : "/noImage.png"} alt=""
+                    }} src={vendor?.logoUrl ? vendor?.logoUrl : "/noImage.png"} alt=""
                     />
                     <Box>
                       {
@@ -66,7 +66,7 @@ const SupplierDetails = () => {
                         color: 'red'
                       }} /> </Typography>
                       <Typography>Email: <b>{vendor?.email}</b> </Typography>
-                      <Typography>Phone: <b>{vendor?.contact}</b> </Typography>
+                      <Typography>Contact: <b>{vendor?.contact}</b> </Typography>
                       <Typography>Post Code: <b>{vendor?.postCode}</b> </Typography>
                     </Box>
                   </Stack>
@@ -115,13 +115,26 @@ const SupplierDetails = () => {
             <Typography my={3} variant='h5'>All Products</Typography>
             <Divider />
 
-            <Stack direction='row' flexWrap='wrap' gap={2} mt={3}>
-              {
-                vendorLoading ? <Loader /> : vendorErr ? <ErrorMsg /> :
-                  vendor?.products?.edges.map(item => (
-                    <SupplierProductCard key={item.node.id} data={item.node} />
-                  ))
-              }
+            <Stack direction={{ xs: 'column-reverse', md: 'row' }} gap={2} justifyContent='space-between'>
+              <Stack direction='row' flexWrap='wrap' gap={2} mt={3}>
+                {
+                  vendorLoading ? <Loader /> : vendorErr ? <ErrorMsg /> :
+                    vendor?.products?.edges.map(item => (
+                      <SupplierProductCard key={item.node.id} data={item.node} />
+                    ))
+                }
+              </Stack>
+              <Box>
+                <Typography variant='h5' sx={{ my: 2, fontWeight: 600 }}>Owner Information</Typography>
+                <Avatar sx={{ mb: 1 }} src={vendor?.owner?.photoUrl} alt="" />
+                <Typography>Name: <b>{vendor?.owner?.firstName + ' ' + vendor?.owner?.lastName}</b> </Typography>
+                <Typography>User Name: <b>{vendor?.owner?.username}</b> </Typography>
+                <Typography>Email: <b>{vendor?.owner?.email}</b> </Typography>
+                <Typography>Phone: <b>{vendor?.owner?.phone}</b> </Typography>
+                <Typography>Gender: <b>{vendor?.owner?.gender}</b> </Typography>
+                <Typography>Birth Date: <b>{vendor?.owner?.dateOfBirth}</b> </Typography>
+                <Typography>Address: <b>{vendor?.owner?.address}</b> </Typography>
+              </Box>
             </Stack>
 
           </Box>

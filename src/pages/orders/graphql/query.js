@@ -130,6 +130,14 @@ export const ORDER = gql`
           orderedQuantity
           priceWithTax
           totalPriceWithTax
+          ingredients{
+          edges{
+            node{
+              id
+              name
+            }
+          }
+        }
           item{
             id
             priceWithTax

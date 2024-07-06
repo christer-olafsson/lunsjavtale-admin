@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,7 +16,7 @@ import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuI
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
 import { useMutation, useQuery } from '@apollo/client';
-import { ADMIN_NOTIFICATIONS, UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/query';
+import {UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/graphql/query';
 import SmallNotification from './notification/SmallNotification';
 
 
@@ -34,11 +34,14 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
         borderRadius: '4px',
         overflow: 'hidden',
         // mb: 1,
-        cursor: 'pointer',
         color: selected ? 'primary.main' : '#95A2B0',
         bgcolor: selected ? 'light.main' : '',
         ...style,
         position: 'relative',
+        cursor: 'pointer',
+        ":hover":{
+          color:  selected ? 'inherit' : '#fff'
+        },
         ":before": {
           position: 'absolute',
           display: selected ? 'block' : 'none',
@@ -119,6 +122,7 @@ function Layout() {
       setUnreadNotifications(res.unreadAdminNotificationCount)
     }
   });
+  
 
   const [logout, { loading }] = useMutation(LOGOUT, {
     onCompleted: (res) => {
@@ -155,6 +159,15 @@ function Layout() {
       setMobileOpen(!mobileOpen);
     }
   };
+
+  useEffect(() => {
+    if(pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories'){
+      setExpandFoodMenu(true)
+    }
+    if(pathname === '/dashboard/suppliers' || pathname === '/dashboard/sales-history' || pathname === '/dashboard/withdraw-req'){
+      setExpandSuppliers(true)
+    }
+  }, [pathname])
 
 
   const drawer = (

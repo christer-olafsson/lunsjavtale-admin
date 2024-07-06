@@ -15,3 +15,11 @@ export const APPLY_COUPON = gql`
     }
   }
 `
+
+export const ORDER_HISTORY_DELETE = gql`
+  mutation OrderHistoryDelete ($id: ID){
+      orderHistoryDelete(id: $id){
+      message
+    }
+  }
+`

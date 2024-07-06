@@ -325,7 +325,7 @@ const Customers = () => {
             <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
             <IconButton><Search /></IconButton>
           </Box>
-          <Box sx={{ minWidth: 200 }}>
+          {/* <Box sx={{ minWidth: 200 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -335,10 +335,10 @@ const Customers = () => {
               >
                 <MenuItem value={'all'}>All </MenuItem>
                 <MenuItem value={'active'}>Active</MenuItem>
-                <MenuItem value={'Locked'}>Locked</MenuItem>
+                <MenuItem value={'rejected'}>rejected</MenuItem>
               </Select>
             </FormControl>
-          </Box>
+          </Box> */}
         </Stack>
         <Button onClick={() => setAddCustomerDialogOpen(true)} variant='contained' startIcon={<Add />}>New Customer</Button>
       </Stack>

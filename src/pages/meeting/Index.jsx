@@ -1,5 +1,5 @@
-import { AccessTime, Add, ArrowRight, DeleteOutline, DoneOutlineOutlined, EditAttributesOutlined, EditOutlined, LocalPhoneOutlined, LockOutlined, MailOutlined } from '@mui/icons-material'
-import { Avatar, Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { AccessTime, Add, ArrowRight, DeleteOutline, DoneOutlineOutlined, EditAttributesOutlined, EditOutlined, LocalPhoneOutlined, LockOutlined, MailOutlined, Search } from '@mui/icons-material'
+import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import NewMeeting from './NewMeeting';
 import CDialog from '../../common/dialog/CDialog';
@@ -30,8 +30,14 @@ const Meeting = () => {
   const [meetingDetailsDialogOpen, setMeetingDetailsDialogOpen] = useState(false)
   const [meetingDetailsData, setMeetingDetailsData] = useState({})
   const [meetings, setMeetings] = useState([])
+  const [searchText, setSearchText] = useState('')
+  const [status, setStatus] = useState('');
 
   const [fetchMeeting, { loading: meetingsLoading, error: meetingsErr }] = useLazyQuery(FOOD_MEETINGS, {
+    variables: {
+      companyNameEmail: searchText,
+      status: status === 'all' ? null : status
+    },
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setMeetings(res.foodMeetings.edges.map(item => item.node))
@@ -356,21 +362,38 @@ const Meeting = () => {
           px: 1
         }}>({meetings?.length})</Typography>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
-        <Box sx={{ minWidth: 200 }}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Filter</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Filter"
-              onChange={handleFilterChange}
-            >
-              <MenuItem value={5}>All </MenuItem>
-              <MenuItem value={10}>Upcoming</MenuItem>
-              <MenuItem value={20}>Complete</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+      <Stack direction={{ xs: 'column-reverse', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      <Stack direction='row' gap={2}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: '480px',
+            bgcolor: '#fff',
+            width: '100%',
+            border: '1px solid lightgray',
+            borderRadius: '4px',
+            pl: 2,
+          }}>
+            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
+            <IconButton><Search /></IconButton>
+          </Box>
+          <Box sx={{ minWidth: 200 }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={status}
+                label="Status"
+                onChange={e => setStatus(e.target.value)}
+              >
+                <MenuItem value={'all'}>All</MenuItem>
+                <MenuItem value={'pending'}>Pending</MenuItem>
+                <MenuItem value={'attended'}>Attended</MenuItem>
+                <MenuItem value={'postponed'}>Postponed</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Stack>
         <Button onClick={() => setCreateMeetingDialogOpen(true)} variant='contained' startIcon={<Add />}>Create Meeting</Button>
       </Stack>
       {/* details meeting */}

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const FOOD_MEETINGS = gql`
-  query{
-  foodMeetings{
+  query($companyNameEmail: String, $status: String){
+  foodMeetings(companyNameEmail: $companyNameEmail, status: $status){
     edges{
       node{
         id

@@ -1,28 +1,51 @@
 import { Box, Stack, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { ADMIN_NOTIFICATIONS } from './query';
-import { useQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react'
+import { ADMIN_NOTIFICATIONS } from './graphql/query';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { AccessTime } from '@mui/icons-material';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
+import CButton from '../../common/CButton/CButton';
+import { NOTIFICATION_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([])
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
 
-  const { loading, error } = useQuery(ADMIN_NOTIFICATIONS, {
+  const [fetchAdminNotifications, { loading, error }] = useLazyQuery(ADMIN_NOTIFICATIONS, {
+    fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setNotifications(res.adminNotifications.edges.map(item => item.node))
     }
   });
+
+  const [notificationDelete, { loading: deleteLoading }] = useMutation(NOTIFICATION_DELETE, {
+    onCompleted: (res) => {
+      toast.success(res.notificationDelete.message)
+      fetchAdminNotifications()
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
+  const handleNotificationDelete = () => {
+    notificationDelete({
+      variables: {
+        ids: selectedRowIds,
+      }
+    })
+  }
 
   const getTimeDifference = (isoString) => {
     const date = parseISO(isoString);
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-
+ 
   const columns = [
     {
       field: 'Time', width: 250,
@@ -74,15 +97,36 @@ const Notifications = () => {
       }
     },
   ]
+
+  useEffect(() => {
+    fetchAdminNotifications()
+  }, [])
+
+
   return (
     <Box maxWidth='xxl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>All Notifications</Typography>
-      <Box mt={3}>
+      {
+        // selectedRowIds.length > 0 &&
+        <CButton
+          style={{
+            mt: 1,
+            visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
+          }}
+          isLoading={deleteLoading}
+          onClick={handleNotificationDelete}
+          variant='contained'>
+          Delete
+        </CButton>
+      }
+      <Box mt={2}>
         {
           loading ? <Loader /> : error ? <ErrorMsg /> :
             <DataTable
               columns={columns}
               rows={notifications ?? []}
+              checkboxSelection
+              onRowSelectionModelChange={(newSelection) => setSelectedRowIds(newSelection)}
             />
         }
       </Box>

@@ -26,6 +26,7 @@ const Notifications = () => {
     onCompleted: (res) => {
       toast.success(res.notificationDelete.message)
       fetchAdminNotifications()
+      setSelectedRowIds([])
     },
     onError: (err) => {
       toast.error(err.message)
@@ -107,7 +108,6 @@ const Notifications = () => {
     <Box maxWidth='xxl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>All Notifications</Typography>
       {
-        // selectedRowIds.length > 0 &&
         <CButton
           style={{
             mt: 1,

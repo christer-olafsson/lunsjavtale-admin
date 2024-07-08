@@ -1,8 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import React, { useEffect, useState } from 'react'
 import { WITHDRAW_REQ } from './graphql/query';
 import { Avatar, Box, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { DeleteOutlineOutlined, DoneAll, EmailOutlined, LocalPhoneOutlined, MailOutlined, ModeEditOutlineOutlined, Search, StoreOutlined } from '@mui/icons-material';
+import { DeleteOutline, DeleteOutlineOutlined, DoneAll, EditOutlined, EmailOutlined, LocalPhoneOutlined, MailOutlined, ModeEditOutlineOutlined, Search, StoreOutlined } from '@mui/icons-material';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
@@ -10,12 +10,17 @@ import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import CDialog from '../../common/dialog/CDialog';
 import EditWithdrawReq from './EditWithdrawReq';
+import { WITHDRAW_REQ_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
+import CButton from '../../common/CButton/CButton';
 
 const WithdrawReq = () => {
   const [withdrawReq, setWithdrawReq] = useState([])
   const [searchText, setSearchText] = useState('')
   const [withdrawReqData, setWithdrawReqData] = useState({})
   const [withdrawReqDialogOpen, setWithdrawReqDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState('')
   const [status, setStatus] = useState('')
 
   const [fetchWithdrawReq, { loading: WithdrawReqLoading, error: WithdrawReqErr }] = useLazyQuery(WITHDRAW_REQ, {
@@ -29,21 +34,35 @@ const WithdrawReq = () => {
     },
   });
 
+  const [withdrawReqDelete, { loading: deleteLoading }] = useMutation(WITHDRAW_REQ_DELETE, {
+    onCompleted: (res) => {
+      fetchWithdrawReq()
+      toast.success(res.withdrawRequestDelete.message)
+      setDeleteDialogOpen(false)
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
+  function handleDeleteDialog(row) {
+    setDeleteDialogOpen(true)
+    setDeleteId(row.id)
+  }
+
+  function handleDelete (){
+    withdrawReqDelete({
+      variables: {
+        id: deleteId
+      }
+    })
+  }
+
   const handleWithdrawReqDialog = (row) => {
     setWithdrawReqDialogOpen(true)
     setWithdrawReqData(row)
   }
 
-  // const [vendorDelete, { loading: deleteLoading }] = useMutation(VENDOR_DELETE, {
-  //   onCompleted: (res) => {
-  //     fetchVendors()
-  //     toast.success(res.vendorDelete.message)
-  //     setDeleteDialogOpen(false)
-  //   },
-  //   onError: (err) => {
-  //     toast.error(err.message)
-  //   }
-  // });
 
   const columns = [
     {
@@ -122,7 +141,7 @@ const WithdrawReq = () => {
       )
     },
     {
-      field: 'status', width: 150,
+      field: 'status', width: 200,
       renderHeader: (params) => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
       ),
@@ -147,7 +166,7 @@ const WithdrawReq = () => {
       }
     },
     {
-      field: 'edit', headerName: '', width: 80,
+      field: 'edit', headerName: '', width: 60,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleWithdrawReqDialog(params.row)} sx={{
@@ -156,7 +175,17 @@ const WithdrawReq = () => {
             height: { xs: '30px', md: '40px' },
           }}
           >
-            <DoneAll sx={{}} fontSize='small' />
+            <EditOutlined sx={{}} fontSize='small' />
+          </IconButton>
+        )
+      },
+    },
+    {
+      field: 'delete', headerName: '', width: 100,
+      renderCell: (params) => {
+        return (
+          <IconButton onClick={() => handleDeleteDialog(params.row)}>
+            <DeleteOutline fontSize='small' />
           </IconButton>
         )
       },
@@ -171,23 +200,7 @@ const WithdrawReq = () => {
           <Typography sx={{ fontWeight: 600 }} > {params.row.note}</Typography>
         </Stack >
       )
-    },
-    // {
-    //   field: 'delete', headerName: '', width: 50,
-    //   renderCell: (params) => {
-    //     return (
-    //       <IconButton
-    //         // onClick={() => handleDelete(params.row)} 
-    //         sx={{
-    //           borderRadius: '5px',
-    //           width: { xs: '30px', md: '40px' },
-    //           height: { xs: '30px', md: '40px' },
-    //         }}>
-    //         <DeleteOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
-    //       </IconButton>
-    //     )
-    //   },
-    // },
+    }
   ];
 
 
@@ -238,18 +251,18 @@ const WithdrawReq = () => {
       <CDialog openDialog={withdrawReqDialogOpen}>
         <EditWithdrawReq data={withdrawReqData} fetchWithdrawReq={fetchWithdrawReq} closeDialog={() => setWithdrawReqDialogOpen(false)} />
       </CDialog>
-      {/* delete  */}
-      {/* <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
+      {/* delete */}
+      <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
         <Box>
           <img src="/Featured icon.png" alt="" />
-          <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Delete company</Typography>
-          <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this company? This action cannot be undone.</Typography>
+          <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Confirm Delete?</Typography>
+          <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this withdraw Request? This action cannot be undone.</Typography>
           <Stack direction='row' gap={2} mt={3}>
-            <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-            <CButton isLoading={deleteLoading} onClick={handleCompanyDelete} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
+            <CButton onClick={() => setDeleteDialogOpen(false)} style={{ width: '100%' }} variant='outlined'>Cancel</CButton>
+            <CButton isLoading={deleteLoading} onClick={handleDelete} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
           </Stack>
         </Box>
-      </CDialog> */}
+      </CDialog>
       <Box mt={{ xs: 10, md: 3 }}>
         {
           WithdrawReqLoading ? <LoadingBar /> : WithdrawReqErr ? <ErrorMsg /> :

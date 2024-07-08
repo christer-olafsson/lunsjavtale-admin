@@ -1,19 +1,24 @@
 /* eslint-disable react/prop-types */
-import { Box } from '@mui/material'
+import { Box, styled } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
-import React from 'react'
 
-const DataTable = ({ rows,getRowId, rowHeight,columns, getRowHeight, columnVisibilityModel,checkboxSelection,onRowSelectionModelChange }) => {
+
+const DataTable = ({ rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
   return (
     <Box
       sx={{
         minHeight: '650px',
         width: '100%',
+        minHeight: '650px',
       }}
     >
       <DataGrid
+        sx={{
+          boxShadow: 2
+        }}
         rows={rows}
         columns={columns}
+        autoHeight
         rowHeight={rowHeight}
         getRowHeight={getRowHeight}
         getRowId={getRowId}

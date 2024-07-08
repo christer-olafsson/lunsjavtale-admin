@@ -16,7 +16,8 @@ const boxStyle = {
   box: {
     minWidth: '300px',
     border: '1px solid lightgray',
-    p: 2, borderRadius: '8px'
+    p: 2, borderRadius: '8px',
+    boxShadow: 2
   },
   title: {
     fontSize: '14px', fontWeight: 600, mb: 1
@@ -67,26 +68,31 @@ const Dashboard = () => {
               <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Sales Today </Typography>
                 <Typography sx={boxStyle.value}>
-                  <ShoppingBasketOutlined fontSize='large' />
+                  <ShoppingBasketOutlined sx={{ bgcolor: 'green', borderRadius: '50px', p: 1, fontSize: '40px', color: '#fff' }} />
                   {data?.salesToday}
                   <span>kr</span>
                 </Typography>
               </Box>
               <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Total Orders </Typography>
-                <Typography sx={boxStyle.value}><AddShoppingCartOutlined fontSize='large' />{data?.totalOrders}</Typography>
+                <Typography sx={boxStyle.value}>
+                  <AddShoppingCartOutlined sx={{ bgcolor: '#7C74EA', borderRadius: '50px', p: 1, fontSize: '40px', color: '#fff' }} />
+                  {data?.totalOrders}
+                </Typography>
               </Box>
               <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Total Sales </Typography>
                 <Typography sx={boxStyle.value}>
-                  <AccountBalanceWalletOutlined fontSize='large' />
+                  <AccountBalanceWalletOutlined sx={{ bgcolor: '#6489F2', borderRadius: '50px', p: 1, fontSize: '40px', color: '#fff' }} />
                   {data?.totalSales}
                   <span>kr</span>
                 </Typography>
               </Box>
               <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Total Customers </Typography>
-                <Typography sx={boxStyle.value}> <PeopleAltOutlined fontSize='large' /> {data?.totalCustomers}</Typography>
+                <Typography sx={boxStyle.value}> <PeopleAltOutlined sx={{ bgcolor: '#E46698', borderRadius: '50px', p: 1, fontSize: '40px', color: '#fff' }} />
+                  {data?.totalCustomers}
+                </Typography>
               </Box>
             </Stack>
 

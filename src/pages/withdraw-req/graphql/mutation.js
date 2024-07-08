@@ -7,3 +7,11 @@ export const WITHDRAW_REQ_MUTATION = gql`
     }
   }
 `
+
+export const WITHDRAW_REQ_DELETE = gql`
+  mutation WithdrawReqDelete($id: ID!){
+      withdrawRequestDelete(id: $id){
+      message
+    }
+  }
+`

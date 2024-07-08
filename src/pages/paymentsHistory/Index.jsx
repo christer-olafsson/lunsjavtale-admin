@@ -6,21 +6,50 @@ import DataTable from '../../common/datatable/DataTable';
 import CDialog from '../../common/dialog/CDialog';
 import CreatePayment from './CreatePayment';
 import { ORDER_PAYMENTS } from './graphql/query';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { format } from 'date-fns';
+import { PAYMENT_HISTORY_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
+import CButton from '../../common/CButton/CButton';
 
 const PaymentsHistory = () => {
   const [orderPayments, setOrderPayments] = useState([])
   const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
+  const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState('');
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
 
   const [fetchOrderPayment, { loading, error }] = useLazyQuery(ORDER_PAYMENTS, {
+    variables: {
+      companyNameEmail: searchText,
+      status: statusFilter === 'all' ? null : statusFilter
+    },
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setOrderPayments(res.orderPayments.edges.map(item => item.node));
     }
   });
+
+  const [paymentHistoryDelete, { loading: deleteLoading }] = useMutation(PAYMENT_HISTORY_DELETE, {
+    onCompleted: (res) => {
+      toast.success(res.paymentHistoryDelete.message)
+      fetchOrderPayment()
+      setSelectedRowIds([])
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
+  const handlePaymentHistoryDelete = () => {
+    paymentHistoryDelete({
+      variables: {
+        ids: selectedRowIds
+      }
+    })
+  }
 
   const columns = [
 
@@ -122,6 +151,49 @@ const PaymentsHistory = () => {
         </Stack>
         <Button onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems='center'>
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          maxWidth: '300px',
+          bgcolor: '#fff',
+          width: '100%',
+          border: '1px solid lightgray',
+          borderRadius: '4px',
+          pl: 2
+        }}>
+          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
+          <IconButton><Search /></IconButton>
+        </Box>
+        <Box sx={{ minWidth: 200 }}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={e => setStatusFilter(e.target.value)}
+            >
+              <MenuItem value={'all'}>All</MenuItem>
+              <MenuItem value={'pending'}>Pending</MenuItem>
+              <MenuItem value={'completed'}>Completed</MenuItem>
+              <MenuItem value={'cancelled'}>Cancelled</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+        {
+          <CButton
+            style={{
+              visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
+            }}
+            isLoading={deleteLoading}
+            color='warning'
+            onClick={handlePaymentHistoryDelete}
+            variant='contained'>
+            Delete Selected
+          </CButton>
+        }
+      </Stack>
       <CDialog openDialog={openCreatePaymentDialog}>
         <CreatePayment fetchOrderPayment={fetchOrderPayment} closeDialog={() => setOpenCreatePaymentDialog(false)} />
       </CDialog>
@@ -129,6 +201,8 @@ const PaymentsHistory = () => {
         {
           loading ? <Loader /> : error ? <ErrorMsg /> :
             <DataTable
+              checkboxSelection
+              onRowSelectionModelChange={(newSelection) => setSelectedRowIds(newSelection)}
               columns={columns}
               rows={orderPayments}
             />

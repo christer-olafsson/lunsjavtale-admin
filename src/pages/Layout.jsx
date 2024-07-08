@@ -11,12 +11,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, Diversity3, FiberManualRecord, FiberManualRecordOutlined, History, HolidayVillage, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, FiberManualRecord, FiberManualRecordOutlined, History, HolidayVillage, Instagram, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
 import { useMutation, useQuery } from '@apollo/client';
-import {UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/graphql/query';
+import { UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/graphql/query';
 import SmallNotification from './notification/SmallNotification';
 
 
@@ -39,8 +39,8 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
         ...style,
         position: 'relative',
         cursor: 'pointer',
-        ":hover":{
-          color:  selected ? 'inherit' : '#fff'
+        ":hover": {
+          color: selected ? 'inherit' : '#fff'
         },
         ":before": {
           position: 'absolute',
@@ -122,7 +122,7 @@ function Layout() {
       setUnreadNotifications(res.unreadAdminNotificationCount)
     }
   });
-  
+
 
   const [logout, { loading }] = useMutation(LOGOUT, {
     onCompleted: (res) => {
@@ -161,10 +161,10 @@ function Layout() {
   };
 
   useEffect(() => {
-    if(pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories'){
+    if (pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories') {
       setExpandFoodMenu(true)
     }
-    if(pathname === '/dashboard/suppliers' || pathname === '/dashboard/sales-history' || pathname === '/dashboard/withdraw-req'){
+    if (pathname === '/dashboard/suppliers' || pathname === '/dashboard/sales-history' || pathname === '/dashboard/withdraw-req') {
       setExpandSuppliers(true)
     }
   }, [pathname])
@@ -217,10 +217,6 @@ function Layout() {
           onClick={handleDrawerClose}
           link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
           selected={pathname === '/dashboard/notifications'} />
-        <ListBtn
-          onClick={handleDrawerClose}
-          link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
-          selected={pathname === '/dashboard/areas'} />
         <ListBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
           expandIcon
           expand={expandFoodMenu || pathname === '/dashboard/food-item'}
@@ -318,6 +314,10 @@ function Layout() {
           text='Coupons'
           selected={pathname === '/dashboard/coupons'}
         />
+        <ListBtn
+          onClick={handleDrawerClose}
+          link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
+          selected={pathname === '/dashboard/areas'} />
         {/* <ListBtn onClick={handleDrawerClose}
           link='/dashboard/invoice'
           icon={<Description fontSize='small' />}
@@ -335,6 +335,12 @@ function Layout() {
           icon={<LiveHelp fontSize='small' />}
           text='Faq'
           selected={pathname === '/dashboard/faq'}
+        />
+        <ListBtn onClick={handleDrawerClose}
+          link='/dashboard/social'
+          icon={<Instagram fontSize='small' />}
+          text='Social'
+          selected={pathname === '/dashboard/social'}
         />
         <ListBtn onClick={handleDrawerClose}
           link='/dashboard/promotion'

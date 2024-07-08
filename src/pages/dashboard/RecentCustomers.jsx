@@ -47,7 +47,8 @@ const RecentCustomers = ({ data }) => {
   return (
     <Box sx={{
       border: '1px solid lightgray',
-      p: 2, borderRadius: '8px'
+      p: 2, borderRadius: '8px',
+      boxShadow: 2
     }}>
       <Stack direction='row' justifyContent='space-between'>
         <Typography variant='h5'>Recent Customers</Typography>

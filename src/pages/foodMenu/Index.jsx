@@ -222,7 +222,7 @@ const FoodItem = () => {
                             color: '#fff',
                             px: 1, borderRadius: '4px',
                           }}>
-                          Vendor
+                          Supplier
                         </Typography>
                       }
                     </Stack>

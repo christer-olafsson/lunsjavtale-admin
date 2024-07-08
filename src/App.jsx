@@ -9,7 +9,6 @@ import Orders from './pages/orders/Index'
 import PaymentsHistory from './pages/paymentsHistory/Index'
 import Customers from './pages/customers/Index'
 import Coupons from './pages/coupons/Index'
-import Invoice from './pages/invoice/Index'
 import Brand from './pages/brand/Index'
 import Faq from './pages/faq/Index'
 import Promotion from './pages/promotion/Index'
@@ -19,7 +18,6 @@ import SalesDetails from './pages/paymentsHistory/SalesDetails'
 import Meeting from './pages/meeting/Index'
 import Login from './pages/login/Login'
 import { useEffect, useState } from 'react'
-import InvoiceDetails from './pages/invoice/InvoiceDetails'
 import Suppliers from './pages/suppliers/Index'
 import Areas from './pages/postCode/Index'
 import CustomerDetails from './pages/customers/CustomerDetails'
@@ -28,6 +26,7 @@ import SupplierDetails from './pages/suppliers/SupplierDetails'
 import WithdrawReq from './pages/withdraw-req/Index'
 import Notifications from './pages/notification/Notifications'
 import StaffDetails from './pages/customers/StaffDetails'
+import Social from './pages/social/Index'
 
 
 function App() {
@@ -70,6 +69,7 @@ function App() {
         <Route path='/dashboard/invoice/details/:id' element={<InvoiceDetails />} /> */}
         <Route path='/dashboard/brand' element={<Brand />} />
         <Route path='/dashboard/faq' element={<Faq />} />
+        <Route path='/dashboard/social' element={<Social />} />
         <Route path='/dashboard/promotion' element={<Promotion />} />
         <Route path='/dashboard/settings' element={<Settings />} />
         <Route path='*' element={<NotFound />} />

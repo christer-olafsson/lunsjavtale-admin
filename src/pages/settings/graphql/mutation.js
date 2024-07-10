@@ -8,6 +8,7 @@ export const DEFAULT_MUTATION = gql`
     $formationDate: Date
     $logoUrl: String
     $name: String!
+    $email: String
     $slogan: String
     $socialMediaLinks: JSONString
   ){
@@ -18,6 +19,7 @@ export const DEFAULT_MUTATION = gql`
       formationDate: $formationDate
       logoUrl: $logoUrl
       name: $name
+      email: $email
       slogan: $slogan
       socialMediaLinks: $socialMediaLinks
     ){
@@ -48,4 +50,20 @@ export const USER_DELETE = gql`
       message
     }
   }
+`
+export const ACCOUNT_PROFILE_UPDATE = gql`
+  mutation AccountProfileUpdate($input: UserAccountMutationInput!){
+    accountProfileUpdate(input: $input){
+      success
+      message
+    }
+  }
+`
+export const PASSWORD_RESET = gql`
+  mutation PasswordResetMail ($email: String!){
+    passwordResetMail(email:$email){
+      success
+      message
+  }
+}
 `

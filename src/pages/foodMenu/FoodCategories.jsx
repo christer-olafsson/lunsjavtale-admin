@@ -261,13 +261,17 @@ const FoodCategories = () => {
                         </Typography>
                       }
                     </Stack>
+                    {
+                      data.node.vendor &&
+                      <Link style={{ fontSize: '14px' }} to={`/dashboard/suppliers/details/${data.node.vendor.id}`}>{data.node.vendor.name}</Link>
+                    }
                     {/* <Stack direction='row' alignItems='center' gap={1}>
                       <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
                       <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
                       <span>|</span>
                       <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
                     </Stack> */}
-                    <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1} mt={1}>
+                    <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1}>
                       <Typography sx={{ fontSize: '16px' }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.priceWithTax}
                         <i style={{ fontWeight: 400, fontSize: '13px' }}> (tax)</i> </Typography>
                       <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.actualPrice}</Typography>

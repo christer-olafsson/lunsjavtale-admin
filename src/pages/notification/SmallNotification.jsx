@@ -24,10 +24,11 @@ const SmallNotification = ({ onClose }) => {
 
 
   return (
-    <Stack sx={{
+    <Stack className='custom-scrollbar' justifyContent={notifications?.length === 0 ? 'center' : 'none'} sx={{
       width: { xs: '300px', sm: '300px', md: '350px' },
       overflowY: 'auto',
       zIndex: 99999,
+      // minHeight: '500px',
       bgcolor: '#fff',
       border: '1px solid lightgray',
       borderRadius: '8px', p: '10px 20px',
@@ -39,7 +40,9 @@ const SmallNotification = ({ onClose }) => {
             notifications?.slice(0, 5).map(item => (
               <Box key={item.id}>
                 <Typography sx={{ fontSize: '16px', fontWeight: 600, color: 'green' }}>{item.title}</Typography>
-                <Typography sx={{ fontSize: '14px' }}>{item.message}</Typography>
+                <Link to={`/dashboard/orders/details/${item.objectId}`}>
+                  <Typography onClick={onClose} sx={{ fontSize: '14px' }}>{item.message}</Typography>
+                </Link>
                 <Stack direction='row' alignItems='center' gap={.5} >
                   <QueryBuilder sx={{ fontSize: '12px' }} />
                   <Typography sx={{ fontSize: '12px' }}>{getTimeDifference(item.sentOn)}</Typography>

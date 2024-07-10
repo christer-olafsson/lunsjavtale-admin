@@ -406,37 +406,6 @@ function Layout() {
             display: 'flex',
             alignItems: 'center',
           }}>
-            {/* <ClickAwayListener onClickAway={() => setOpenEmail(false)}>
-              <Box sx={{
-                position: 'relative'
-              }}>
-                <IconButton onClick={() => (
-                  setOpenEmail(!openEmail),
-                  setOpenNotification(false)
-                )} sx={{ color: 'gray.main' }}>
-                  <Badge badgeContent={0} color="error">
-                    <MailOutline />
-                  </Badge>
-                </IconButton>
-                <Collapse sx={{
-                  position: 'absolute',
-                  right: { xs: -80, md: 0 },
-                  top: 55,
-                  zIndex: 9999999
-                }} in={openEmail}>
-                  <Box sx={{
-                    width: { xs: '90vw', sm: '300px', md: '350px' },
-                    maxHeight: '500px',
-                    overflowY: 'auto',
-                    bgcolor: '#fff',
-                    border: '1px solid gray',
-                    borderRadius: '8px', p: '10px 20px',
-                  }}>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum ipsam asperiores quasi dolor, recusandae sequi ducimus nam labore impedit quam?</p>
-                  </Box>
-                </Collapse>
-              </Box>
-            </ClickAwayListener> */}
 
             {/* small notification */}
             <ClickAwayListener onClickAway={() => setOpenNotification(false)}>

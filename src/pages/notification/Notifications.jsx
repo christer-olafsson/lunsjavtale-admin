@@ -10,6 +10,7 @@ import DataTable from '../../common/datatable/DataTable';
 import CButton from '../../common/CButton/CButton';
 import { NOTIFICATION_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([])
@@ -90,9 +91,11 @@ const Notifications = () => {
         const { row } = params
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{
-              color: row.isSeen ? 'gray' : 'green'
-            }} variant='body2'>{row.message}</Typography>
+            <Link to={`/dashboard/orders/details/${row.objectId}`}>
+              <Typography sx={{
+                color: row.isSeen ? 'gray' : 'green'
+              }} variant='body2'>{row.message}</Typography>
+            </Link>
           </Stack>
         )
       }

@@ -7,6 +7,7 @@ import UserManagemenet from "./tabs/UserManagemenet";
 import PaymentSettings from "./tabs/PaymentSettings";
 import NotificationSettings from "./tabs/NotificationSettings";
 import Info from "./tabs/Info";
+import Account from "./tabs/Account";
 
 
 const TabItem = styled(Tab)(({ theme }) => ({
@@ -57,7 +58,8 @@ CustomTabPanel.propTypes = {
 
 const tabName = [
   // 'General Settings', 
-  'Info',
+  'Company Info',
+  'Account',
   'User Management',
   // 'Payment Settings ', 'Notification Settings ',
 ]
@@ -96,11 +98,9 @@ const SettingTab = () => {
       </Stack>
 
       <Box maxWidth='lg' sx={{ p: { xs: 1, lg: 3 } }}>
-        {/* <CustomTabPanel value={tabIndex} index={0}><GeneralSettings /></CustomTabPanel> */}
         <CustomTabPanel value={tabIndex} index={0}><Info /></CustomTabPanel>
-        <CustomTabPanel value={tabIndex} index={1}><UserManagemenet /></CustomTabPanel>
-        {/* <CustomTabPanel value={tabIndex} index={2}><PaymentSettings /></CustomTabPanel> */}
-        {/* <CustomTabPanel value={tabIndex} index={3}><NotificationSettings /></CustomTabPanel> */}
+        <CustomTabPanel value={tabIndex} index={1}><Account /></CustomTabPanel>
+        <CustomTabPanel value={tabIndex} index={2}><UserManagemenet /></CustomTabPanel>
       </Box>
 
     </Paper>

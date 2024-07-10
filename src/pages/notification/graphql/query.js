@@ -12,6 +12,7 @@ export const ADMIN_NOTIFICATIONS = gql`
         sentOn
         status
         isSeen
+        objectId
       }
     }
   }

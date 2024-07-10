@@ -1,5 +1,61 @@
 import { gql } from "@apollo/client";
 
+export const ME = gql`
+  query{
+    me{
+      id
+      email
+      firstName
+      lastName
+      username
+      phone
+      postCode
+      gender
+      role
+      jobTitle
+      dateOfBirth
+      address
+      about
+      photoUrl
+      fileId
+      isActive
+      company{
+        id
+        name
+        email
+        postCode
+        logoUrl
+        totalEmployee
+        noOfEmployees
+        description
+        workingEmail
+        contact
+        isBlocked
+        fileId
+        balance
+        formationDate
+          billingAddress{
+          id
+          firstName
+          lastName
+          address
+          sector
+          country
+          phone
+        }
+      }
+      allergies{
+        edges{
+          node{
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`
+
 export const GET_ALL_CATEGORY = gql`
 query{
   categories{

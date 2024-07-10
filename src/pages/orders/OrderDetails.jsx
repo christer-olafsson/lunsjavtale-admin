@@ -39,7 +39,7 @@ const OrderDetails = () => {
   return (
     <Box>
       <Stack direction='row' gap={2}>
-        <IconButton onClick={() => navigate('/dashboard/orders')}>
+        <IconButton onClick={() => navigate(- 1)}>
           <ArrowBack />
         </IconButton>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order Details</Typography>

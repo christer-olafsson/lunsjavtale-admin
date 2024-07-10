@@ -15,8 +15,6 @@ const Login = () => {
   const [disableResendBtn, setDisableResendBtn] = useState(false);
   const [forgotEmail, setForgotEmail] = useState({ email: '' });
 
-
-
   const [loginUser, { loading, error: loginErr }] = useMutation(LOGIN_USER, {
     onCompleted: (res) => {
       if (!res.loginUser.user.isAdmin) {

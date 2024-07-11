@@ -33,7 +33,7 @@ const FoodDetails = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '1000px' }}>
+    <Box maxWidth='xl' sx={{ minHeight: '1000px' }}>
       {
         loading ? <Loader /> : error ? <ErrorMsg /> :
           <>

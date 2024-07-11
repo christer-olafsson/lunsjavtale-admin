@@ -84,7 +84,7 @@ const FoodItem = () => {
 
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between' mb={2} gap={2}>
         <Stack direction='row' gap={2}>
           <Box sx={{

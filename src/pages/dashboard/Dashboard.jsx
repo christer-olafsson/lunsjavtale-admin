@@ -43,28 +43,25 @@ const Dashboard = () => {
   });
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Welcome , Lunsjavtale</Typography>
       {
         loading ? <Loader /> : error ? <ErrorMsg /> :
           <Stack gap={3}>
-            <Stack direction='row' justifyContent='space-between' sx={{ minWidth: 200, mt: 2 }}>
-              <Box />
-              <FormControl sx={{ minWidth: '200px' }} size='small'>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={dateRange}
-                  label="Status"
-                  onChange={e => setDateRange(e.target.value)}
-                >
-                  <MenuItem value={'last-7-days'}>Last 7 days </MenuItem>
-                  <MenuItem value={'last-30-days'}>Last 30 days</MenuItem>
-                  <MenuItem value={'last-6-months'}>Last 6 months</MenuItem>
-                  <MenuItem value={'last-12-months'}>Last 12 months</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
-            <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={3}>
+            <FormControl sx={{ maxWidth: '200px', mt: 2 }} size='small'>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={dateRange}
+                label="Status"
+                onChange={e => setDateRange(e.target.value)}
+              >
+                <MenuItem value={'last-7-days'}>Last 7 days </MenuItem>
+                <MenuItem value={'last-30-days'}>Last 30 days</MenuItem>
+                <MenuItem value={'last-6-months'}>Last 6 months</MenuItem>
+                <MenuItem value={'last-12-months'}>Last 12 months</MenuItem>
+              </Select>
+            </FormControl>
+            <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
               <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Sales Today </Typography>
                 <Typography sx={boxStyle.value}>

@@ -62,7 +62,7 @@ const Faq = () => {
 
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Frequently asked questions</Typography>
       <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Box />

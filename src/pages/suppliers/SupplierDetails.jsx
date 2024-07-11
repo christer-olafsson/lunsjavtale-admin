@@ -119,7 +119,7 @@ const SupplierDetails = () => {
               <Stack direction='row' flexWrap='wrap' gap={2} mt={3}>
                 {
                   vendorLoading ? <Loader /> : vendorErr ? <ErrorMsg /> :
-                    vendor?.products?.edges.map(item => (
+                    vendor?.products?.edges.filter(item => !item.node.isDeleted).map(item => (
                       <SupplierProductCard key={item.node.id} data={item.node} />
                     ))
                 }
@@ -127,8 +127,7 @@ const SupplierDetails = () => {
               <Box>
                 <Typography variant='h5' sx={{ my: 2, fontWeight: 600 }}>Owner Information</Typography>
                 <Avatar sx={{ mb: 1 }} src={vendor?.owner?.photoUrl} alt="" />
-                <Typography>Name: <b>{vendor?.owner?.firstName + ' ' + vendor?.owner?.lastName}</b> </Typography>
-                <Typography>User Name: <b>{vendor?.owner?.username}</b> </Typography>
+                <Typography>Name: <b>{vendor?.owner?.firstName}</b> </Typography>
                 <Typography>Email: <b>{vendor?.owner?.email}</b> </Typography>
                 <Typography>Phone: <b>{vendor?.owner?.phone}</b> </Typography>
                 <Typography>Gender: <b>{vendor?.owner?.gender}</b> </Typography>

@@ -6,10 +6,10 @@ import { DataGrid } from '@mui/x-data-grid'
 const DataTable = ({ rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
   return (
     <Box
+      maxWidth='xl'
       sx={{
         minHeight: '650px',
         width: '100%',
-        minHeight: '650px',
       }}
     >
       <DataGrid

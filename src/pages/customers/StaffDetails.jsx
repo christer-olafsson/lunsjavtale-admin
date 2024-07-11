@@ -24,7 +24,7 @@ const StaffDetails = () => {
   });
  
   return (
-    <Box>
+    <Box maxWidth='xl'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>
         <IconButton onClick={() => navigate(-1)}>
           <West />

@@ -1,4 +1,4 @@
-import { AccessTime, Add, ArrowRight, DeleteOutline, DoneOutlineOutlined, EditAttributesOutlined, EditOutlined, LocalPhoneOutlined, LockOutlined, MailOutlined, Search } from '@mui/icons-material'
+import { AccessTime, Add, ArrowRight, DeleteOutline, DoneOutlineOutlined, EditAttributesOutlined, EditOutlined, LocalPhoneOutlined, Lock, LockOutlined, MailOutlined, Search } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import NewMeeting from './NewMeeting';
@@ -129,6 +129,10 @@ const Meeting = () => {
             <IconButton onClick={() => handleMeetingDetailsDialog(params.row)}>
               <ArrowRight />
             </IconButton>
+            {
+              params.row.company?.isBlocked &&
+              <LockOutlined sx={{ color: 'red' }} />
+            }
           </Stack>
         )
       }
@@ -275,27 +279,6 @@ const Meeting = () => {
     },
 
     {
-      field: 'lock', headerName: '', width: 100,
-      renderCell: (params) => {
-        return (
-          <IconButton onClick={() => handleDeleteDialog(params.row)}>
-            <Typography sx={{
-              fontSize: '14px',
-              color: '#fff',
-              gap: '5px',
-              display: params.row.company?.isBlocked ? 'inline-flex' : 'none',
-              bgcolor: 'red',
-              px: 1, borderRadius: '4px'
-            }}>
-              {/* <LockOutlined fontSize='small' /> */}
-              Blocked
-            </Typography>
-          </IconButton>
-        )
-      },
-    },
-
-    {
       field: 'action', headerName: '', width: 50,
       renderCell: (params) => {
         return (
@@ -330,17 +313,17 @@ const Meeting = () => {
         )
       },
     },
-    {
-      field: 'note', headerName: '', flex: 1,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Note</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} justifyContent='center'>
-          <Typography variant='body2'>{params.row.note}</Typography>
-        </Stack>
-      )
-    },
+    // {
+    //   field: 'note', headerName: '', flex: 1,
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Note</Typography>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Stack sx={{ height: '100%' }} justifyContent='center'>
+    //       <Typography variant='body2'>{params.row.note}</Typography>
+    //     </Stack>
+    //   )
+    // },
 
   ];
 
@@ -350,7 +333,7 @@ const Meeting = () => {
 
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Stack direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Meetings</Typography>
         <Typography sx={{
@@ -363,7 +346,7 @@ const Meeting = () => {
         }}>({meetings?.length})</Typography>
       </Stack>
       <Stack direction={{ xs: 'column-reverse', md: 'row' }} gap={2} justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
-      <Stack direction='row' gap={2}>
+        <Stack direction='row' gap={2}>
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
@@ -397,7 +380,7 @@ const Meeting = () => {
         <Button onClick={() => setCreateMeetingDialogOpen(true)} variant='contained' startIcon={<Add />}>Create Meeting</Button>
       </Stack>
       {/* details meeting */}
-      <CDialog openDialog={meetingDetailsDialogOpen}>
+      <CDialog maxWidth='md' openDialog={meetingDetailsDialogOpen}>
         <MeetingDetails data={meetingDetailsData} closeDialog={() => setMeetingDetailsDialogOpen(false)} />
       </CDialog>
       {/* new meeting */}

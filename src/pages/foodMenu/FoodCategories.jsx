@@ -65,7 +65,7 @@ const FoodCategories = () => {
     fetchProducts()
   }, [])
   return (
-    <Box>
+    <Box maxWidth='xl'>
       <Stack direction='row' justifyContent='space-between'>
         <Stack direction='row' gap={2}>
           <Box sx={{

@@ -67,7 +67,7 @@ const Promotion = () => {
   }, [])
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Box />
         <Button onClick={() => setAddPromotionDialogOpen(true)} variant='contained' startIcon={<Add />}>New Promotion</Button>

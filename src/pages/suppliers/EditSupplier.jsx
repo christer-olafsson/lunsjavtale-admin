@@ -16,6 +16,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
   const [fileUploadLoading, setFileUploadLoading] = useState(false)
   const [payload, setPayload] = useState({
     name: '',
+    firstName: '',
     email: '',
     contact: '',
     postCode: '',
@@ -48,10 +49,10 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       setErrors({ name: 'Supplier Name Required!' })
       return
     }
-    // if (!payload.firstName) {
-    //   setErrors({ firstName: 'Owner Name Required!' })
-    //   return
-    // }
+    if (!payload.firstName) {
+      setErrors({ firstName: 'Owner Name Required!' })
+      return
+    }
     if (!payload.email) {
       setErrors({ email: 'Email Required!' })
       return
@@ -93,6 +94,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
   useEffect(() => {
     setPayload({
       name: data.name,
+      firstName: data.firstName,
       email: data.email,
       contact: data.contact,
       isBlocked: data.isBlocked,
@@ -100,7 +102,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       // firstName: data.users.edges.find(item => item.node.role === 'vendor')?.node.firstName,
     })
   }, [data])
-
+  console.log(data)
 
   return (
     <Box>
@@ -113,25 +115,24 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       </Stack>
 
       <FormGroup>
-        <TextField value={payload.name} error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} name='name' label='Supplier name' />
+        <TextField sx={{ mb: 2 }} value={payload.name} error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} name='name' label='Supplier name' />
+        <TextField value={payload.firstName} error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' />
         <Stack direction='row' gap={2} mb={2} mt={2}>
           <Stack flex={1} gap={2}>
-            {/* <TextField value={payload.firstName} error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' /> */}
             <TextField value={payload.contact} error={Boolean(errors.contact)} helperText={errors.contact} onChange={handleInputChange} name='contact' label='Phone Number' />
-            <TextField value={payload.postCode} onChange={handleInputChange} name='postCode' label='Post Code' />
             {/* <TextField error={Boolean(errors.password)} helperText={errors.password} onChange={handleInputChange} name='password' label='Password' /> */}
           </Stack>
           <Stack flex={1} gap={2}>
-            <TextField value={payload.email} error={Boolean(errors.email)} helperText={errors.email} onChange={handleInputChange} name='email' label='Email' />
-            <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })} checked={payload.isBlocked} />} label="Status Lock" />
+            <TextField value={payload.postCode} onChange={handleInputChange} name='postCode' label='Post Code' />
           </Stack>
         </Stack>
+        <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })} checked={payload.isBlocked} />} label="Status Lock" />
 
       </FormGroup>
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
         {
-          file && <Box sx={{
+          file || data.logoUrl && <Box sx={{
             flex: 1,
             position: 'relative'
           }}>
@@ -139,13 +140,13 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
               width: '100%',
               height: '114px'
             }}>
-              <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} src={file ? URL.createObjectURL(file) : ''} alt="" />
-              <IconButton onClick={() => setFile('')} sx={{
+              <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} src={file ? URL.createObjectURL(file) : data.logoUrl ?? ''} alt="" />
+              {/* <IconButton onClick={() => setFile('')} sx={{
                 position: 'absolute',
                 top: -30, left: -20
               }}>
                 <Close />
-              </IconButton>
+              </IconButton> */}
             </Box>
           </Box>
         }

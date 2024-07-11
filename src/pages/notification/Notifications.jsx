@@ -47,7 +47,7 @@ const Notifications = () => {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
- 
+ console.log(notifications)
   const columns = [
     {
       field: 'Time', width: 250,
@@ -94,7 +94,7 @@ const Notifications = () => {
             <Link to={`/dashboard/orders/details/${row.objectId}`}>
               <Typography sx={{
                 color: row.isSeen ? 'gray' : 'green'
-              }} variant='body2'>{row.message}</Typography>
+              }} >{row.message}</Typography>
             </Link>
           </Stack>
         )

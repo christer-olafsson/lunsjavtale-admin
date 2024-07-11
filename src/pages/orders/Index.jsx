@@ -82,7 +82,8 @@ const Orders = () => {
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Link to={`/dashboard/orders/details/${params.row.id}`}>
-            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{params.row.id}</Typography>
+          details
+            {/* <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>>>{params.row.id}</Typography> */}
           </Link>
         </Stack>
       ),
@@ -254,7 +255,7 @@ const Orders = () => {
 
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
         <Typography sx={{

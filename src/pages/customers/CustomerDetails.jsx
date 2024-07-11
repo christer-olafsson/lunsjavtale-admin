@@ -25,7 +25,7 @@ const CustomerDetails = () => {
   });
 
   return (
-    <Box>
+    <Box maxWidth='xl'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>
         <IconButton onClick={() => navigate(-1)}>
           <West />
@@ -48,10 +48,10 @@ const CustomerDetails = () => {
                           height: '100px',
                           objectFit: 'cover',
                           borderRadius: '4px',
-                        }} src={company.logoUrl ? company.logoUrl : "/noImage.png"} alt="" />
+                        }} src={company?.logoUrl ? company?.logoUrl : "/noImage.png"} alt="" />
                         <Box>
                           <Typography sx={{ display: 'inline-flex', gap: 1 }}>Company: <b>{company?.name}</b> <LockOutlined sx={{
-                            display: company.isBlocked ? 'block' : 'none',
+                            display: company?.isBlocked ? 'block' : 'none',
                             color: 'red'
                           }} /> </Typography>
                           <Typography>Email: <b>{company?.email}</b> </Typography>

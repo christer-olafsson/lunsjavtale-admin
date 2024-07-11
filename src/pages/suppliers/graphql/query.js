@@ -24,6 +24,7 @@ export const VENDORS = gql`
               firstName
               lastName
               role
+              photoUrl
             }
           }
         }
@@ -77,6 +78,7 @@ export const VENDOR = gql`
           title
           description
           contains
+          isDeleted
           availability
           discountAvailability
           # productRatings

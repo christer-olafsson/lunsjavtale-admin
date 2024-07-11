@@ -116,7 +116,7 @@ const Customers = () => {
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Company Info</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }}>
+        <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>
           <Typography sx={{
             fontSize: '14px',
             display: 'inline-flex',
@@ -304,7 +304,7 @@ const Customers = () => {
   }, [])
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Stack direction='row' gap={1} alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Customers</Typography>
         <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'primary.main', bgcolor: 'light.main', borderRadius: '4px', px: 1 }}>{rows?.length} Customers</Typography>
@@ -366,6 +366,7 @@ const Customers = () => {
         {
           loadingCompany ? <LoadingBar /> : companyErr ? <ErrorMsg /> :
             <DataTable
+              rowHeight={70}
               columns={columns}
               rows={rows}
             />

@@ -12,11 +12,11 @@ import { deleteFile } from '../../utils/deleteFile';
 
 const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
   const [errors, setErrors] = useState({})
-  const [file, setFile] = useState('')
+  const [file, setFile] = useState(null)
   const [fileUploadLoading, setFileUploadLoading] = useState(false)
   const [payload, setPayload] = useState({
     name: '',
-    firstName: '',
+    // firstName: '',
     email: '',
     contact: '',
     postCode: '',
@@ -49,10 +49,10 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       setErrors({ name: 'Supplier Name Required!' })
       return
     }
-    if (!payload.firstName) {
-      setErrors({ firstName: 'Owner Name Required!' })
-      return
-    }
+    // if (!payload.firstName) {
+    //   setErrors({ firstName: 'Owner Name Required!' })
+    //   return
+    // }
     if (!payload.email) {
       setErrors({ email: 'Email Required!' })
       return
@@ -94,7 +94,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
   useEffect(() => {
     setPayload({
       name: data.name,
-      firstName: data.firstName,
+      // firstName: data.firstName,
       email: data.email,
       contact: data.contact,
       isBlocked: data.isBlocked,
@@ -102,7 +102,6 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       // firstName: data.users.edges.find(item => item.node.role === 'vendor')?.node.firstName,
     })
   }, [data])
-  console.log(data)
 
   return (
     <Box>
@@ -116,7 +115,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
 
       <FormGroup>
         <TextField sx={{ mb: 2 }} value={payload.name} error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} name='name' label='Supplier name' />
-        <TextField value={payload.firstName} error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' />
+        {/* <TextField value={payload.firstName} error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' /> */}
         <Stack direction='row' gap={2} mb={2} mt={2}>
           <Stack flex={1} gap={2}>
             <TextField value={payload.contact} error={Boolean(errors.contact)} helperText={errors.contact} onChange={handleInputChange} name='contact' label='Phone Number' />
@@ -132,7 +131,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
         {
-          file || data.logoUrl && <Box sx={{
+          <Box sx={{
             flex: 1,
             position: 'relative'
           }}>
@@ -140,7 +139,9 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
               width: '100%',
               height: '114px'
             }}>
-              <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} src={file ? URL.createObjectURL(file) : data.logoUrl ?? ''} alt="" />
+              <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                src={file !== null ? URL.createObjectURL(file) : data.logoUrl ?? ''} alt="No Image"
+              />
               {/* <IconButton onClick={() => setFile('')} sx={{
                 position: 'absolute',
                 top: -30, left: -20

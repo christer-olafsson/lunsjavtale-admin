@@ -75,14 +75,13 @@ const OrderDetails = () => {
   }
 
   useEffect(() => {
-    setOrderStatus(order.status ?? '')
+    setOrderStatus(order?.status ?? '')
   }, [order])
 
 
   useEffect(() => {
     fetchOrder()
   }, [])
-
 
 
   return (
@@ -98,20 +97,20 @@ const OrderDetails = () => {
           mb: 2,
           display: 'inline-flex',
           padding: '5px 12px',
-          bgcolor: order.status === 'Cancelled'
+          bgcolor: order?.status === 'Cancelled'
             ? 'red'
-            : order.status === 'Confirmed'
+            : order?.status === 'Confirmed'
               ? 'lightgreen'
-              : order.status === 'Delivered'
+              : order?.status === 'Delivered'
                 ? 'green'
                 : 'yellow',
-          color: order.status === 'Placed'
-            ? 'dark' : order.status === 'Payment-pending'
-              ? 'dark' : order.status === 'Confirmed' ? 'dark' : '#fff',
+          color: order?.status === 'Placed'
+            ? 'dark' : order?.status === 'Payment-pending'
+              ? 'dark' : order?.status === 'Confirmed' ? 'dark' : '#fff',
           borderRadius: '50px',
           minWidth: '200px',
         }}>
-          <Typography sx={{ fontWeight: 600 }} variant='body2'>{order.status}</Typography>
+          <Typography sx={{ fontWeight: 600 }} variant='body2'>{order?.status}</Typography>
         </Stack>
         <Stack direction='row' justifyContent='space-between'>
           <Stack direction='row' gap={10}>
@@ -131,7 +130,7 @@ const OrderDetails = () => {
                 <FormControl size='small' fullWidth>
                   <InputLabel>Order Status</InputLabel>
                   <Select
-                    disabled={order.status === 'Cancelled' || order.status === 'Delivered'}
+                    disabled={order?.status === 'Cancelled' || order?.status === 'Delivered'}
                     label="Order Status"
                     error={Boolean(errors.status)}
                     value={orderStatus}
@@ -142,7 +141,7 @@ const OrderDetails = () => {
                     <MenuItem value={'Delivered'}>Delivered </MenuItem>
                   </Select>
                 </FormControl>
-                <CButton disable={order.status === 'Cancelled' || order.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
+                <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
               </Stack>
             </Stack>
             <Stack gap={1}>

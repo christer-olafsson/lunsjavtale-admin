@@ -1,21 +1,30 @@
-import { useQuery } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import { LockOutlined, West } from '@mui/icons-material'
-import { Box, IconButton, Stack, Typography } from '@mui/material'
+import { Box, IconButton, Stack, Tab, Typography } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { COMPANY } from './graphql/query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import CustomersList from './CustomersList'
 import { format } from 'date-fns'
+import { TabContext, TabList, TabPanel } from '@mui/lab'
+import CustomerOrders from './CustomerOrders'
 
 const CustomerDetails = () => {
   const [company, setCompany] = useState({})
+  const [value, setValue] = useState('1');
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
 
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { loading: loadingCompany, error: companyErr } = useQuery(COMPANY, {
+  const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANY, {
+    fetchPolicy: 'network-only',
     variables: {
       id
     },
@@ -24,8 +33,13 @@ const CustomerDetails = () => {
     },
   });
 
+  useEffect(() => {
+    fetchCompany()
+  }, [])
+
+
   return (
-    <Box maxWidth='xl'>
+    <Box maxWidth='xxl'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>
         <IconButton onClick={() => navigate(-1)}>
           <West />
@@ -41,7 +55,7 @@ const CustomerDetails = () => {
               {
                 loadingCompany ? <Loader /> : companyErr ? <ErrorMsg /> :
                   <Box>
-                    <Stack direction={{xs: 'column',lg: 'row'}} justifyContent='space-between'>
+                    <Stack direction={{ xs: 'column', lg: 'row' }} justifyContent='space-between'>
                       <Stack direction='row' gap={2} mb={5} alignItems='center'>
                         <img style={{
                           width: '100px',
@@ -100,7 +114,22 @@ const CustomerDetails = () => {
                         </Typography>
                       </Stack>
                     </Stack>
-                    <CustomersList data={company} />
+                    <Box sx={{ width: '100%', typography: 'body1' }}>
+                      <TabContext value={value}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                          <TabList onChange={handleChange} aria-label="lab API tabs example">
+                            <Tab label="Orders" value="1" />
+                            <Tab label="Staffs" value="2" />
+                          </TabList>
+                        </Box>
+                        <TabPanel value="1">
+                          <CustomerOrders fetchOrders={fetchCompany} loading={loadingCompany} error={companyErr} data={company} />
+                        </TabPanel>
+                        <TabPanel value="2">
+                          <CustomersList />
+                        </TabPanel>
+                      </TabContext>
+                    </Box>
                   </Box>
               }
             </Stack>

@@ -3,19 +3,20 @@ import { Box, styled } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 
 
-const DataTable = ({ rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
+const DataTable = ({loading, rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
   return (
     <Box
-      maxWidth='xl'
+      maxWidth='1800px'
       sx={{
-        minHeight: '650px',
         width: '100%',
       }}
     >
       <DataGrid
         sx={{
-          boxShadow: 2
+          boxShadow: 2,
+          minHeight: '650px',
         }}
+        loading={loading}
         rows={rows}
         columns={columns}
         autoHeight

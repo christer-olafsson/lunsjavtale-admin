@@ -30,7 +30,7 @@ import Social from './pages/social/Index'
 
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem('admin_lunsjavtale'));
 
   const { pathname } = useLocation();
   useEffect(() => {
@@ -38,7 +38,7 @@ function App() {
   }, [pathname]);
 
   useEffect(() => {
-    setToken(localStorage.getItem('token'))
+    setToken(localStorage.getItem('admin_lunsjavtale'))
   }, [])
 
 

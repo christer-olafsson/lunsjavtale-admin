@@ -21,7 +21,7 @@ const Login = () => {
         toast.error('Access Denied');
         return
       }
-      localStorage.setItem("token", res.loginUser.access);
+      localStorage.setItem("admin_lunsjavtale", res.loginUser.access);
       toast.success('Login Success!');
       window.location.href = "/";
     },

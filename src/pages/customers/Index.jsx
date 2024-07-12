@@ -69,14 +69,13 @@ const Customers = () => {
 
   const columns = [
     {
-      field: 'details', headerName: '', width: 60,
+      field: 'details', headerName: 'ID', width: 60,
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} justifyContent='center'>
-          <IconButton>
-            <Link to={`/dashboard/customers/details/${params.row.id}`}>
-              <KeyboardArrowRight />
-            </Link>
-          </IconButton>
+          <Link to={`/dashboard/customers/details/${params.row.id}`}>
+            {/* <KeyboardArrowRight /> */}
+            {params.row.id}
+          </Link>
         </Stack>
       )
     },
@@ -99,7 +98,7 @@ const Customers = () => {
                 gap: '3px'
               }}>{params.row.company}
                 {
-                  params.row.isChecked &&
+                  !params.row.isChecked &&
                   <span style={{ fontSize: '10px', color: 'green' }}>new</span>
                 }
               </Typography>

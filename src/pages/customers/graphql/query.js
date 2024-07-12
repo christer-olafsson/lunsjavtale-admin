@@ -15,6 +15,28 @@ export const COMPANY = gql`
     orderedAmount
     balance
     isBlocked
+    orders{
+      edges{
+        node{
+          id
+          createdOn
+          coupon{
+            id
+            name
+          }
+          isDeleted
+          paymentType
+          deliveryDate
+          companyAllowance
+          discountAmount
+          finalPrice
+          paidAmount
+          isFullPaid
+          status
+          dueAmount
+        }
+      }
+    }
     owner{
       id
       username

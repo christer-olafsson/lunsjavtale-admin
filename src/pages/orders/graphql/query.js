@@ -14,6 +14,7 @@ export const ORDERS = gql`
           deliveryDate
           finalPrice
           paidAmount
+          dueAmount
           coupon{
             id
             name

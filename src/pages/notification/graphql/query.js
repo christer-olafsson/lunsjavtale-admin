@@ -13,6 +13,7 @@ export const ADMIN_NOTIFICATIONS = gql`
         status
         isSeen
         objectId
+        notificationType
       }
     }
   }

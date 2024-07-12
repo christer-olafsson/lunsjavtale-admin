@@ -1,21 +1,26 @@
 import { ArrowRight, BorderColor, Search, TrendingFlat } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useEffect, useState } from 'react';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ORDERS, SALES_HISTORIES } from './graphql/query';
 import { format } from 'date-fns';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
+import { SALES_HISTORY_DELETE } from './graphql/mutation';
+import toast from 'react-hot-toast';
+import CButton from '../../common/CButton/CButton';
 
 const SalesHistory = () => {
   const [salesHistories, setSalesHistories] = useState([])
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState('');
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
 
 
-  const { loading, error: salesHistoryErr } = useQuery(SALES_HISTORIES, {
+  const [fetchSalesHistory, { loading, error: salesHistoryErr }] = useLazyQuery(SALES_HISTORIES, {
+    fetchPolicy:'network-only',
     variables: {
       supplierNameEmail: searchText
     },
@@ -24,9 +29,28 @@ const SalesHistory = () => {
     }
   });
 
+  const [salesHistoryDelete, { loading: deleteLoading }] = useMutation(SALES_HISTORY_DELETE, {
+    onCompleted: (res) => {
+      toast.success(res.salesHistoryDelete.message)
+      fetchSalesHistory()
+      setSelectedRowIds([])
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    }
+  });
+
+  const handleSalesHistoryDelete = () => {
+    salesHistoryDelete({
+      variables: {
+        ids: selectedRowIds,
+      }
+    })
+  }
+
   const columns = [
     {
-      field: 'supplier', width: 250,
+      field: 'supplier', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Suppliers</Typography>
       ),
@@ -59,7 +83,7 @@ const SalesHistory = () => {
       }
     },
     {
-      field: 'ordered Company', width: 250,
+      field: 'ordered Company', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Ordered Company</Typography>
       ),
@@ -144,7 +168,7 @@ const SalesHistory = () => {
                 : row.order.status === 'Delivered'
                   ? 'green'
                   : 'yellow',
-            color: row.order.status === 'Placed' ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
+            color: row.order.status === 'Placed' ? 'dark' : row.order.status === 'Payment-pending' ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.order.status}</Typography>
@@ -156,9 +180,14 @@ const SalesHistory = () => {
 
   ];
 
+  useEffect(() => {
+    fetchSalesHistory()
+  }, [])
+  
+
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='xl'>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>
         <Stack direction='row' alignItems='center'>
           <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Suppliers Sales History</Typography>
@@ -172,7 +201,7 @@ const SalesHistory = () => {
           }}>({salesHistories?.length})</Typography>
         </Stack>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems='center'>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
@@ -201,6 +230,17 @@ const SalesHistory = () => {
             </Select>
           </FormControl>
         </Box>
+        {
+          <CButton
+            style={{
+              visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
+            }}
+            isLoading={deleteLoading}
+            onClick={handleSalesHistoryDelete}
+            variant='contained'>
+            Delete
+          </CButton>
+        }
       </Stack>
       <Box mt={3}>
         {
@@ -208,6 +248,8 @@ const SalesHistory = () => {
             <DataTable
               columns={columns}
               rows={salesHistories}
+              checkboxSelection
+              onRowSelectionModelChange={(newSelection) => setSelectedRowIds(newSelection)}
             />
         }
       </Box>

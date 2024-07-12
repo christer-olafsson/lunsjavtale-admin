@@ -1,22 +1,24 @@
-import { ArrowRight, BorderColor, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
-import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
-import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import { ORDERS } from './graphql/query';
-import { format } from 'date-fns';
+/* eslint-disable react/prop-types */
+import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
-import CDialog from '../../common/dialog/CDialog';
-import UpdateOrder from './UpdateOrder';
-import ApplyCoupon from './ApplyCoupon';
-import CButton from '../../common/CButton/CButton';
+import { format } from 'date-fns';
+import { DeleteOutline, EditOutlined, Search } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { ORDER_HISTORY_DELETE } from './graphql/mutation';
+import { useMutation } from '@apollo/client';
+import { ORDER_HISTORY_DELETE } from '../orders/graphql/mutation';
+import CDialog from '../../common/dialog/CDialog';
+import ApplyCoupon from '../orders/ApplyCoupon';
+import UpdateOrder from '../orders/UpdateOrder';
+import CButton from '../../common/CButton/CButton';
 
-const Orders = () => {
+const CustomerOrders = ({ data, error, loading, fetchOrders }) => {
   const [orders, setOrders] = useState([])
+
+
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
   const [searchText, setSearchText] = useState('')
@@ -26,17 +28,6 @@ const Orders = () => {
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
 
-
-  const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
-    variables: {
-      companyNameEmail: searchText,
-      status: statusFilter === 'all' ? '' : statusFilter
-    },
-    fetchPolicy: 'network-only',
-    onCompleted: (res) => {
-      setOrders(res.orders.edges.map(item => item.node));
-    }
-  });
 
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
     onCompleted: (res) => {
@@ -86,26 +77,6 @@ const Orders = () => {
           </Link>
         </Stack>
       ),
-    },
-    {
-      field: 'company', width: 300,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
-            <Avatar src={row.company.logoUrl ?? ''} />
-            <Box>
-              <Link to={`/dashboard/customers/details/${row.company.id}`}>
-                <Typography>{row.company?.name}</Typography>
-              </Link>
-              <Typography>{row.company?.email}</Typography>
-            </Box>
-          </Stack>
-        )
-      }
     },
     {
       field: 'Date', width: 250,
@@ -262,10 +233,10 @@ const Orders = () => {
     },
   ];
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
 
+  useEffect(() => {
+    setOrders(data?.orders?.edges?.map(item => item.node))
+  }, [data])
 
   return (
     <Box maxWidth='xxl'>
@@ -320,8 +291,8 @@ const Orders = () => {
       <CDialog openDialog={orderUpdateDialogOpen}>
         <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
       </CDialog>
-       {/* delete Order */}
-       <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>
+      {/* delete Order */}
+      <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>
         <Box>
           <img src="/Featured icon.png" alt="" />
           <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Confirm Delete ?</Typography>
@@ -334,11 +305,11 @@ const Orders = () => {
       </CDialog>
       <Box mt={3}>
         {
-          loading ? <Loader /> : orderErr ? <ErrorMsg /> :
+          loading ? <Loader /> : error ? <ErrorMsg /> :
             <DataTable
               rowHeight={70}
               columns={columns}
-              rows={orders}
+              rows={orders ?? []}
             />
         }
       </Box>
@@ -346,4 +317,4 @@ const Orders = () => {
   )
 }
 
-export default Orders
+export default CustomerOrders

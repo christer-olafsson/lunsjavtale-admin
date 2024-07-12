@@ -8,25 +8,36 @@ import DataTable from '../../common/datatable/DataTable';
 import { format } from 'date-fns';
 import { DeleteOutline, EditOutlined, Search } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { ORDER_HISTORY_DELETE } from '../orders/graphql/mutation';
 import CDialog from '../../common/dialog/CDialog';
 import ApplyCoupon from '../orders/ApplyCoupon';
 import UpdateOrder from '../orders/UpdateOrder';
 import CButton from '../../common/CButton/CButton';
+import { ORDERS } from '../orders/graphql/query';
 
-const CustomerOrders = ({ data, error, loading, fetchOrders }) => {
+const CustomerOrders = ({ data }) => {
   const [orders, setOrders] = useState([])
-
-
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState(null)
   const [statusFilter, setStatusFilter] = useState('');
   const [couponRowData, setCouponRowData] = useState({})
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
+
+  const [fetchOrders, { loading, error }] = useLazyQuery(ORDERS, {
+    variables: {
+      deliveryDate: searchText ? searchText : null,
+      status: statusFilter === 'all' ? '' : statusFilter,
+      company: data.id
+    },
+    fetchPolicy: 'network-only',
+    onCompleted: (res) => {
+      setOrders(res.orders.edges.map(item => item.node));
+    }
+  });
 
 
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
@@ -233,10 +244,10 @@ const CustomerOrders = ({ data, error, loading, fetchOrders }) => {
     },
   ];
 
-
   useEffect(() => {
-    setOrders(data?.orders?.edges?.map(item => item.node))
-  }, [data])
+    fetchOrders()
+  }, [])
+
 
   return (
     <Box maxWidth='xxl'>
@@ -263,7 +274,7 @@ const CustomerOrders = ({ data, error, loading, fetchOrders }) => {
           borderRadius: '4px',
           pl: 2
         }}>
-          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
+          <Input type='date' onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
           <IconButton><Search /></IconButton>
         </Box>
         <Box sx={{ minWidth: 200 }}>

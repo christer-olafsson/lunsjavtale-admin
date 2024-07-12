@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const ORDERS = gql`
-  query($companyNameEmail: String, $status: String){
-    orders(companyNameEmail: $companyNameEmail, status: $status){
+  query($companyNameEmail: String, $status: String,$company: String,$deliveryDate: Date){
+    orders(companyNameEmail: $companyNameEmail, status: $status,company: $company, deliveryDate: $deliveryDate){
       edges{
         node{
           id

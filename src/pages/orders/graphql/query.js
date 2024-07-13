@@ -28,6 +28,7 @@ export const ORDERS = gql`
             contact
             postCode
             isBlocked
+            isDeleted
             status
             logoUrl
             orderedAmount

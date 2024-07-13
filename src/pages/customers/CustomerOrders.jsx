@@ -16,7 +16,7 @@ import UpdateOrder from '../orders/UpdateOrder';
 import CButton from '../../common/CButton/CButton';
 import { ORDERS } from '../orders/graphql/query';
 
-const CustomerOrders = ({ data }) => {
+const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
   const [orders, setOrders] = useState([])
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
@@ -27,17 +27,17 @@ const CustomerOrders = ({ data }) => {
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
 
-  const [fetchOrders, { loading, error }] = useLazyQuery(ORDERS, {
-    variables: {
-      deliveryDate: searchText ? searchText : null,
-      status: statusFilter === 'all' ? '' : statusFilter,
-      company: data.id
-    },
-    fetchPolicy: 'network-only',
-    onCompleted: (res) => {
-      setOrders(res.orders.edges.map(item => item.node));
-    }
-  });
+  // const [fetchOrders, { loading, error }] = useLazyQuery(ORDERS, {
+  //   variables: {
+  //     deliveryDate: searchText ? searchText : null,
+  //     status: statusFilter === 'all' ? '' : statusFilter,
+  //     company: data?.id
+  //   },
+  //   fetchPolicy: 'network-only',
+  //   onCompleted: (res) => {
+  //     setOrders(res.orders.edges.map(item => item.node));
+  //   }
+  // });
 
 
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
@@ -97,8 +97,8 @@ const CustomerOrders = ({ data }) => {
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'yyyy-MM-dd')}</b> </Typography>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{params.row.deliveryDate}</b> </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b> </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate, 'dd-MM-yyyy')}</b> </Typography>
           </Stack>
         )
       }
@@ -245,10 +245,10 @@ const CustomerOrders = ({ data }) => {
   ];
 
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    setOrders(data?.orders?.edges.map(item => item.node))
+  }, [data])
 
-
+  console.log('data',data)
   return (
     <Box maxWidth='xxl'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
@@ -262,7 +262,7 @@ const CustomerOrders = ({ data }) => {
           px: 1
         }}>({orders?.length})</Typography>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
+      {/* <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
@@ -293,7 +293,7 @@ const CustomerOrders = ({ data }) => {
             </Select>
           </FormControl>
         </Box>
-      </Stack>
+      </Stack> */}
       {/* apply coupon */}
       <CDialog openDialog={couponDialogOpen}>
         <ApplyCoupon fetchOrders={fetchOrders} data={couponRowData} closeDialog={() => setCouponDialogOpen(false)} />

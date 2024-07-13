@@ -1,4 +1,4 @@
-import { BorderColor, ChevronRight, MoreHoriz, Search, StoreOutlined } from '@mui/icons-material'
+import { BorderColor, ChevronRight, MoreHoriz, PriorityHigh, RemoveCircleOutline, Search, StoreOutlined } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -63,11 +63,12 @@ const PaymentsHistory = () => {
           {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> :
             <StoreOutlined />}
           <Box>
-            <Link to={`/dashboard/customers/details/${params.row.company.id}`}>
+            <Link to={params.row.company.isDeleted ? '' : `/dashboard/customers/details/${params.row.company.id}`}>
               <Typography sx={{
                 fontSize: '14px',
                 fontWeight: 600,
-              }}>{params.row.company.name}
+                color: params.row.company.isDeleted ? 'red' : 'inherit'
+              }}>{params.row.company.isDeleted && '(removed)'}{params.row.company.name}
               </Typography>
             </Link>
             <Typography sx={{ fontSize: '14px' }}>{params.row.company.email}</Typography>
@@ -134,7 +135,7 @@ const PaymentsHistory = () => {
     fetchOrderPayment()
   }, [])
 
-
+  console.log(orderPayments)
   return (
     <Box maxWidth='xl'>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>

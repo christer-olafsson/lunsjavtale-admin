@@ -27,6 +27,7 @@ export const ORDER_PAYMENTS = gql`
         isBlocked
         status
         logoUrl
+        isDeleted
       }
       }
     }

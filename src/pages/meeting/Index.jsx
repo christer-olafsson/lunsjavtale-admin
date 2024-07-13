@@ -17,6 +17,7 @@ import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
 import MeetingDetails from './MeetingDetails';
 import EditMeeting from './EditMeeting';
+import { nb } from 'date-fns/locale';
 
 const Meeting = () => {
   const [statusFilter, setStatusFilter] = useState('');
@@ -150,8 +151,13 @@ const Meeting = () => {
             {
               row.company !== null ?
                 <Stack>
-                  <Link to={`/dashboard/customers/details/${row.company?.id}`}>
-                    <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.company?.name}</Typography>
+                  <Link to={params.row.company.isDeleted ? '' : `/dashboard/customers/details/${row.company.id}`}>
+                    <Typography sx={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: row.company.isDeleted ? 'red' : 'inherit'
+                    }}>{row.company.isDeleted && '(removed)'} {row.company.name}
+                    </Typography>
                   </Link>
                   <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{row.company?.email}</Typography>
                   {
@@ -226,7 +232,7 @@ const Meeting = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
+          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'dd-MM-yyyy',{locale:nb})}</Typography>
           <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
             <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
           {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}
@@ -240,7 +246,7 @@ const Meeting = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.meetingTime, 'yyyy-MM-dd')}</Typography>
+          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.meetingTime, 'dd-MM-yyyy')}</Typography>
           <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
             <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
           {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}

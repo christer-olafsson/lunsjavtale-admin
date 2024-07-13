@@ -42,6 +42,7 @@ export const FOOD_MEETINGS = gql`
           email
           logoUrl
           isBlocked
+          isDeleted
         }
         firstName
         lastName

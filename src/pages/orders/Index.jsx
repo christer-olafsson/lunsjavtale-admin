@@ -1,4 +1,4 @@
-import { ArrowRight, BorderColor, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
+import { AccessTimeOutlined, ArrowRight, BorderColor, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import ApplyCoupon from './ApplyCoupon';
 import CButton from '../../common/CButton/CButton';
 import toast from 'react-hot-toast';
 import { ORDER_HISTORY_DELETE } from './graphql/mutation';
+import moment from 'moment-timezone';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
@@ -73,9 +74,34 @@ const Orders = () => {
     })
   }
 
+  function timeUntilNorway(futureDate, mode = "") {
+    if (mode === "Delivered") {
+      return "Delivered";
+    }
+    if (mode === "Cancelled") {
+      return "Cancelled";
+    }
+
+    const now = moment().tz("Europe/Oslo").startOf('day');
+    const future = moment.tz(futureDate, "UTC").tz("Europe/Oslo").startOf('day');
+
+    const diffInMilliseconds = future.diff(now);
+    if (diffInMilliseconds < 0) {
+      return 'Date passed!';
+    }
+
+    const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) {
+      return 'Delivered Today';
+    } else {
+      return `Delivered in ${diffInDays} days`;
+    }
+  }
+
   const columns = [
     {
-      field: 'id', headerName: '', width: 70,
+      field: 'id', headerName: '', width: 50,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
       ),
@@ -98,8 +124,13 @@ const Orders = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
             <Avatar src={row.company.logoUrl ?? ''} />
             <Box>
-              <Link to={`/dashboard/customers/details/${row.company.id}`}>
-                <Typography>{row.company?.name}</Typography>
+              <Link to={params.row.company.isDeleted ? '' : `/dashboard/customers/details/${row.company.id}`}>
+                <Typography sx={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: row.company.isDeleted ? 'red' : 'inherit'
+                }}>{row.company.isDeleted && '(removed)'} {row.company.name}
+                </Typography>
               </Link>
               <Typography>{row.company?.email}</Typography>
             </Box>
@@ -115,8 +146,10 @@ const Orders = () => {
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'yyyy-MM-dd')}</b> </Typography>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{params.row.deliveryDate}</b> </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b>
+              <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(params.row?.createdOn, 'HH:mm')}</span>
+            </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate,'dd-MM-yyyy')}</b> </Typography>
           </Stack>
         )
       }
@@ -136,35 +169,45 @@ const Orders = () => {
       )
     },
     {
-      field: 'paidAmount', headerName: '', width: 150,
+      field: 'amount', headerName: '', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Paid Amount</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Amount</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            <span style={{ fontWeight: 400 }}>kr </span>
-            {params.row.paidAmount}
-          </Typography>
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          {
+            params.row.paidAmount > 0 &&
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: params.row.paidAmount > 0 ? 'green' : 'lightgray' }}>
+              Paid: <b>{params.row.paidAmount}</b>
+              <span style={{ fontWeight: 400, marginLeft: '5px' }}>kr </span>
+            </Typography>
+          }
+          {
+            params.row.dueAmount > 0 &&
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: params.row.dueAmount > 0 ? 'coral' : 'lightgray' }}>
+              due: <b>{params.row.dueAmount}</b>
+              <span style={{ fontWeight: 400, marginLeft: '5px' }}>kr </span>
+            </Typography>
+          }
         </Stack>
       )
     },
+    // {
+    //   field: 'dueAmount', headerName: '', width: 150,
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+    //       <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
+    //         <span style={{ fontWeight: 400 }}>kr </span>
+    //         {params.row.dueAmount}
+    //       </Typography>
+    //     </Stack>
+    //   )
+    // },
     {
-      field: 'dueAmount', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            <span style={{ fontWeight: 400 }}>kr </span>
-            {params.row.dueAmount}
-          </Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'status', headerName: 'Status', width: 250,
+      field: 'status', headerName: 'Status', width: 220,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
@@ -192,8 +235,44 @@ const Orders = () => {
         )
       }
     },
+
     {
-      field: 'Coupon', headerName: 'Action', width: 150,
+      field: 'action', headerName: '', width: 70,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Action</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params;
+        return (
+          <IconButton
+            disabled={
+              row.status === 'Cancelled'
+              || row.status === 'Delivered'
+              || row.company.isDeleted
+            }
+            sx={{
+              bgcolor: 'light.main',
+              borderRadius: '5px',
+              width: { xs: '30px', md: '40px' },
+              height: { xs: '30px', md: '40px' },
+            }} onClick={() => handleEdit(params.row)}>
+            <EditOutlined fontSize='small' />
+          </IconButton>
+        )
+      },
+    },
+    {
+      field: 'delete', headerName: '', width: 60,
+      renderCell: (params) => {
+        return (
+          <IconButton onClick={() => handleDeleteDialog(params.row)}>
+            <DeleteOutline fontSize='small' />
+          </IconButton>
+        )
+      },
+    },
+    {
+      field: 'Coupon', headerName: 'Action', width: 100,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Coupon</Typography>
       ),
@@ -217,6 +296,7 @@ const Orders = () => {
                     row.status === 'Cancelled'
                     || row.status === 'Delivered'
                     || row.coupon !== null
+                    || row.company.isDeleted
                   }
                   onClick={() => handleCoupon(params.row)}>
                   Apply
@@ -227,38 +307,15 @@ const Orders = () => {
       },
     },
     {
-      field: 'action', headerName: 'Action', width: 70,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Action</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <IconButton
-            disabled={
-              row.status === 'Cancelled'
-              || row.status === 'Delivered'
-            }
-            sx={{
-              bgcolor: 'light.main',
-              borderRadius: '5px',
-              width: { xs: '30px', md: '40px' },
-              height: { xs: '30px', md: '40px' },
-            }} onClick={() => handleEdit(params.row)}>
-            <EditOutlined fontSize='small' />
-          </IconButton>
-        )
-      },
-    },
-    {
-      field: 'delete', headerName: '', width: 60,
-      renderCell: (params) => {
-        return (
-          <IconButton onClick={() => handleDeleteDialog(params.row)}>
-            <DeleteOutline fontSize='small' />
-          </IconButton>
-        )
-      },
+      field: 'timeUntil', headerName: '', width: 200,
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+          <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>
+            <AccessTimeOutlined sx={{ mr: .5 }} fontSize='small' />
+            {timeUntilNorway(params.row.deliveryDate, params.row.status)}
+          </Typography>
+        </Stack>
+      )
     },
   ];
 
@@ -320,8 +377,8 @@ const Orders = () => {
       <CDialog openDialog={orderUpdateDialogOpen}>
         <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
       </CDialog>
-       {/* delete Order */}
-       <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>
+      {/* delete Order */}
+      <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>
         <Box>
           <img src="/Featured icon.png" alt="" />
           <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Confirm Delete ?</Typography>
@@ -336,7 +393,7 @@ const Orders = () => {
         {
           loading ? <Loader /> : orderErr ? <ErrorMsg /> :
             <DataTable
-              rowHeight={70}
+              rowHeight={80}
               columns={columns}
               rows={orders}
             />

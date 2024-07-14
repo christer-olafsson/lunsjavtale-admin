@@ -59,7 +59,7 @@ const SupplierDetails = () => {
                       }
                       {
                         vendor.createdOn &&
-                        <Typography>Joined: <b>{format(vendor?.createdOn, 'yyyy-MM-dd')}</b> </Typography>
+                        <Typography>Joined: <b>{format(vendor?.createdOn, 'dd-MM-yyyy')}</b> </Typography>
                       }
                       <Typography sx={{ display: 'inline-flex', gap: 1 }}>Name: <b>{vendor?.name}</b> <LockOutlined sx={{
                         display: vendor.isBlocked ? 'block' : 'none',

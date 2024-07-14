@@ -127,7 +127,15 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
           }
           <Stack>
             <label style={{ marginBottom: '10px' }}>Category Image</label>
-            <input onChange={(e) => setFile(e.target.files[0])} type="file" />
+            <input onChange={(e) => {
+              const file = e.target.files[0];
+              const maxFileSize = 500 * 1024; // 500KB in bytes
+              if (file.size > maxFileSize) {
+                alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                return
+              }
+              setFile(e.target.files[0])
+            }} type="file" />
           </Stack>
         </Stack>
         <TextField value={payload.name} error={Boolean(nameErr)} helperText={nameErr} onChange={handleInputChange} name='name' label='Category Name' sx={{ mb: 2 }} />
@@ -150,8 +158,8 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
           <Box sx={{
             py: 1, px: 2
           }}>
-            <Typography variant='h5' sx={{ color:'red' }}>Confirm delete this category?</Typography>
-            <FormControlLabel checked={deleteAllProductCheck} onChange={e=> setDeleteAllProductCheck(e.target.checked)} control={<Checkbox color='warning' size="small" />} label="All products under this category" />
+            <Typography variant='h5' sx={{ color: 'red' }}>Confirm delete this category?</Typography>
+            <FormControlLabel checked={deleteAllProductCheck} onChange={e => setDeleteAllProductCheck(e.target.checked)} control={<Checkbox color='warning' size="small" />} label="All products under this category" />
             <Stack direction='row' gap={2} alignItems='center' justifyContent='end'>
               <Button color="error" disabled={deleteCatLoading} onClick={handleDelete} variant='contained' size='small' >Confirm</Button>
               <Button onClick={() => setDeleteBtnOn(false)} variant='outlined' size='small'>Cencel</Button>

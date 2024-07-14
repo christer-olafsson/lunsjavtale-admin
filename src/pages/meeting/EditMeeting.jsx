@@ -181,7 +181,7 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
         </FormControl>
         <Box mb={2}>
           <Typography value={payload.meetingTime} variant='body2'>Meeting Time
-            <i> ({format(data.meetingTime, 'yyyy-MM-dd HH:mm')})</i>
+            <i> ({format(data.meetingTime, 'dd-MM-yyyy HH:mm')})</i>
           </Typography>
           <TextField onChange={(e) => setPayload({ ...payload, meetingTime: e.target.value })} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
         </Box>

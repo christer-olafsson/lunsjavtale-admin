@@ -19,7 +19,7 @@ const EditBrand = ({ data, fetchBrands, closeDialog }) => {
     siteUrl: '',
     isActive: true
   })
-  
+
   const [brandMutation, { loading: brandMutationLoading }] = useMutation(BRAND_MUTATION, {
     onCompleted: (res) => {
       toast.success(res.supportedBrandMutation.message)
@@ -102,31 +102,39 @@ const EditBrand = ({ data, fetchBrands, closeDialog }) => {
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
-        
+
+        <Box sx={{
+          flex: 1
+        }}>
           <Box sx={{
-            flex: 1
+            width: '100%',
+            height: '114px'
           }}>
-            <Box sx={{
-              width: '100%',
-              height: '114px'
-            }}>
-              <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-                src={file ? URL.createObjectURL(file) : data.logoUrl ? data.logoUrl : ''} alt="" />
-            </Box>
+            <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+              src={file ? URL.createObjectURL(file) : data.logoUrl ? data.logoUrl : ''} alt="" />
           </Box>
-        
+        </Box>
+
         <Box sx={{
           flex: 1
         }}>
           <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-            <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png)</Typography>
+            <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png) (Max 500KB)</Typography>
             <Button
               component='label'
               variant="outlined"
               startIcon={<CloudUpload />}
             >
               Upload file
-              <input onChange={(e) => setFile(e.target.files[0])} type="file" hidden />
+              <input onChange={(e) => {
+                const file = e.target.files[0];
+                const maxFileSize = 500 * 1024; // 500KB in bytes
+                if (file.size > maxFileSize) {
+                  alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                  return
+                }
+                setFile(e.target.files[0])
+              }} type="file" hidden />
             </Button>
             {(errors.file || !errors.logoUrl) && <Typography variant='body2' sx={{ color: 'red' }}>{errors.file}</Typography>}
           </Stack>

@@ -75,6 +75,14 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
 
   // added mutiple image
   const handleFileSelect = (event) => {
+    const Upfiles = event.target.files;
+    const maxFileSize = 500 * 1024; // 500KB in bytes
+    for (const file of Upfiles) {
+      if (file.size > maxFileSize) {
+        alert(`File ${file.name} is too large. Please select a file smaller than 500 KB.`);
+        return;
+      }
+    }
     const files = Array.from(event.target.files).slice(0, 5);
     setSelectedFiles(files);
   };

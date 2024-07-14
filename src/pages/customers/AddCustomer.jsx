@@ -142,7 +142,7 @@ const AddCustomer = ({ fetchCompany, closeDialog }) => {
             flex: 1
           }}>
             <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png)</Typography>
+              <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Chose files (jpg,png) (Max 500 KB)</Typography>
               <Button
                 component="label"
                 role={undefined}
@@ -151,8 +151,15 @@ const AddCustomer = ({ fetchCompany, closeDialog }) => {
                 startIcon={<CloudUpload />}
               >
                 Upload file
-                <input onChange={(e) => setFile(e.target.files[0])} type="file" hidden />
-                {/* <VisuallyHiddenInput type="file" /> */}
+                <input onChange={(e) => {
+                  const file = e.target.files[0];
+                  const maxFileSize = 500 * 1024; // 500KB in bytes
+                  if (file.size > maxFileSize) {
+                    alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                    return
+                  }
+                  setFile(e.target.files[0])
+                }} type="file" hidden />
               </Button>
             </Stack>
           </Box>

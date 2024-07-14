@@ -47,7 +47,7 @@ const Notifications = () => {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
- console.log(notifications)
+
   const columns = [
     {
       field: 'Time', width: 250,
@@ -91,10 +91,13 @@ const Notifications = () => {
         const { row } = params
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Link to={`/dashboard/orders/details/${row.objectId}`}>
-              <Typography sx={{
-                color: row.isSeen ? 'gray' : 'green'
-              }} >{row.message}</Typography>
+            <Link
+              to={row.notificationType === 'order-placed' ? '/dashboard/orders' :
+                row.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
+                  row.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${row.objectId}` : ''
+              }
+            >
+              <Typography sx={{ fontSize: '14px' }}>{row.message}</Typography>
             </Link>
           </Stack>
         )

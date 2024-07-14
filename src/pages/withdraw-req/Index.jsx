@@ -125,7 +125,7 @@ const WithdrawReq = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontWeight: 600 }} > {format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
+          <Typography sx={{ fontWeight: 600 }} > {format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
         </Stack >
       )
     },

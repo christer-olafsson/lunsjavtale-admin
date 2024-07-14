@@ -106,7 +106,7 @@ const SalesHistory = () => {
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'yyyy-MM-dd')}</Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
           </Stack>
         )
       }

@@ -99,7 +99,8 @@ const Brand = () => {
       </Stack>
       <Stack direction='row' gap={2} alignItems='center' flexWrap='wrap' mt={{ xs: 10, md: 4 }}>
         {
-          brandsLoading ? <LoadingBar /> : brandsErr ? <ErrorMsg /> :
+          brandsLoading ? <LoadingBar /> : brandsErr ? <ErrorMsg /> : 
+          brands.length === 0 ? <Typography>No Brand Found!</Typography> :
             brands.map(item => (
               <Box sx={{
                 width: { xs: '100%', md: '250px' },

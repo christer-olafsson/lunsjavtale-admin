@@ -35,3 +35,11 @@ export const PRODUCT_DELETE = gql`
     }
   }
 `
+
+export const FAVORITE_PRODUCT_MUTATION = gql`
+  mutation FavoriteProductMutation ($id: ID){
+    favoriteProductMutation(id: $id){
+      message
+    }
+  }
+`

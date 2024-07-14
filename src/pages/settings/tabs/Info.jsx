@@ -177,7 +177,7 @@ const Info = () => {
               flex: 1
             }}>
               <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Company Logo (jpg,png,gif)</Typography>
+                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Company Logo (jpg,png,gif) (Max 500KB)</Typography>
                 <Button
                   component="label"
                   role={undefined}
@@ -186,7 +186,15 @@ const Info = () => {
                   startIcon={<CloudUpload />}
                 >
                   Upload file
-                  <input onChange={(e) => setLogo(e.target.files[0])} type="file" hidden />
+                  <input onChange={(e) => {
+                    const file = e.target.files[0];
+                    const maxFileSize = 500 * 1024; // 500KB in bytes
+                    if (file.size > maxFileSize) {
+                      alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                      return
+                    }
+                    setLogo(e.target.files[0])
+                  }} type="file" hidden />
                   {/* <VisuallyHiddenInput type="file" /> */}
                 </Button>
               </Stack>
@@ -210,7 +218,7 @@ const Info = () => {
               flex: 1
             }}>
               <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Cover Image (jpg,png)</Typography>
+                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Cover Image (jpg,png) (Max 500KB)</Typography>
                 <Button
                   component="label"
                   role={undefined}
@@ -219,7 +227,15 @@ const Info = () => {
                   startIcon={<CloudUpload />}
                 >
                   Upload file
-                  <input onChange={(e) => setCover(e.target.files[0])} type="file" hidden />
+                  <input onChange={(e) => {
+                    const file = e.target.files[0];
+                    const maxFileSize = 500 * 1024; // 500KB in bytes
+                    if (file.size > maxFileSize) {
+                      alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                      return
+                    }
+                    setCover(e.target.files[0])
+                  }} type="file" hidden />
                   {/* <VisuallyHiddenInput type="file" /> */}
                 </Button>
               </Stack>

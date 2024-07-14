@@ -69,9 +69,11 @@ const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
           value={orderStatus}
           onChange={e => setOrderStatus(e.target.value)}
         >
-          <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
           <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
+          <MenuItem value={'Processing'}>Processing </MenuItem>
+          <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
           <MenuItem value={'Delivered'}>Delivered </MenuItem>
+          <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
         </Select>
       </FormControl>
 

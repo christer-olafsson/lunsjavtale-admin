@@ -103,6 +103,7 @@ const AddUser = ({ fetchSystemUsers, closeDialog }) => {
         />
         <Stack direction='row' gap={2}>
           <FormControl
+            sx={{ maxWidth: '300px' }}
             error={Boolean(errors.role)} fullWidth>
             <InputLabel >Role</InputLabel>
             <Select
@@ -120,7 +121,7 @@ const AddUser = ({ fetchSystemUsers, closeDialog }) => {
           </FormControl>
           <FormControlLabel
             control={<Switch onChange={e => setPayload({ ...payload, superUser: e.target.checked })}
-              checked={payload.superUser} />} label="SuperUser" />
+              checked={payload.superUser} />} label="Super Admin" />
         </Stack>
 
       </FormGroup>

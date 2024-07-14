@@ -88,8 +88,25 @@ export const GET_SINGLE_CATEGORY = gql`
 `
 
 export const PRODUCTS = gql`
-  query Products ($id: ID, $category: String, $title: String,$availability: Boolean,$isVendorProduct: Boolean ) {
-      products(id:$id, category: $category, title: $title,availability: $availability,isVendorProduct: $isVendorProduct ){
+  query Products (
+        $id: ID,
+        $category: String,
+        $title: String,
+        $availability: Boolean,
+        $isVendorProduct: Boolean,
+        $offset:Int,
+        $first: Int
+       ) {
+        products(
+          id:$id, 
+          category: 
+          $category, 
+          title: $title,
+          availability: $availability,
+          isVendorProduct: $isVendorProduct,
+          offset: $offset,
+          first: $first 
+        ){
         edges{
           node{
           id
@@ -102,6 +119,7 @@ export const PRODUCTS = gql`
           isDeleted
           title
           contains
+          isFavorite
           vendor{
             id
             name

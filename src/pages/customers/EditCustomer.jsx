@@ -163,7 +163,15 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
             borderRadius: '6px',
             color: '#fff'
           }}>
-            <input onChange={(e) => setFile(e.target.files[0])} type="file" id='staffImg' accept='jpg,png' />
+            <input onChange={(e) => {
+              const file = e.target.files[0];
+              const maxFileSize = 500 * 1024; // 500KB in bytes
+              if (file.size > maxFileSize) {
+                alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                return
+              }
+              setFile(e.target.files[0])
+            }} type="file" id='staffImg' accept='jpg,png' />
           </Box>
         </Stack>
 

@@ -48,7 +48,7 @@ const StaffDetails = () => {
                     }} src={user.photoUrl ? user.photoUrl : "/noImage.png"} alt="" />
                     <Box>
                       {user?.createdOn &&
-                        <Typography>Added On: <b>{format(user?.createdOn, 'yyyy-MM-dd')}</b> </Typography>
+                        <Typography>Added On: <b>{format(user?.createdOn, 'dd-MM-yyyy')}</b> </Typography>
                       }
                       <Typography>User name: <b>{user?.username}</b> </Typography>
                       <Typography>Name: <b>{user?.firstName + ' ' + user?.lastName}</b> </Typography>

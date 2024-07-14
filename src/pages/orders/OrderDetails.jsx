@@ -122,7 +122,7 @@ const OrderDetails = () => {
               {
                 order?.createdOn &&
                 <Typography>Order Placed:
-                  <b>{format(order?.createdOn, 'yyyy-MM-dd')}</b>
+                  <b>{format(order?.createdOn, 'dd-MM-yyyy')}</b>
                   <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(order?.createdOn, 'HH:mm')}</span>
                 </Typography>
               }

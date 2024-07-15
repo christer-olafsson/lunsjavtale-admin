@@ -138,7 +138,7 @@ const FoodItem = () => {
   return (
     <Box maxWidth='xl'>
       <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between' mb={2} gap={2}>
-        <Stack direction='row' gap={2}>
+        <Stack direction={{xs:'column',md:'row'}} gap={2}>
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
@@ -170,7 +170,7 @@ const FoodItem = () => {
           </Box>
           {/* all vendors */}
           <Autocomplete
-            sx={{ minWidth: '250px' }}
+            sx={{ minWidth: '300px' }}
             size='small'
             loading={vendorLoading}
             options={vendors}

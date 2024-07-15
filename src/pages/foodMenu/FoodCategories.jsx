@@ -93,51 +93,52 @@ const FoodCategories = () => {
   return (
     <Box maxWidth='xl'>
       <Stack direction='row' justifyContent='space-between'>
-        <Stack direction='row' gap={2}>
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: '480px',
-            bgcolor: '#fff',
-            width: '100%',
-            border: '1px solid lightgray',
-            borderRadius: '4px',
-            pl: 2,
-          }}>
-            <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
-            <IconButton><Search /></IconButton>
-          </Box>
-          <Box sx={{ minWidth: 200 }}>
-            <FormControl size='small' fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={status}
-                label="Status"
-                onChange={e => setStatus(e.target.value)}
-              >
-                <MenuItem value={'all'}>All </MenuItem>
-                <MenuItem value={'available'}>Available</MenuItem>
-                <MenuItem value={'not-available'}>Not Available</MenuItem>
-                {/* <MenuItem value={'vendors'}>Vendors</MenuItem> */}
-              </Select>
-            </FormControl>
-          </Box>
-          <FormGroup sx={{ my: 1 }}>
-            <FormControlLabel control={<Switch
-              size='small'
-              checked={vendorProductShow}
-              onChange={e => setVendorProductShow(e.target.checked)}
-            />} label="Supplier" />
-          </FormGroup>
-        </Stack>
-        <Button onClick={() => setAddCategoryOpen(true)} startIcon={<Add />} variant='contained'>New Categories</Button>
+        <Box />
+        <Button sx={{ height: 'fit-content' }} onClick={() => setAddCategoryOpen(true)} startIcon={<Add />} variant='contained'>New Categories</Button>
       </Stack>
+      <Stack direction='row' gap={2} mt={2}>
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          maxWidth: '480px',
+          bgcolor: '#fff',
+          width: '100%',
+          border: '1px solid lightgray',
+          borderRadius: '4px',
+          pl: 2,
+        }}>
+          <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
+          <IconButton><Search /></IconButton>
+        </Box>
+        <Box sx={{ minWidth: 200 }}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={status}
+              label="Status"
+              onChange={e => setStatus(e.target.value)}
+            >
+              <MenuItem value={'all'}>All </MenuItem>
+              <MenuItem value={'available'}>Available</MenuItem>
+              <MenuItem value={'not-available'}>Not Available</MenuItem>
+              {/* <MenuItem value={'vendors'}>Vendors</MenuItem> */}
+            </Select>
+          </FormControl>
+        </Box>
+      </Stack>
+      <FormGroup sx={{ my: 1 }}>
+        <FormControlLabel control={<Switch
+          size='small'
+          checked={vendorProductShow}
+          onChange={e => setVendorProductShow(e.target.checked)}
+        />} label="Supplier" />
+      </FormGroup>
       {/* add category */}
       <CDialog openDialog={addCategoryOpen}>
         <AddCategory fetchCategory={fetchCategory} closeDialog={() => setAddCategoryOpen(false)} />
       </CDialog>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} flexWrap='wrap' mt={4}>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} flexWrap='wrap' mt={2}>
         <Stack onClick={() => setCategoryId(null)} sx={{
           bgcolor: categoryId === null ? 'primary.main' : 'light.main',
           color: categoryId === null ? '#fff' : 'inherit',
@@ -161,50 +162,50 @@ const FoodCategories = () => {
         </Stack>
         {
           // loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
-            allCategorys?.map(item => (
-              <Box sx={{
-                position: 'relative'
-              }} key={item?.node.id}>
-                <Stack onClick={() => setCategoryId(item?.node.id)} sx={{
-                  bgcolor: categoryId === item.node.id ? 'primary.main' : 'light.main',
-                  color: categoryId === item.node.id ? '#fff' : !item.node.isActive ? '#AEAEAE' : 'inherit',
-                  borderRadius: '8px',
-                  padding: 2,
-                  height: '90px',
-                  width: { xs: '100%', md: '300px' },
-                  cursor: 'pointer',
-                  border: item.node.isActive ? `1px solid ${theme.palette.primary.main}` : ''
-                }} direction='row' gap={2} alignItems='center'>
+          allCategorys?.map(item => (
+            <Box sx={{
+              position: 'relative'
+            }} key={item?.node.id}>
+              <Stack onClick={() => setCategoryId(item?.node.id)} sx={{
+                bgcolor: categoryId === item.node.id ? 'primary.main' : 'light.main',
+                color: categoryId === item.node.id ? '#fff' : !item.node.isActive ? '#AEAEAE' : 'inherit',
+                borderRadius: '8px',
+                padding: 2,
+                height: '90px',
+                width: { xs: '100%', md: '300px' },
+                cursor: 'pointer',
+                border: item.node.isActive ? `1px solid ${theme.palette.primary.main}` : ''
+              }} direction='row' gap={2} alignItems='center'>
 
-                  <img style={{
-                    opacity: !item.node.isActive ? '.4' : '.8',
-                    width: '50px',
-                    height: '50px',
-                    objectFit: 'cover'
-                  }} src={item.node.logoUrl ? item.node?.logoUrl : '/Breakfast.png'} alt="" />
-                  <Divider orientation="vertical" />
-                  <Box>
-                    <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>{item?.node?.isActive ? 'Active' : 'Inactive'}</Typography>
-                    <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>{item?.node?.name}</Typography>
-                    <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>({item?.node?.products?.edges.length}) Available products</Typography>
-                  </Box>
-                </Stack>
-                <IconButton onClick={() => handleEdit(item)} sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0
-                }}>
-                  <Edit fontSize='small' />
-                </IconButton>
-                {/* edit category */}
-                {
-                  categoryId === item?.node?.id &&
-                  <CDialog openDialog={editCategoryOpen}>
-                    <EditCategory fetchCategory={fetchCategory} data={editCategoryData} closeDialog={() => setEditCategoryOpen(false)} />
-                  </CDialog>
-                }
-              </Box>
-            ))
+                <img style={{
+                  opacity: !item.node.isActive ? '.4' : '.8',
+                  width: '50px',
+                  height: '50px',
+                  objectFit: 'cover'
+                }} src={item.node.logoUrl ? item.node?.logoUrl : '/Breakfast.png'} alt="" />
+                <Divider orientation="vertical" />
+                <Box>
+                  <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>{item?.node?.isActive ? 'Active' : 'Inactive'}</Typography>
+                  <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>{item?.node?.name}</Typography>
+                  <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>({item?.node?.products?.edges.length}) Available products</Typography>
+                </Box>
+              </Stack>
+              <IconButton onClick={() => handleEdit(item)} sx={{
+                position: 'absolute',
+                top: 0,
+                right: 0
+              }}>
+                <Edit fontSize='small' />
+              </IconButton>
+              {/* edit category */}
+              {
+                categoryId === item?.node?.id &&
+                <CDialog openDialog={editCategoryOpen}>
+                  <EditCategory fetchCategory={fetchCategory} data={editCategoryData} closeDialog={() => setEditCategoryOpen(false)} />
+                </CDialog>
+              }
+            </Box>
+          ))
         }
         <Stack onClick={() => setCategoryId("0")} sx={{
           bgcolor: categoryId === "0" ? 'primary.main' : 'light.main',

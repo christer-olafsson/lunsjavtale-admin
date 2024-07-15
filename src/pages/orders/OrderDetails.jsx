@@ -19,7 +19,6 @@ const OrderDetails = () => {
   const [selectedStaffDetailsId, setSelectedStaffDetailsId] = useState('')
   const [errors, setErrors] = useState({});
   const [orderStatus, setOrderStatus] = useState('')
-  console.log(order)
 
   const { id } = useParams()
   const navigate = useNavigate()

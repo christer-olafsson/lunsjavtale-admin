@@ -27,7 +27,7 @@ const FoodDetails = () => {
       setProduct(res.products.edges[0].node)
     }
   })
-  console.log(product)
+  
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };

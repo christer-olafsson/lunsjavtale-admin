@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_ALL_CATEGORY = gql`
-query{
+query($isVendorProduct: Boolean, $vendor: String,$isFeatured: Boolean, $availability: Boolean){
   categories{
   edges{
     node{
@@ -11,7 +11,8 @@ query{
       isActive
       logoUrl
       fileId
-      products(isDeleted: false){
+      order
+      products(isDeleted: false,isVendorProduct:$isVendorProduct, vendor: $vendor, isFeatured: $isFeatured, availability: $availability){
         edges{
           node{
             id
@@ -95,7 +96,9 @@ export const PRODUCTS = gql`
         $availability: Boolean,
         $isVendorProduct: Boolean,
         $offset:Int,
-        $first: Int
+        $first: Int,
+        $vendor: String,
+        $isFeatured: Boolean
        ) {
         products(
           id:$id, 
@@ -105,7 +108,9 @@ export const PRODUCTS = gql`
           availability: $availability,
           isVendorProduct: $isVendorProduct,
           offset: $offset,
-          first: $first 
+          first: $first,
+          vendor: $vendor,
+          isFeatured: $isFeatured
         ){
         edges{
           node{
@@ -119,7 +124,7 @@ export const PRODUCTS = gql`
           isDeleted
           title
           contains
-          isFavorite
+          isFeatured
           vendor{
             id
             name

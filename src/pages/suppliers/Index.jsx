@@ -14,12 +14,6 @@ import { VENDOR_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
-const rows = [
-  { id: '987654', supplierName: 'Fcorp - Futures Enterprise', username: 'Supplier C', phone: '(+33)7 75 55 65 33', email: 'deanna.curtis@example.com', joiningDate: 'May 6, 2012', totalRevenue: '32000', status: 'Active' },
-  { id: '977654', supplierName: 'Fcorp - Futures Enterprise', username: 'Supplier C', phone: '(+33)7 75 55 65 33', email: 'deanna.curtis@example.com', joiningDate: 'May 6, 2012', totalRevenue: '32000', status: 'Active' },
-  { id: '976654', supplierName: 'Fcorp - Futures Enterprise', username: 'Supplier C', phone: '(+33)7 75 55 65 33', email: 'deanna.curtis@example.com', joiningDate: 'May 6, 2012', totalRevenue: '32000', status: 'Active' },
-];
-
 
 const Suppliers = () => {
   const [statusFilter, setStatusFilter] = useState('');

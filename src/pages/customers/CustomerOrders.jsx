@@ -248,7 +248,6 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
     setOrders(data?.orders?.edges.map(item => item.node))
   }, [data])
 
-  console.log('data',data)
   return (
     <Box maxWidth='xxl'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>

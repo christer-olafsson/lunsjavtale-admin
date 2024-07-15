@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const VENDORS = gql`
-  query($name: String){
-    vendors(name: $name){
+  query($name: String,$hasProduct: Boolean){
+    vendors(name: $name,hasProduct:$hasProduct){
       edges{
         node{
           id
@@ -16,6 +16,13 @@ export const VENDORS = gql`
           logoUrl
           fileId
           isDeleted
+          products{
+            edges{
+              node{
+                id
+              }
+            }
+          }
           users{
           edges{
             node{

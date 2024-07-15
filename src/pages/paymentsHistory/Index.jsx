@@ -135,7 +135,6 @@ const PaymentsHistory = () => {
     fetchOrderPayment()
   }, [])
 
-  console.log(orderPayments)
   return (
     <Box maxWidth='xl'>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between'>

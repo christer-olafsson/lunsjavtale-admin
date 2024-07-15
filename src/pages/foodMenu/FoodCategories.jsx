@@ -1,6 +1,6 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { Add, ArrowRightAlt, Edit, Error, Search } from '@mui/icons-material'
-import { Box, Button, Divider, FormControl, IconButton, Input, InputLabel, MenuItem, Rating, Select, Stack, Typography, useTheme } from '@mui/material'
+import { Box, Button, Divider, FormControl, FormControlLabel, FormGroup, IconButton, Input, InputLabel, MenuItem, Pagination, Rating, Select, Stack, Switch, Typography, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { GET_ALL_CATEGORY, GET_SINGLE_CATEGORY, PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
@@ -17,10 +17,14 @@ const FoodCategories = () => {
   const [editCategoryOpen, setEditCategoryOpen] = useState(false)
   const [categoryId, setCategoryId] = useState(null);
   const [allCategorys, setAllCategorys] = useState([]);
-  const [singleCategory, setSingleCategory] = useState([]);
+  const [products, setProducts] = useState([]);
   const [editCategoryData, setEditCategoryData] = useState({})
   const [searchText, setSearchText] = useState('')
   const [status, setStatus] = useState('');
+  const [page, setPage] = useState(1);
+  const [productsLength, setProductsLength] = useState([])
+  const [vendorProductShow, setVendorProductShow] = useState(false)
+
 
   const [productEditDialogOpen, setProductEditDialogOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -28,24 +32,40 @@ const FoodCategories = () => {
   const theme = useTheme();
 
   const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
+    variables: {
+      isVendorProduct: vendorProductShow ? vendorProductShow : null
+    },
     fetchPolicy: "network-only",
     onCompleted: (data) => {
       setAllCategorys(data?.categories?.edges)
+      // setAllCategorys(data?.categories?.edges.map(item => item).sort((a, b) => a.node.order - b.node.order))
       fetchProducts()
+    },
+  });
+
+  useQuery(PRODUCTS, {
+    variables: {
+      isVendorProduct: vendorProductShow ? vendorProductShow : null
+    },
+    onCompleted: (res) => {
+      const data = res.products.edges.map(item => item.node)
+      setProductsLength(data.length)
     },
   });
 
   const [fetchProducts, { loading: loadinProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
     variables: {
+      offset: (page - 1) * 12,
+      first: 12,
       category: categoryId,
       title: searchText,
       availability: status === 'available' ? true : status === 'not-available' ? false : null,
-      isVendorProduct: status === 'vendors' ? true : null
+      isVendorProduct: vendorProductShow ? vendorProductShow : null
     },
     onCompleted: (res) => {
-      const data = res.products.edges.filter(item => !item.node.vendor?.isDeleted).map(item => item)
-      setSingleCategory(data)
+      const data = res.products.edges.map(item => item)
+      setProducts(data)
     },
   });
 
@@ -64,6 +84,12 @@ const FoodCategories = () => {
     fetchCategory()
     fetchProducts()
   }, [])
+
+  useEffect(() => {
+    setPage(1)
+  }, [categoryId])
+
+
   return (
     <Box maxWidth='xl'>
       <Stack direction='row' justifyContent='space-between'>
@@ -93,10 +119,17 @@ const FoodCategories = () => {
                 <MenuItem value={'all'}>All </MenuItem>
                 <MenuItem value={'available'}>Available</MenuItem>
                 <MenuItem value={'not-available'}>Not Available</MenuItem>
-                <MenuItem value={'vendors'}>Vendors</MenuItem>
+                {/* <MenuItem value={'vendors'}>Vendors</MenuItem> */}
               </Select>
             </FormControl>
           </Box>
+          <FormGroup sx={{ my: 1 }}>
+            <FormControlLabel control={<Switch
+              size='small'
+              checked={vendorProductShow}
+              onChange={e => setVendorProductShow(e.target.checked)}
+            />} label="Supplier" />
+          </FormGroup>
         </Stack>
         <Button onClick={() => setAddCategoryOpen(true)} startIcon={<Add />} variant='contained'>New Categories</Button>
       </Stack>
@@ -123,14 +156,11 @@ const FoodCategories = () => {
           <Divider orientation="vertical" />
           <Box>
             <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>All Products</Typography>
-            {
-              categoryId === null &&
-              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{singleCategory.length} Available products</Typography>
-            }
+            <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{productsLength} Available products</Typography>
           </Box>
         </Stack>
         {
-          loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
+          // loadingCategory ? <Loader /> : categoryErr ? <ErrorMsg /> :
             allCategorys?.map(item => (
               <Box sx={{
                 position: 'relative'
@@ -156,10 +186,7 @@ const FoodCategories = () => {
                   <Box>
                     <Typography sx={{ fontSize: '12px', fontWeight: 600 }}>{item?.node?.isActive ? 'Active' : 'Inactive'}</Typography>
                     <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>{item?.node?.name}</Typography>
-                    {
-                      categoryId === item?.node.id &&
-                      <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{singleCategory.length} Available products</Typography>
-                    }
+                    <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>({item?.node?.products?.edges.length}) Available products</Typography>
                   </Box>
                 </Stack>
                 <IconButton onClick={() => handleEdit(item)} sx={{
@@ -199,19 +226,18 @@ const FoodCategories = () => {
             <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>Uncategorised</Typography>
             {
               categoryId === '0' &&
-              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{singleCategory.length} Available products</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{products.length} Available products</Typography>
             }
           </Box>
         </Stack>
-
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} flexWrap='wrap' gap={2} mt={3}>
         {
           loadinProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
-            singleCategory.length === 0 ?
+            products.length === 0 ?
               <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
-              singleCategory.map((data, id) => (
+              products.map((data, id) => (
                 <Box key={id} sx={{
                   width: { xs: '100%', md: '300px' },
                   boxShadow: data.node.availability ? 2 : 0,
@@ -263,7 +289,15 @@ const FoodCategories = () => {
                     </Stack>
                     {
                       data.node.vendor &&
-                      <Link style={{ fontSize: '14px' }} to={`/dashboard/suppliers/details/${data.node.vendor.id}`}>{data.node.vendor.name}</Link>
+                      <Stack direction='row' gap={.5}>
+                        <Link
+                          style={{ fontSize: '14px' }}
+                          to={`/dashboard/suppliers/details/${data.node.vendor.id}`}>
+                          {data.node.vendor.name}
+                        </Link>
+                        {data.node.vendor.isDeleted && <i style={{ color: 'coral' }}>(deleted)</i>}
+                      </Stack>
+
                     }
                     {/* <Stack direction='row' alignItems='center' gap={1}>
                       <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
@@ -294,6 +328,9 @@ const FoodCategories = () => {
                 </Box>
               ))
         }
+        <Stack width='100%' direction='row' justifyContent='end' my={2}>
+          <Pagination count={Math.ceil(categoryId !== null ? products.length / 12 : productsLength / 12)} page={page} onChange={(e, value) => setPage(value)} />
+        </Stack>
       </Stack>
 
     </Box >

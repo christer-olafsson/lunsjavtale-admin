@@ -41,7 +41,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     description: '',
     contains: '',
     availability: true,
-    // discountAvailability: false
+    isFeatured: false
   })
 
   // product create
@@ -317,15 +317,14 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         />
         <Stack direction='row' gap={2} my={3} alignItems='center'>
           <FormControlLabel
-            sx={{ width: 'fit-content' }}
             control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
             label="Available" />
-          {/* <FormControlLabel
+          <FormControlLabel
             control={<Switch size='small' color="warning"
-              checked={payload.discountAvailability}
-              onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
-            label="Discount" /> */}
+              checked={payload.isFeatured}
+              onChange={e => setPayload({ ...payload, isFeatured: e.target.checked })} />}
+            label="Featured" />
         </Stack>
 
         {/* selected image */}

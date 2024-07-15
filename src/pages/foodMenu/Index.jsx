@@ -1,5 +1,5 @@
-import { Add, ArrowRightAlt, Bookmark, BookmarkBorder, Error, ErrorOutline, Search } from '@mui/icons-material';
-import { Box, Button, Checkbox, FormControl, IconButton, Input, InputLabel, MenuItem, Pagination, Select, Stack, Tooltip, Typography } from '@mui/material';
+import { Add, ArrowRightAlt, Bookmark, BookmarkBorder, ChevronRight, Error, ErrorOutline, Search } from '@mui/icons-material';
+import { Autocomplete, Avatar, Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, Input, InputLabel, MenuItem, Pagination, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import CDialog from '../../common/dialog/CDialog';
@@ -12,6 +12,7 @@ import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import toast from 'react-hot-toast';
 import { FAVORITE_PRODUCT_MUTATION } from './graphql/mutation';
+import { VENDORS } from '../suppliers/graphql/query';
 
 
 function CustomTabPanel(props) {
@@ -51,10 +52,29 @@ const FoodItem = () => {
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const [productsLength, setProductsLength] = useState([])
-  const [checked, setChecked] = useState(false);
+  const [vendorProductShow, setVendorProductShow] = useState(false)
+  const [vendors, setVendors] = useState([])
+  const [selectedVendor, setSelectedVendor] = useState([])
 
 
-  const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
+  const { loading: vendorLoading } = useQuery(VENDORS, {
+    variables: {
+      hasProduct: true
+    },
+    onCompleted: (res) => {
+      const data = res.vendors.edges.filter(item => !item.node.isDeleted).map(item => item.node)
+      setVendors(data)
+    }
+  })
+
+
+  const [fetchCategory] = useLazyQuery(GET_ALL_CATEGORY, {
+    variables: {
+      vendor: selectedVendor ? selectedVendor.id : null,
+      isVendorProduct: vendorProductShow ? vendorProductShow : null,
+      availability: status === 'available' ? true : status === 'not-available' ? false : null,
+      isFeatured: status === 'featured' ? true : null
+    },
     fetchPolicy: "network-only",
     onCompleted: (data) => {
       setAllCategorys(data?.categories?.edges)
@@ -63,6 +83,12 @@ const FoodItem = () => {
   });
 
   useQuery(PRODUCTS, {
+    variables: {
+      vendor: selectedVendor ? selectedVendor.id : null,
+      isVendorProduct: vendorProductShow ? vendorProductShow : null,
+      availability: status === 'available' ? true : status === 'not-available' ? false : null,
+      isFeatured: status === 'featured' ? true : null
+    },
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item.node)
       setProductsLength(data.length)
@@ -73,33 +99,27 @@ const FoodItem = () => {
   const [fetchProducts, { loading: loadinProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
     variables: {
-      offset: (page - 1) * 10,
+      offset: (page - 1) * 12,
       first: 12,
       category: categoryId,
       title: searchText,
+      isFeatured: status === 'featured' ? true : null,
       availability: status === 'available' ? true : status === 'not-available' ? false : null,
-      isVendorProduct: status === 'vendors' ? true : null
+      isVendorProduct: vendorProductShow ? vendorProductShow : null,
+      vendor: selectedVendor ? selectedVendor.id : null,
     },
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item)
       setProducts(data)
+      // if (vendorProductShow) {
+      //   const data = res.products.edges.map(item => item)
+      //   setProducts(data)
+      // } else {
+      //   const data = res.products.edges.filter(item => !item.node.vendor).map(item => item)
+      //   setProducts(data)
+      // }
     },
   });
-
-  const [fvrtProductMutation, { loading: fvrtMutationLoading }] = useMutation(FAVORITE_PRODUCT_MUTATION, {
-    onCompleted: (res) => {
-      fetchProducts()
-      toast.success(res.favoriteProductMutation.message)
-    },
-    onError: (err) => {
-      toast.error(err.message)
-    }
-  });
-
-  const handleAddFavorite = (e, id) => {
-    console.log(id)
-  }
-
 
   const handleProductEditDialogOpen = (id) => {
     setSelectedProductId(id)
@@ -111,7 +131,10 @@ const FoodItem = () => {
     fetchProducts()
   }, [])
 
-  // console.log(checked)
+  useEffect(() => {
+    setPage(1)
+  }, [categoryId, status])
+
   return (
     <Box maxWidth='xl'>
       <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between' mb={2} gap={2}>
@@ -139,12 +162,49 @@ const FoodItem = () => {
                 onChange={e => setStatus(e.target.value)}
               >
                 <MenuItem value={'all'}>All </MenuItem>
+                <MenuItem value={'featured'}>Featured</MenuItem>
                 <MenuItem value={'available'}>Available</MenuItem>
                 <MenuItem value={'not-available'}>Not Available</MenuItem>
-                <MenuItem value={'vendors'}>Vendors</MenuItem>
               </Select>
             </FormControl>
           </Box>
+          {/* all vendors */}
+          <Autocomplete
+            sx={{ minWidth: '250px' }}
+            size='small'
+            loading={vendorLoading}
+            options={vendors}
+            onChange={(_, value) => setSelectedVendor(value)}
+            getOptionLabel={(option) => option.name}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Stack direction='row' alignItems='center'>
+                  <IconButton>
+                    <Link to={`/dashboard/suppliers/details/${option.id}`}>
+                      <ChevronRight fontSize='small' />
+                    </Link>
+                  </IconButton>
+                  <Stack direction='row' alignItems='center' gap={1}>
+                    <Avatar src={option.logoUrl ?? ''} />
+                    <Box>
+                      <Typography>{option.name}</Typography>
+                      <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+                    </Box>
+                  </Stack>
+                </Stack>
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Select Supplier" />
+            )}
+          />
+          <FormGroup sx={{ my: 1 }}>
+            <FormControlLabel control={<Switch
+              size='small'
+              checked={vendorProductShow}
+              onChange={e => setVendorProductShow(e.target.checked)}
+            />} label="Supplier" />
+          </FormGroup>
         </Stack>
         <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Items</Button>
       </Stack>
@@ -154,7 +214,7 @@ const FoodItem = () => {
           <AddItem fetchCategory={fetchCategory} closeDialog={() => setAddItemDialogOpen(false)} />
         </CDialog>
       }
-      <Stack direction='row' gap={2} flexWrap='wrap' my={4}>
+      <Stack direction='row' gap={2} flexWrap='wrap' mt={4}>
         <Box sx={{
           border: '1px solid lightgray',
           py: 1, px: 2,
@@ -164,7 +224,7 @@ const FoodItem = () => {
           cursor: 'pointer',
           userSelect: 'none'
         }} onClick={() => setCategoryId(null)}>
-          <Typography>All {categoryId === null && <i style={{ fontSize: '14px' }}>({productsLength})</i>}</Typography>
+          <Typography>All {<i style={{ fontSize: '14px', fontWeight: 600, marginLeft: '5px' }}>({productsLength})</i>}</Typography>
         </Box>
         {
           // loadingCategory ? <LoadingBar/> : 
@@ -179,7 +239,9 @@ const FoodItem = () => {
               userSelect: 'none',
               opacity: !item.node.isActive ? '.4' : '1'
             }} onClick={() => setCategoryId(item.node.id)} key={item?.node.id}>
-              <Typography>{item?.node.name} {categoryId === item.node.id && <i style={{ fontSize: '14px' }}>({products.length})</i>}</Typography>
+              <Typography>{item?.node.name}
+                <i style={{ fontSize: '14px', fontWeight: 600, marginLeft: '5px' }}>({item?.node?.products?.edges.length})</i>
+              </Typography>
             </Box>
           ))
         }
@@ -196,7 +258,7 @@ const FoodItem = () => {
         </Box>
       </Stack>
 
-      <Stack direction='row' flexWrap='wrap' gap={2}>
+      <Stack direction='row' flexWrap='wrap' gap={2} mt={2}>
         {
           loadinProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
             products.length === 0 ?
@@ -211,15 +273,15 @@ const FoodItem = () => {
                   boxShadow: data.node.availability ? 2 : 0,
                   position: 'relative'
                 }}>
-                  <Tooltip title='Add Featured Product'>
-                    {/* <Checkbox onChange={(e) => handleAddFavorite(e, data.node.id)} sx={{
-                      position: 'absolute',
-                      top: 0, right: 0
-                    }}
-                      icon={<BookmarkBorder />}
-                      checkedIcon={<Bookmark />}
-                    /> */}
-                  </Tooltip>
+                  {
+                    data.node.isFeatured &&
+                    <Tooltip title='Featured Product'>
+                      <Bookmark color='primary' sx={{
+                        position: 'absolute',
+                        top: 5, right: 5
+                      }} />
+                    </Tooltip>
+                  }
                   {
                     !data.node.availability &&
                     <ErrorOutline sx={{
@@ -271,7 +333,7 @@ const FoodItem = () => {
                             to={`/dashboard/suppliers/details/${data.node.vendor.id}`}>
                             {data.node.vendor.name}
                           </Link>
-                          {data.node.vendor.isDeleted && <i style={{ color: 'coral' }}>(removed)</i>}
+                          {data.node.vendor.isDeleted && <i style={{ color: 'coral' }}>(deleted)</i>}
                         </Stack>
                       }
                       {/* <Stack direction='row' alignItems='center' gap={1}>
@@ -307,7 +369,7 @@ const FoodItem = () => {
               ))
         }
         <Stack width='100%' direction='row' justifyContent='end' my={2}>
-          <Pagination count={Math.ceil(productsLength / 10)} page={page} onChange={(e, value) => setPage(value)} />
+          <Pagination count={Math.ceil(categoryId !== null ? products.length / 12 : productsLength / 12)} page={page} onChange={(e, value) => setPage(value)} />
         </Stack>
       </Stack>
     </Box>

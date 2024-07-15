@@ -46,7 +46,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
     description: '',
     contains: '',
     availability: true,
-    // discountAvailability: false
+    isFeatured: false
   })
 
   const handlePriceWithoutTaxChange = (event) => {
@@ -237,7 +237,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
       description: data.description,
       contains: data.contains ? JSON.parse(data.contains) : '',
       availability: data.availability ? data.availability : false,
-      discountAvailability: data.discountAvailability ? data.discountAvailability : false
+      isFeatured: data.isFeatured ? data.isFeatured : false
     })
     setPriceWithTax(data.priceWithTax);
     setPriceWithoutTax(data.actualPrice);
@@ -391,15 +391,14 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
         />
         <Stack direction='row' gap={2} my={3} alignItems='center'>
           <FormControlLabel
-            sx={{ mb: 1, width: 'fit-content' }}
             control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
             label="Available" />
-          {/* <FormControlLabel
+          <FormControlLabel
             control={<Switch size='small' color="warning"
-              checked={payload.discountAvailability}
-              onChange={e => setPayload({ ...payload, discountAvailability: e.target.checked })} />}
-            label="Discount Active" /> */}
+              checked={payload.isFeatured}
+              onChange={e => setPayload({ ...payload, isFeatured: e.target.checked })} />}
+            label="Featured" />
         </Stack>
 
         {/* Product image from api */}

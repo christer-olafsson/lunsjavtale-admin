@@ -78,4 +78,31 @@
   outline: none;
 }
 
+/* Incoice table */
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-table th,
+.invoice-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 12px;
+}
+
+.invoice-table th {
+  background-color: #63883B;
+  /* background-color: #1F2626; */
+  color:#fff
+}
+
+.invoice-table tbody tr:nth-child(even) {
+  /* background-color: #f2f2f2; */
+}
+
+.invoice-table tbody tr:hover {
+  /* background-color: #dddddd; */
+}
+
 

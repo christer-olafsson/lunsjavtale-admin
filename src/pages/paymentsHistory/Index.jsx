@@ -52,7 +52,17 @@ const PaymentsHistory = () => {
   }
 
   const columns = [
-
+    {
+      field: 'id', headerName: '', width: 50,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
+          <Link to={`/dashboard/payments-history/details/${params.row.id}`}>{params.row.id}</Link>
+        </Stack>
+      )
+    },
     {
       field: 'company', headerName: '', width: 250,
       renderHeader: () => (

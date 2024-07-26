@@ -217,20 +217,24 @@ const Orders = () => {
           <Box sx={{
             ml: 5,
             display: 'inline-flex',
-            padding: '3px 12px',
+            padding: '5px 12px',
             bgcolor: row.status === 'Cancelled'
               ? 'red'
               : row.status === 'Confirmed'
                 ? 'lightgreen'
                 : row.status === 'Delivered'
                   ? 'green'
+                  : row.status === 'Processing'
+                  ? '#8294C4'
+                  : row.status === 'Ready-to-deliver'
+                  ? '#01B8A9'
                   : 'yellow',
             color: row.status === 'Placed'
               ? 'dark' : row.status === 'Payment-pending'
                 ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
-            <Typography sx={{ fontWeight: 600 }} variant='body2'>{row.status}</Typography>
+            <Typography sx={{ fontWeight: 600,textAlign:'center' }} variant='body2'>{row.status}</Typography>
           </Box>
         )
       }

@@ -48,10 +48,10 @@ const OrderDetails = () => {
       }
     }
   });
-
+  console.log(order)
 
   const handleUpdate = () => {
-    if (!orderStatus) {
+    if (orderStatus === 'Placed') {
       setErrors({ status: 'Status required!' })
       toast.error('Order Status Required!')
       return
@@ -99,13 +99,17 @@ const OrderDetails = () => {
             mb: 2,
             display: 'inline-flex',
             padding: '5px 12px',
-            bgcolor: order?.status === 'Cancelled'
+            bgcolor: order.status === 'Cancelled'
               ? 'red'
-              : order?.status === 'Confirmed'
+              : order.status === 'Confirmed'
                 ? 'lightgreen'
-                : order?.status === 'Delivered'
+                : order.status === 'Delivered'
                   ? 'green'
-                  : 'yellow',
+                  : order.status === 'Processing'
+                    ? '#8294C4'
+                    : order.status === 'Ready-to-deliver'
+                      ? '#01B8A9'
+                      : 'yellow',
             color: order?.status === 'Placed'
               ? 'dark' : order?.status === 'Payment-pending'
                 ? 'dark' : order?.status === 'Confirmed' ? 'dark' : '#fff',
@@ -115,30 +119,37 @@ const OrderDetails = () => {
             <Typography sx={{ fontWeight: 600 }} variant='body2'>{order?.status}</Typography>
           </Stack>
         }
-        <Stack direction='row' justifyContent='space-between' gap={3}>
-          <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 4, md: 3, lg: 10 }}>
-            <Stack gap={1}>
-              {
-                order?.createdOn &&
-                <Typography>Order Placed:
-                  <b>{format(order?.createdOn, 'dd-MM-yyyy')}</b>
-                  <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(order?.createdOn, 'HH:mm')}</span>
-                </Typography>
-              }
-              <Typography>Delivery Date: <b>{order?.deliveryDate}</b></Typography>
-              <Typography>Payment Type: <b>{order?.paymentType}</b></Typography>
-              <Typography>Discount Amount: <b>{order?.discountAmount}</b> kr</Typography>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
+          <Stack direction='row' gap={2}>
+            <Stack alignItems='flex-end' gap={1}>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Created On:</Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Delivery Date: </Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Payment Type: </Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Discount Amount: </Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Company Allowance: </Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Due Amount: </Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Paid Amount: </Typography>
+              <Typography>Coupon: </Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}>Total Price: </Typography>
             </Stack>
-            <Divider sx={{ display: { xs: 'none', md: 'block' } }} orientation="vertical" />
             <Stack gap={1}>
-              <Typography>Company Allowance: <b>{order?.companyAllowance}</b> %</Typography>
-              <Typography>Due Amount: <b>{order?.dueAmount}</b> kr</Typography>
-              <Typography>Paid Amount: <b>{order?.paidAmount}</b> kr</Typography>
-              {
-                order?.coupon &&
-                <Typography sx={{ bgcolor: 'yellow', width: 'fit-content' }}><b>Coupon: {order?.coupon?.name}</b></Typography>
-              }
-              <Typography>Total Price: <b>{order?.finalPrice}</b> kr</Typography>
+              <Box >
+                {
+                  order?.createdOn &&
+                  <Typography sx={{ whiteSpace: 'nowrap' }}>
+                    <b>{format(order?.createdOn, 'dd-MM-yyyy')}</b>
+                    <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(order?.createdOn, 'HH:mm')}</span>
+                  </Typography>
+                }
+              </Box>
+              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.deliveryDate}</b></Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.paymentType}</b></Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.discountAmount}</b> kr</Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.companyAllowance}</b> %</Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.dueAmount}</b> kr</Typography>
+              <Typography sx={{ whiteSpace: 'nowrap' }}> <b>{order?.paidAmount}</b> kr</Typography>
+              <Typography sx={{ bgcolor: 'yellow', width: 'fit-content', whiteSpace: 'nowrap' }}>{order?.coupon && <b> {order?.coupon?.name}</b>}</Typography>
+              <Typography><b>{order?.finalPrice}</b> kr</Typography>
             </Stack>
           </Stack>
           <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 4, md: 3, lg: 10 }}>
@@ -182,9 +193,11 @@ const OrderDetails = () => {
               value={orderStatus}
               onChange={e => setOrderStatus(e.target.value)}
             >
-              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
               <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
+              <MenuItem value={'Processing'}>Processing </MenuItem>
+              <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
               <MenuItem value={'Delivered'}>Delivered </MenuItem>
+              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
             </Select>
           </FormControl>
           <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
@@ -203,18 +216,20 @@ const OrderDetails = () => {
                       <Stack sx={{
                         border: '1px solid lightgray',
                         maxWidth: '800px',
-                        borderRadius: '8px'
-                      }} direction='row' gap={2} alignItems='center' justifyContent='space-between'>
-                        <Stack direction={{ xs: 'column', md: 'row' }} gap={2} alignItems='center'>
+                        borderRadius: '8px',
+                        p: 1
+                      }} direction={{ xs: 'column', md: 'row' }} gap={{ xs: 0, md: 2 }} alignItems={{ xs: 'start', md: 'center' }} justifyContent='space-between'>
+                        <Stack direction={{ xs: 'row', md: 'row' }} gap={{ xs: 0, md: 1 }} alignItems='center'>
                           <img style={{
                             width: '100px',
                             height: '100px',
                             objectFit: 'cover',
                             borderRadius: '4px',
-                            margin: '10px'
+                            margin: '10px',
+                            border: '1px solid lightgray'
                           }} src={data?.node.item.attachments?.edges.find(item => item.node.isCover)?.node.fileUrl ?? "/noImage.png"} alt="" />
-                          <Box ml={2} mb={2}>
-                            <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>{data?.node.item.name}</Typography>
+                          <Box mb={{ xs: 0, md: 2 }}>
+                            <Typography sx={{ fontSize: { xs: '14', md: '18px' }, fontWeight: 600 }}>{data?.node.item.name}</Typography>
                             <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
                             <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
                             <Typography>Ingredients: </Typography>
@@ -240,7 +255,7 @@ const OrderDetails = () => {
                         <Stack gap={.5} mr={2}>
                           <Typography>Quantity: <b>{data?.node.orderedQuantity}</b> </Typography>
                           <Typography>Total Price: <b>{data?.node.totalPriceWithTax}</b> kr</Typography>
-                          <Button onClick={() => handleSelectedStaffsDetails(data.node)} variant='outlined' size='small' endIcon={<ArrowDropDown />}>
+                          <Button sx={{ whiteSpace: 'nowrap' }} onClick={() => handleSelectedStaffsDetails(data.node)} variant='outlined' size='small' endIcon={<ArrowDropDown />}>
                             Selected Staffs ({data?.node.users?.edges?.length})
                           </Button>
                         </Stack>

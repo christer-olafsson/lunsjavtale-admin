@@ -1,10 +1,24 @@
 /* eslint-disable react/prop-types */
 import { ArrowRightAlt } from '@mui/icons-material'
 import { Box, Button, Stack, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import SlideDrawer from '../foodMenu/SlideDrawer'
+import FoodDetails from '../foodMenu/FoodDetails'
 
 const SupplierProductCard = ({ data }) => {
+  const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
+
+  const toggleDrawer = (event) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setOpenSlideDrawer(!openSlideDrawer);
+  };
   return (
     <Box sx={{
       width: { xs: '100%', md: '300px' },
@@ -44,10 +58,12 @@ const SupplierProductCard = ({ data }) => {
       </Stack>
       <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>
         {/* <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Edit Now</Button> */}
-        <Link to={`/dashboard/food-item/food-details/${data.id}`}>
-          <Button endIcon={<ArrowRightAlt />}>Details</Button>
-        </Link>
+        <Button onClick={toggleDrawer} endIcon={<ArrowRightAlt />}>Details</Button>
       </Stack>
+      {/* food details page */}
+      <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}>
+        <FoodDetails data={data} toggleDrawer={toggleDrawer} />
+      </SlideDrawer>
     </Box>
   )
 }

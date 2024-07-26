@@ -3,7 +3,6 @@ import Layout from './pages/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
 import NotFound from './pages/notFound/Index'
 import FoodCategories from './pages/foodMenu/FoodCategories'
-import FoodDetails from './pages/foodMenu/FoodDetails'
 import FoodItem from './pages/foodMenu/Index'
 import Orders from './pages/orders/Index'
 import PaymentsHistory from './pages/paymentsHistory/Index'
@@ -14,7 +13,6 @@ import Faq from './pages/faq/Index'
 import Promotion from './pages/promotion/Index'
 import Settings from './pages/settings/Index'
 import OrderDetails from './pages/orders/OrderDetails'
-import SalesDetails from './pages/paymentsHistory/SalesDetails'
 import Meeting from './pages/meeting/Index'
 import Login from './pages/login/Login'
 import { useEffect, useState } from 'react'
@@ -27,6 +25,8 @@ import WithdrawReq from './pages/withdraw-req/Index'
 import Notifications from './pages/notification/Notifications'
 import StaffDetails from './pages/customers/StaffDetails'
 import Social from './pages/social/Index'
+import PaymentDetails from './pages/paymentsHistory/PaymentDetails'
+import CouponDetails from './pages/coupons/CouponDetails'
 
 
 function App() {
@@ -51,12 +51,11 @@ function App() {
         <Route path='/dashboard/areas' element={<Areas />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />
-        <Route path='/dashboard/:path/food-details/:id' element={<FoodDetails />} />
         <Route path='/dashboard/orders' element={<Orders />} />
         <Route path='/dashboard/orders/details/:id' element={<OrderDetails />} />
         <Route path='/dashboard/sales-history' element={<SalesHistory />} />
         <Route path='/dashboard/payments-history' element={<PaymentsHistory />} />
-        <Route path='/dashboard/payments-history/details/:id' element={<SalesDetails />} />
+        <Route path='/dashboard/payments-history/details/:id' element={<PaymentDetails />} />
         <Route path='/dashboard/customers' element={<Customers />} />
         <Route path='/dashboard/customers/details/:id' element={<CustomerDetails />} />
         <Route path='/dashboard/customers/staff/details/:id' element={<StaffDetails />} />
@@ -65,8 +64,7 @@ function App() {
         <Route path='/dashboard/withdraw-req' element={<WithdrawReq />} />
         <Route path='/dashboard/meetings' element={<Meeting />} />
         <Route path='/dashboard/coupons' element={<Coupons />} />
-        {/* <Route path='/dashboard/invoice' element={<Invoice />} />
-        <Route path='/dashboard/invoice/details/:id' element={<InvoiceDetails />} /> */}
+        <Route path='/dashboard/coupons/details/:id' element={<CouponDetails />} />
         <Route path='/dashboard/brand' element={<Brand />} />
         <Route path='/dashboard/faq' element={<Faq />} />
         <Route path='/dashboard/social' element={<Social />} />

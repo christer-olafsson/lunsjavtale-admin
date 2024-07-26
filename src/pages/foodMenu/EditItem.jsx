@@ -16,7 +16,7 @@ const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
 
 
-const EditItem = ({ data, fetchCategory, closeDialog }) => {
+const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   const [categoryId, setCategoryId] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -103,6 +103,7 @@ const EditItem = ({ data, fetchCategory, closeDialog }) => {
   const [productMutation, { loading: productMutationLoading }] = useMutation(PRODUCT_MUTATION, {
     onCompleted: (res) => {
       fetchCategory()
+      fetchProducts()
       toast.success(res.productMutation.message)
       closeDialog()
     },

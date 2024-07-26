@@ -29,6 +29,7 @@ const CustomerDetails = () => {
       id
     },
     onCompleted: (res) => {
+      console.log(res)
       setCompany(res.company)
     },
   });
@@ -134,7 +135,7 @@ const CustomerDetails = () => {
                   <CustomerOrders fetchOrders={fetchCompany} loading={loadingCompany} error={companyErr} data={company} />
                 </TabPanel>
                 <TabPanel value="2">
-                  <CustomersList />
+                  <CustomersList data={company} />
                 </TabPanel>
               </TabContext>
             </Box>

@@ -32,7 +32,7 @@ const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
 
 
   const handleUpdate = () => {
-    if (!orderStatus) {
+    if (orderStatus === 'Placed') {
       setErrors({ status: 'Status required!' })
       toast.error('Order Status Required!')
       return

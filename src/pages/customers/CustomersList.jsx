@@ -79,7 +79,7 @@ const CustomersList = ({ data }) => {
       )
     },
   ];
-
+console.log(data)
   useEffect(() => {
     const rows = data?.users?.edges?.map(item => {
       const user = item?.node;

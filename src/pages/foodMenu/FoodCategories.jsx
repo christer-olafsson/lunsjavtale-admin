@@ -10,6 +10,7 @@ import AddCategory from './AddCategory'
 import EditCategory from './EditCategory'
 import { Link } from 'react-router-dom'
 import EditItem from './EditItem'
+import FoodCard from './FoodCard'
 
 
 const FoodCategories = () => {
@@ -239,94 +240,12 @@ const FoodCategories = () => {
             products.length === 0 ?
               <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
               products.map((data, id) => (
-                <Box key={id} sx={{
-                  width: { xs: '100%', md: '300px' },
-                  boxShadow: data.node.availability ? 2 : 0,
-                  p: { xs: 1, lg: 2.5 },
-                  borderRadius: '8px',
-                  border: data.node.vendor ? '1px solid coral' : '1px solid lightgray',
-                  position: 'relative'
-                }}>
-                  {
-                    !data.node.availability &&
-                    <Error sx={{
-                      position: 'absolute',
-                      m: 1,
-                      color: '#fff',
-                      fontSize: '3rem',
-                      zIndex: 2,
-                    }} />
-                  }
-                  <img style={{
-                    opacity: data.node.availability ? '1' : '.3'
-                    , width: '100%', height: '138px', objectFit: 'cover', borderRadius: '4px'
-                  }}
-                    src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="" />
-                  <Stack>
-                    {/* <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>lunch</Typography> */}
-                    <Typography sx={{ fontSize: '14px', fontWeight: '600' }}>{data?.node.name}</Typography>
-                    <Stack direction='row' alignItems='center' gap={1} mt={1}>
-                      <Typography
-                        sx={{
-                          fontSize: '12px',
-                          bgcolor: data.node.availability ? 'primary.main' : 'darkgray',
-                          color: '#fff',
-                          px: 1, borderRadius: '4px',
-                        }}>
-                        {data.node.availability ? 'Available' : 'Not Available'}
-                      </Typography>
-                      {
-                        data.node.vendor !== null &&
-                        <Typography
-                          sx={{
-                            fontSize: '12px',
-                            bgcolor: 'coral',
-                            color: '#fff',
-                            px: 1, borderRadius: '4px',
-                          }}>
-                          Vendor
-                        </Typography>
-                      }
-                    </Stack>
-                    {
-                      data.node.vendor &&
-                      <Stack direction='row' gap={.5}>
-                        <Link
-                          style={{ fontSize: '14px' }}
-                          to={`/dashboard/suppliers/details/${data.node.vendor.id}`}>
-                          {data.node.vendor.name}
-                        </Link>
-                        {data.node.vendor.isDeleted && <i style={{ color: 'coral' }}>(deleted)</i>}
-                      </Stack>
-
-                    }
-                    {/* <Stack direction='row' alignItems='center' gap={1}>
-                      <Rating value={4} size='small' sx={{ color: 'primary.main' }} readOnly />
-                      <Typography sx={{ fontSize: '12px' }}>86 Rating</Typography>
-                      <span>|</span>
-                      <Typography sx={{ fontSize: '12px' }}>43 Delivery</Typography>
-                    </Stack> */}
-                    <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1}>
-                      <Typography sx={{ fontSize: '16px' }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.priceWithTax}
-                        <i style={{ fontWeight: 400, fontSize: '13px' }}> (tax)</i> </Typography>
-                      <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.actualPrice}</Typography>
-                    </Stack>
-                  </Stack>
-                  <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>
-                    <Button variant='outlined' onClick={() => handleProductEditDialogOpen(id)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Edit Now</Button>
-                    <Link to={`/dashboard/food-categories/food-details/${data.node.id}`}>
-                      <Button endIcon={<ArrowRightAlt />}>Details</Button>
-                    </Link>
-                  </Stack>
-                  {/* product edit dialog */}
-                  {
-                    selectedProductId === id && (
-                      <CDialog openDialog={productEditDialogOpen}>
-                        <EditItem fetchCategory={fetchCategory} data={data.node} closeDialog={() => setProductEditDialogOpen(false)} />
-                      </CDialog>
-                    )
-                  }
-                </Box>
+                <FoodCard
+                  key={id}
+                  fetchCategory={fetchCategory}
+                  fetchProducts={fetchProducts}
+                  data={data}
+                />
               ))
         }
         <Stack width='100%' direction='row' justifyContent='end' my={2}>

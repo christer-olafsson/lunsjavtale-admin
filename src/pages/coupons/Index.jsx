@@ -12,6 +12,8 @@ import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { COUPON_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
 
 const Coupons = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
@@ -73,6 +75,22 @@ const Coupons = () => {
 
   const columns = [
     {
+      field: 'id', width: 50,
+      renderHeader: (params) => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
+      ),
+      renderCell: (params) => {
+        const { row } = params
+        return (
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+            <Link to={`/dashboard/coupons/details/${row.id}`}>
+              <Typography>{row.id}</Typography>
+            </Link>
+          </Stack>
+        )
+      }
+    },
+    {
       field: 'promoCode', width: 150,
       renderHeader: (params) => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Promo Code </Typography>
@@ -108,7 +126,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.startDate}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.startDate,'dd-MM-yyyy')}</Typography>
         </Stack>
       )
     },
@@ -119,7 +137,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{params.row.endDate}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.endDate,'dd-MM-yyyy')}</Typography>
         </Stack>
       )
     },

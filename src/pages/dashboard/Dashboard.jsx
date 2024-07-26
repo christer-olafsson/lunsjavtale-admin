@@ -14,7 +14,9 @@ import Users from './Users';
 
 const boxStyle = {
   box: {
-    minWidth: '300px',
+    minWidth: '250px',
+    maxWidth: '450px',
+    flex: 1,
     border: '1px solid lightgray',
     p: 2, borderRadius: '8px',
     boxShadow: 2
@@ -61,7 +63,7 @@ const Dashboard = () => {
                 <MenuItem value={'last-12-months'}>Last 12 months</MenuItem>
               </Select>
             </FormControl>
-            <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
+            <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} flexWrap='wrap'>
               <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Sales Today </Typography>
                 <Typography sx={boxStyle.value}>
@@ -78,11 +80,18 @@ const Dashboard = () => {
                 </Typography>
               </Box>
               <Box sx={boxStyle.box}>
+                <Typography sx={boxStyle.title}>Total Due </Typography>
+                <Typography sx={boxStyle.value}>
+                  <AddShoppingCartOutlined sx={{ bgcolor: 'coral', borderRadius: '50px', p: 1, fontSize: '40px', color: '#fff' }} />
+                  {data?.totalDue} <span style={{ fontSize: '16px' }}>kr</span>
+                </Typography>
+              </Box>
+              <Box sx={boxStyle.box}>
                 <Typography sx={boxStyle.title}>Total Sales </Typography>
                 <Typography sx={boxStyle.value}>
                   <AccountBalanceWalletOutlined sx={{ bgcolor: '#6489F2', borderRadius: '50px', p: 1, fontSize: '40px', color: '#fff' }} />
                   {data?.totalSales}
-                  <span>kr</span>
+                  <span style={{ fontSize: '16px' }}>kr</span>
                 </Typography>
               </Box>
               <Box sx={boxStyle.box}>
@@ -94,7 +103,7 @@ const Dashboard = () => {
             </Stack>
 
             <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
-              <Box sx={{ width: { xs: '100%', lg: '60%' } }}>
+              <Box sx={{ width: { xs: '100%', lg: '70%' } }}>
                 <RecentOrders data={data} />
               </Box>
               <Box sx={{ width: { xs: '100%', lg: '30%' } }}>
@@ -103,7 +112,7 @@ const Dashboard = () => {
             </Stack>
 
             <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
-              <Box sx={{ width: { xs: '100%', lg: '60%' } }}>
+              <Box sx={{ width: { xs: '100%', lg: '70%' } }}>
                 <SoldProducts data={data} />
               </Box>
               <Box sx={{ width: { xs: '100%', lg: '30%' } }}>

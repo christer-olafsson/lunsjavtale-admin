@@ -38,3 +38,56 @@ export const COUPONS = gql`
     }
 }
 `
+
+export const COUPON = gql`
+  query($id:ID){
+  coupon(id:$id){
+    id
+    createdOn
+    isDeleted
+    name
+    promoType
+    maxUsesLimit
+    maxLimitPerUser
+    value
+    minAmount
+    maxAmount
+    isActive
+    startDate
+    endDate
+    usercouponSet{
+      edges{
+        node{
+          id
+          createdOn
+          discountedAmount
+          isPaymentSuccess
+          user{
+            id
+            username
+            email
+            firstName
+            lastName
+          }
+          coupon{
+            id
+            name
+          }
+        }
+      }
+    }
+    addedFor{
+      edges{
+        node{
+          id
+          createdOn
+          isDeleted
+          name
+          email
+          logoUrl
+        }
+      }
+    }
+  }
+}
+`

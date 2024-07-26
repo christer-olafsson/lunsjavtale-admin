@@ -1,21 +1,42 @@
 import { ArrowBackIos, BorderColor } from '@mui/icons-material'
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from '@mui/lab'
 import { Box, Button, Divider, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, NativeSelect, Paper, Rating, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const InvoiceDetails = () => {
-  const [ratingCount, setRatingCount] = useState(4);
-  const [status, setStatus] = useState('');
+  const downloadPDF = () => {
+    const button = document.getElementById('downloadButton');
+    const input = document.getElementById('invoice');
 
-  const handleStatusChange = (event) => {
-    setStatus(event.target.value);
+    // Hide the download button
+    button.style.display = 'none';
+
+    html2canvas(input, { scale: 1.5 }) // Adjust scale for balance between quality and size
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/jpeg', 0.7); // Lower the quality to reduce size
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, '', 'FAST'); // Add 'FAST' for additional compression
+        pdf.save('invoice.pdf');
+
+        // Show the download button again
+        button.style.display = 'block';
+      })
+      .catch((error) => {
+        console.error('Error generating PDF:', error);
+
+        // Show the download button again in case of an error
+        button.style.display = 'block';
+      });
   };
 
-  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('md'))
-
   return (
-    <Box maxWidth='xxl'>
+    <Box id="invoice" maxWidth='xl' sx={{ p: 2, color: 'black' }}>
       <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Invoice  Details</Typography>
 
       <Stack direction={{ xs: 'column', lg: 'row' }} mt={3} gap={2} justifyContent='space-between'>
@@ -29,7 +50,7 @@ const InvoiceDetails = () => {
           </Box>
         </Stack>
         <Stack direction='row' gap={2}>
-          <Button variant='contained'>Download Invoice</Button>
+          <Button id='downloadButton' onClick={downloadPDF} variant='contained'>Download Invoice</Button>
         </Stack>
       </Stack>
       <Divider sx={{ mt: 2 }} />

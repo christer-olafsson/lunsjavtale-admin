@@ -151,21 +151,3 @@ export const ORDER_PAYMENT = gql`
   }
 }
 `
-
-export const USERS = gql`
-  query($company: String){
-  users(company:$company){
-    edges{
-      node{
-        id
-        username
-        email
-        firstName
-        lastName
-        photoUrl
-        dueAmount
-      }
-    }
-  }
-}
-`

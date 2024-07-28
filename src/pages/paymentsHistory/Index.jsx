@@ -1,12 +1,10 @@
-import { BorderColor, ChevronRight, MoreHoriz, PriorityHigh, RemoveCircleOutline, Search, StoreOutlined } from '@mui/icons-material'
-import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
-import { Link, useNavigate } from 'react-router-dom';
+import { Search, StoreOutlined } from '@mui/icons-material'
+import { Avatar, Box, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import DataTable from '../../common/datatable/DataTable';
-import CDialog from '../../common/dialog/CDialog';
-import CreatePayment from './CreatePayment';
 import { ORDER_PAYMENTS } from './graphql/query';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { format } from 'date-fns';
@@ -16,7 +14,6 @@ import CButton from '../../common/CButton/CButton';
 
 const PaymentsHistory = () => {
   const [orderPayments, setOrderPayments] = useState([])
-  const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState([]);
@@ -159,7 +156,6 @@ const PaymentsHistory = () => {
             px: 1
           }}>({orderPayments?.length})</Typography>
         </Stack>
-        <Button onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems='center'>
         <Box sx={{
@@ -204,9 +200,6 @@ const PaymentsHistory = () => {
           </CButton>
         }
       </Stack>
-      <CDialog openDialog={openCreatePaymentDialog}>
-        <CreatePayment fetchOrderPayment={fetchOrderPayment} closeDialog={() => setOpenCreatePaymentDialog(false)} />
-      </CDialog>
       <Box mt={3}>
         {
           loading ? <Loader /> : error ? <ErrorMsg /> :

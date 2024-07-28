@@ -15,6 +15,7 @@ import CButton from '../../common/CButton/CButton';
 import toast from 'react-hot-toast';
 import { ORDER_HISTORY_DELETE } from './graphql/mutation';
 import moment from 'moment-timezone';
+import CreatePayment from './CreatePayment';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
@@ -26,6 +27,7 @@ const Orders = () => {
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
+  const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
 
 
   const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
@@ -149,7 +151,7 @@ const Orders = () => {
             <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b>
               <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(params.row?.createdOn, 'HH:mm')}</span>
             </Typography>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate,'dd-MM-yyyy')}</b> </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate, 'dd-MM-yyyy')}</b> </Typography>
           </Stack>
         )
       }
@@ -225,16 +227,16 @@ const Orders = () => {
                 : row.status === 'Delivered'
                   ? 'green'
                   : row.status === 'Processing'
-                  ? '#8294C4'
-                  : row.status === 'Ready-to-deliver'
-                  ? '#01B8A9'
-                  : 'yellow',
+                    ? '#8294C4'
+                    : row.status === 'Ready-to-deliver'
+                      ? '#01B8A9'
+                      : 'yellow',
             color: row.status === 'Placed'
               ? 'dark' : row.status === 'Payment-pending'
                 ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
-            <Typography sx={{ fontWeight: 600,textAlign:'center' }} variant='body2'>{row.status}</Typography>
+            <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>{row.status}</Typography>
           </Box>
         )
       }
@@ -341,38 +343,46 @@ const Orders = () => {
           px: 1
         }}>({orders?.length})</Typography>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          maxWidth: '300px',
-          bgcolor: '#fff',
-          width: '100%',
-          border: '1px solid lightgray',
-          borderRadius: '4px',
-          pl: 2
-        }}>
-          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
-          <IconButton><Search /></IconButton>
-        </Box>
-        <Box sx={{ minWidth: 200 }}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Status"
-              onChange={e => setStatusFilter(e.target.value)}
-            >
-              <MenuItem value={'all'}>All </MenuItem>
-              <MenuItem value={'Placed'}>Placed</MenuItem>
-              <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
-              <MenuItem value={'Delivered'}>Delivered</MenuItem>
-              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+      <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between'>
+        <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: '300px',
+            bgcolor: '#fff',
+            width: '100%',
+            height: 'fit-content',
+            border: '1px solid lightgray',
+            borderRadius: '4px',
+            pl: 2
+          }}>
+            <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
+            <IconButton><Search /></IconButton>
+          </Box>
+          <Box sx={{ minWidth: 200 }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value={'all'}>All </MenuItem>
+                <MenuItem value={'Placed'}>Placed</MenuItem>
+                <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
+                <MenuItem value={'Delivered'}>Delivered</MenuItem>
+                <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Stack>
+        <Button sx={{ mt: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>
+      {/* create payment */}
+      <CDialog openDialog={openCreatePaymentDialog}>
+        <CreatePayment fetchOrders={fetchOrders} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+      </CDialog>
       {/* apply coupon */}
       <CDialog openDialog={couponDialogOpen}>
         <ApplyCoupon fetchOrders={fetchOrders} data={couponRowData} closeDialog={() => setCouponDialogOpen(false)} />

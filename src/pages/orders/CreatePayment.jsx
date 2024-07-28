@@ -2,27 +2,25 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { CheckBox, CheckBoxOutlineBlank, Close } from '@mui/icons-material'
 import { Autocomplete, Avatar, Box, Checkbox, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { CREATE_PAYMENT } from './graphql/mutation';
 import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { USERS } from './graphql/query';
 
-const icon = <CheckBoxOutlineBlank fontSize="small" />;
-const checkedIcon = <CheckBox fontSize="small" />;
-
-const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
+const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [companies, setCompanies] = useState([]);
   const [users, setUsers] = useState([])
   const [payload, setPayload] = useState({
-    company: {},
+    company: { id: '', email: '', name: '', logoUrl: '' },
     paymentFor: '',
     paidAmount: '',
+    orders: '',
     note: '',
   })
-
+  console.log(orderData)
   const { loading: companiesLoading } = useQuery(COMPANIES, {
     onCompleted: (res) => {
       setCompanies(res.companies.edges.map(item => ({
@@ -33,6 +31,18 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
       })))
     },
   });
+
+  useEffect(() => {
+    if (orderData) {
+      setPayload({
+        ...payload,
+        company: orderData?.company ?? {},
+        orders: orderData?.id ?? '',
+        paidAmount: orderData?.dueAmount ?? ''
+      })
+    }
+  }, [orderData])
+
 
   const { loading: usersLoading } = useQuery(USERS, {
     variables: {
@@ -53,7 +63,12 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
   const [createPayment, { loading }] = useMutation(CREATE_PAYMENT, {
     onCompleted: (res) => {
       toast.success(res.createPayment.message)
-      fetchOrderPayment()
+      if (fetchOrder) {
+        fetchOrder()
+      }
+      if (fetchOrders) {
+        fetchOrders()
+      }
       closeDialog()
     },
     onError: (err) => {
@@ -70,7 +85,7 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
 
 
   const handleSave = () => {
-    if (!payload.company) {
+    if (!payload.company.id) {
       setErrors({ company: 'Please select a Company!' })
       return
     }
@@ -102,8 +117,10 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
 
       {/* company select */}
       <Autocomplete
+        disabled={orderData}
         sx={{ mb: 2 }}
         options={companies}
+        value={payload.company}
         loading={companiesLoading}
         onChange={(_, value) => setPayload({ ...payload, company: value })}
         getOptionLabel={(option) => option.email}
@@ -150,9 +167,19 @@ const CreatePayment = ({fetchOrderPayment, closeDialog }) => {
 
       <FormGroup sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField
+          disabled={orderData}
+          onChange={e => setPayload({ ...payload, orders: e.target.value })}
+          error={Boolean(errors.orders)}
+          helperText={errors.orders}
+          value={payload.orders}
+          label='Order ID'
+          type='number'
+        />
+        <TextField
           onChange={e => setPayload({ ...payload, paidAmount: e.target.value })}
           error={Boolean(errors.paidAmount)}
           helperText={errors.paidAmount}
+          value={payload.paidAmount}
           label='Amount'
           type='number'
         />

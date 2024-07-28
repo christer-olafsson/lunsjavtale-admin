@@ -43,3 +43,11 @@ export const FAVORITE_PRODUCT_MUTATION = gql`
     }
   }
 `
+
+export const INGREDIENT_DELETE = gql`
+  mutation IngredientDelete ($id:ID){
+    ingredientDelete(id:$id){
+      message
+    }
+  }
+`

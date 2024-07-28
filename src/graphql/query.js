@@ -56,6 +56,25 @@ export const ME = gql`
   }
 `
 
+export const CLIENT_DETAILS = gql`
+  query{
+  clientDetails{
+    id
+    name
+    email
+    slogan
+    socialMediaLinks
+    logoUrl
+    coverPhotoUrl
+    logoFileId
+    coverPhotoFileId
+    address
+    formationDate
+    contact
+  }
+}
+`
+
 export const GET_ALL_CATEGORY = gql`
 query{
   categories{
@@ -90,7 +109,7 @@ query{
 
 export const GET_INGREDIENTS = gql`
   query{
-    ingredients{
+    ingredients(isDeleted: false){
       edges{
         node{
           id

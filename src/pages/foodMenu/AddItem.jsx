@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { useMutation, useQuery } from '@apollo/client';
-import { CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
-import { useState } from 'react';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { ArrowDownward, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
+import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { useEffect, useState } from 'react';
 import { GET_ALL_CATEGORY } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
 import { PRODUCT_MUTATION } from './graphql/mutation';
 import { VENDORS } from '../suppliers/graphql/query';
+import AllergiesSec from './AllergiesSec';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -27,6 +28,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [selectedCoverImgId, setSelectedCoverImgId] = useState(0)
   const [vendors, setVendors] = useState([])
   const [selectedVendor, setSelectedVendor] = useState('')
+  const [allergiesSecOpen, setAllergiesSecOpen] = useState(false)
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -63,7 +65,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   });
 
   //get all allergies
-  useQuery(GET_INGREDIENTS, {
+  const [fetchAllergies] = useLazyQuery(GET_INGREDIENTS, {
+    fetchPolicy: 'network-only',
     onCompleted: (res) => {
       const allergiesName = res.ingredients.edges.map(item => item.node.name)
       setAllAllergies(allergiesName)
@@ -183,6 +186,11 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     })
   }
 
+  useEffect(() => {
+    fetchAllergies()
+  }, [])
+
+
 
   return (
     <Box>
@@ -249,7 +257,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         </Stack>
         {/* all vendors */}
         <Autocomplete
-          sx={{ mb: 2 }}
           size='small'
           options={vendors}
           onChange={(_, value) => setSelectedVendor(value)}
@@ -266,30 +273,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           )}
           renderInput={(params) => (
             <TextField {...params} label="Added for (Vendor)" />
-          )}
-        />
-        {/* all allAllergies */}
-        <Autocomplete
-          size='small'
-          freeSolo
-          multiple
-          options={allAllergies}
-          disableCloseOnSelect
-          onChange={handleAllergiesChange}
-          getOptionLabel={(option) => option}
-          renderOption={(props, option, { selected }) => (
-            <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-              />
-              {option}
-            </li>
-          )}
-          renderInput={(params) => (
-            <TextField {...params} label="Allergies" placeholder="Type and press Enter" />
           )}
         />
         <TextField
@@ -315,17 +298,48 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           rows={4}
           multiline
         />
-        <Stack direction='row' gap={2} my={3} alignItems='center'>
-          <FormControlLabel
-            control={<Switch size='small' checked={payload.availability}
-              onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
-            label="Available" />
-          <FormControlLabel
-            control={<Switch size='small' color="warning"
-              checked={payload.isFeatured}
-              onChange={e => setPayload({ ...payload, isFeatured: e.target.checked })} />}
-            label="Featured" />
+        <Stack direction='row' justifyContent='space-between' gap={2} alignItems='center'>
+          <Stack direction='row' gap={2} my={3} alignItems='center'>
+            <FormControlLabel
+              control={<Switch size='small' checked={payload.availability}
+                onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
+              label="Available" />
+            <FormControlLabel
+              control={<Switch size='small' color="warning"
+                checked={payload.isFeatured}
+                onChange={e => setPayload({ ...payload, isFeatured: e.target.checked })} />}
+              label="Featured" />
+          </Stack>
+          <Button onClick={() => setAllergiesSecOpen(!allergiesSecOpen)} endIcon={<ArrowDownward />}>Allergies</Button>
         </Stack>
+
+        <Collapse in={allergiesSecOpen}>
+          {/* all allAllergies */}
+          <Autocomplete
+            size='small'
+            freeSolo
+            multiple
+            options={allAllergies}
+            disableCloseOnSelect
+            onChange={handleAllergiesChange}
+            getOptionLabel={(option) => option}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Allergies" placeholder="Type and press Enter" />
+            )}
+          />
+          <AllergiesSec fetchAllergies={fetchAllergies} />
+        </Collapse>
 
         {/* selected image */}
         <Stack gap={2} mt={2}>

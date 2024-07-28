@@ -1,4 +1,4 @@
-import { Add, ArrowBack, ArrowDropDown } from '@mui/icons-material';
+import { Add, ArrowBack, ArrowDropDown, KeyboardDoubleArrowRightOutlined } from '@mui/icons-material';
 import { Avatar, Box, Button, Chip, Collapse, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -12,6 +12,10 @@ import { ORDER_STATUS_UPDATE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
+import SlideDrawer from '../../common/drawer/SlideDrawer';
+import InvoiceTemplate from './InvoiceTemplate';
+import CDialog from '../../common/dialog/CDialog';
+import CreatePayment from './CreatePayment';
 
 
 const OrderDetails = () => {
@@ -19,6 +23,20 @@ const OrderDetails = () => {
   const [selectedStaffDetailsId, setSelectedStaffDetailsId] = useState('')
   const [errors, setErrors] = useState({});
   const [orderStatus, setOrderStatus] = useState('')
+  const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
+  const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
+
+
+  const toggleDrawer = (event) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setOpenSlideDrawer(!openSlideDrawer);
+  };
 
   const { id } = useParams()
   const navigate = useNavigate()
@@ -48,7 +66,6 @@ const OrderDetails = () => {
       }
     }
   });
-  console.log(order)
 
   const handleUpdate = () => {
     if (orderStatus === 'Placed') {
@@ -83,6 +100,13 @@ const OrderDetails = () => {
     fetchOrder()
   }, [])
 
+  if (loading) {
+    return <LoadingBar />
+  }
+  if (orderErr) {
+    return <ErrorMsg />
+  }
+
 
   return (
     <Box maxWidth='xl'>
@@ -92,47 +116,58 @@ const OrderDetails = () => {
         </IconButton>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order Details</Typography>
       </Stack>
+
+      {/* create payment */}
+      <CDialog openDialog={openCreatePaymentDialog}>
+        <CreatePayment orderData={order} fetchOrder={fetchOrder} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+      </CDialog>
+
+      {/* invoice page */}
+      <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}>
+        <InvoiceTemplate data={order} toggleDrawer={toggleDrawer} />
+      </SlideDrawer>
+
       <Box mt={3}>
-        {
-          order?.status &&
-          <Stack alignItems='center' sx={{
-            mb: 2,
-            display: 'inline-flex',
-            padding: '5px 12px',
-            bgcolor: order.status === 'Cancelled'
-              ? 'red'
-              : order.status === 'Confirmed'
-                ? 'lightgreen'
-                : order.status === 'Delivered'
-                  ? 'green'
-                  : order.status === 'Processing'
-                    ? '#8294C4'
-                    : order.status === 'Ready-to-deliver'
-                      ? '#01B8A9'
-                      : 'yellow',
-            color: order?.status === 'Placed'
-              ? 'dark' : order?.status === 'Payment-pending'
-                ? 'dark' : order?.status === 'Confirmed' ? 'dark' : '#fff',
-            borderRadius: '50px',
-            minWidth: '200px',
-          }}>
-            <Typography sx={{ fontWeight: 600 }} variant='body2'>{order?.status}</Typography>
-          </Stack>
-        }
-        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
-          <Stack direction='row' gap={2}>
-            <Stack alignItems='flex-end' gap={1}>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Created On:</Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Delivery Date: </Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Payment Type: </Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Discount Amount: </Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Company Allowance: </Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Due Amount: </Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Paid Amount: </Typography>
-              <Typography>Coupon: </Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>Total Price: </Typography>
+        <Stack direction='row' gap={2} alignItems='center' mb={2}>
+          {
+            order?.status &&
+            <Stack alignItems='center' sx={{
+              display: 'inline-flex',
+              padding: '5px 12px',
+              bgcolor: order.status === 'Cancelled'
+                ? 'red'
+                : order.status === 'Confirmed'
+                  ? 'lightgreen'
+                  : order.status === 'Delivered'
+                    ? 'green'
+                    : order.status === 'Processing'
+                      ? '#8294C4'
+                      : order.status === 'Ready-to-deliver'
+                        ? '#01B8A9'
+                        : 'yellow',
+              color: order?.status === 'Placed'
+                ? 'dark' : order?.status === 'Payment-pending'
+                  ? 'dark' : order?.status === 'Confirmed' ? 'dark' : '#fff',
+              borderRadius: '50px',
+              minWidth: '200px',
+            }}>
+              <Typography sx={{ fontWeight: 600 }} variant='body2'>{order?.status}</Typography>
             </Stack>
-            <Stack gap={1}>
+          }
+          {
+            (order?.status === 'Delivered' || order?.status === 'Payment-pending') &&
+            <Button size='small' onClick={toggleDrawer} sx={{ borderRadius: '50px', height: '30px' }} variant='outlined' startIcon={<KeyboardDoubleArrowRightOutlined />}>Invoice</Button>
+          }
+
+        </Stack>
+        <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
+          <Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Order ID:</b></Typography>
+              <Typography>#{order?.id}</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Created On:</b></Typography>
               <Box >
                 {
                   order?.createdOn &&
@@ -142,33 +177,90 @@ const OrderDetails = () => {
                   </Typography>
                 }
               </Box>
-              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.deliveryDate}</b></Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.paymentType}</b></Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.discountAmount}</b> kr</Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.companyAllowance}</b> %</Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}><b>{order?.dueAmount}</b> kr</Typography>
-              <Typography sx={{ whiteSpace: 'nowrap' }}> <b>{order?.paidAmount}</b> kr</Typography>
-              <Typography sx={{ bgcolor: 'yellow', width: 'fit-content', whiteSpace: 'nowrap' }}>{order?.coupon && <b> {order?.coupon?.name}</b>}</Typography>
-              <Typography><b>{order?.finalPrice}</b> kr</Typography>
             </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Delivery Date:</b></Typography>
+              <Typography>{order?.deliveryDate}</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
+              <Typography>{order?.paymentType}</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
+              <Typography>{order?.discountAmount}</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Allowance:</b></Typography>
+              <Typography>{order?.companyAllowance ?? '0'} %</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Due Amount:</b></Typography>
+              <Typography>{order?.dueAmount}</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Paid Amount:</b></Typography>
+              <Typography>{order?.paidAmount}</Typography>
+            </Stack>
+            {
+              order?.note &&
+              <Typography sx={{
+                fontSize: '16px',
+                border: '1px solid lightgray',
+                p: 1, mt: 1, borderRadius: '8px',
+                maxWidth: '400px'
+              }}>
+                Note: <b>{order?.note}</b>
+              </Typography>
+            }
           </Stack>
           <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 4, md: 3, lg: 10 }}>
             <Box>
               <Typography variant='h5' mb={1}>Billing Address</Typography>
-              <Typography sx={{ fontSize: '16px' }}>Address: <b>{order?.billingAddress?.address}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>First Name: <b>{order?.billingAddress?.firstName}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Last Name: <b>{order?.billingAddress?.lastName}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Phone: <b>{order?.billingAddress?.phone}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Sector: <b>{order?.billingAddress?.sector}</b></Typography>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Address:</b></Typography>
+                <Typography>{order?.billingAddress?.address}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>First Name:</b></Typography>
+                <Typography>{order?.billingAddress?.firstName}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Last Name:</b></Typography>
+                <Typography>{order?.billingAddress?.lastName}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Phone:</b></Typography>
+                <Typography>{order?.billingAddress?.phone}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Sector:</b></Typography>
+                <Typography>{order?.billingAddress?.sector}</Typography>
+              </Stack>
             </Box>
             <Divider sx={{ display: { xs: 'none', md: 'block' } }} orientation="vertical" />
             <Box>
               <Typography variant='h5' mb={1}>Shipping Address</Typography>
-              <Typography sx={{ fontSize: '16px' }}>Address: <b>{order?.shippingAddress?.address}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>First Name: <b>{order?.shippingAddress?.fullName}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>City: <b>{order?.shippingAddress?.city}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Phone: <b>{order?.shippingAddress?.phone}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Post Code: <b>{order?.shippingAddress?.postCode}</b></Typography>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Address:</b></Typography>
+                <Typography>{order?.shippingAddress?.address}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Name:</b></Typography>
+                <Typography>{order?.shippingAddress?.fullName}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>City:</b></Typography>
+                <Typography>{order?.shippingAddress?.city}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Phone:</b></Typography>
+                <Typography>{order?.shippingAddress?.phone}</Typography>
+              </Stack>
+              <Stack direction='row'>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Post Code:</b></Typography>
+                <Typography>{order?.shippingAddress?.postCode}</Typography>
+              </Stack>
               {
                 order?.shippingAddress?.instruction &&
                 <Typography sx={{
@@ -183,24 +275,27 @@ const OrderDetails = () => {
             </Box>
           </Stack>
         </Stack>
-        <Stack sx={{ maxWidth: '300px' }} direction='row' gap={2} my={2}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Order Status</InputLabel>
-            <Select
-              disabled={order?.status === 'Cancelled' || order?.status === 'Delivered'}
-              label="Order Status"
-              error={Boolean(errors.status)}
-              value={orderStatus}
-              onChange={e => setOrderStatus(e.target.value)}
-            >
-              <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
-              <MenuItem value={'Processing'}>Processing </MenuItem>
-              <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
-              <MenuItem value={'Delivered'}>Delivered </MenuItem>
-              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-            </Select>
-          </FormControl>
-          <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
+        <Stack direction='row' gap={2} alignItems='center'>
+          <Stack sx={{ width: '200px' }} direction='row' gap={2} my={2}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Order Status</InputLabel>
+              <Select
+                disabled={order?.status === 'Cancelled' || order?.status === 'Delivered'}
+                label="Order Status"
+                error={Boolean(errors.status)}
+                value={orderStatus}
+                onChange={e => setOrderStatus(e.target.value)}
+              >
+                <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
+                <MenuItem value={'Processing'}>Processing </MenuItem>
+                <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
+                <MenuItem value={'Delivered'}>Delivered </MenuItem>
+                <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+              </Select>
+            </FormControl>
+            <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
+          </Stack>
+          <Button sx={{ width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
         </Stack>
         <Divider sx={{ mt: 3 }} />
 

@@ -49,6 +49,18 @@ const Account = () => {
   }
 
   const handleUpdate = () => {
+    if (!payload.currentPass) {
+      toast.error('Current password required!')
+      return
+    }
+    if (!payload.newPass) {
+      toast.error('New password empty!')
+      return
+    }
+    if (!payload.repeatPass) {
+      toast.error('Repeat password empty!')
+      return
+    }
     if (payload.newPass !== payload.repeatPass) {
       setPasswordErr('Password not match!')
       return;
@@ -205,7 +217,16 @@ const Account = () => {
               {
                 editOn ?
                   <Stack direction='row' gap={2} alignItems='center'>
-                    <Button onClick={() => setEditOn(false)} variant='outlined'>Cancel</Button>
+                    <Button onClick={() => {
+                      setEditOn(false)
+                      setPayload({
+                        username: '',
+                        currentPass: '',
+                        newPass: '',
+                        repeatPass: ''
+                      })
+                      setPasswordErr(null)
+                    }} variant='outlined'>Cancel</Button>
                     <CButton isLoading={updateLoading} onClick={handleUpdate} variant='contained'>Save Changes</CButton>
                   </Stack>
                   : <Button onClick={() => setEditOn(true)} variant='contained'>Edit</Button>

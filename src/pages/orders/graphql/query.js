@@ -15,6 +15,7 @@ export const ORDERS = gql`
           finalPrice
           paidAmount
           dueAmount
+          note
           coupon{
             id
             name
@@ -84,6 +85,7 @@ export const ORDER = gql`
     discountAmount
     paidAmount
     isFullPaid
+    note
     coupon{
       id
       name
@@ -200,4 +202,22 @@ export const ORDER = gql`
     }
   }
   }
+`
+
+export const USERS = gql`
+  query($company: String){
+  users(company:$company){
+    edges{
+      node{
+        id
+        username
+        email
+        firstName
+        lastName
+        photoUrl
+        dueAmount
+      }
+    }
+  }
+}
 `

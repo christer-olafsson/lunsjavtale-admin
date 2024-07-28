@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useMutation } from '@apollo/client';
 import { Close } from '@mui/icons-material'
-import { Box, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Box, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import CButton from '../../common/CButton/CButton';
 import toast from 'react-hot-toast';
@@ -11,7 +11,8 @@ import { ORDER_STATUS_UPDATE } from './graphql/mutation';
 const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [orderStatus, setOrderStatus] = useState('')
-
+  const [note, setNote] = useState('')
+console.log(data)
   const [orderStatusUpdate, { loading }] = useMutation(ORDER_STATUS_UPDATE, {
     onCompleted: (res) => {
       fetchOrders()
@@ -40,7 +41,8 @@ const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
     orderStatusUpdate({
       variables: {
         id: data.id,
-        status: orderStatus
+        status: orderStatus,
+        note
       }
     })
   }
@@ -76,6 +78,7 @@ const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
           <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
         </Select>
       </FormControl>
+      <TextField onChange={e => setNote(e.target.value)} label='Note' sx={{ mt: 2 }} fullWidth multiline rows={4} />
 
       <CButton isLoading={loading} onClick={handleUpdate} variant='contained' style={{ width: '100%', mt: 2 }}>
         Save and Update

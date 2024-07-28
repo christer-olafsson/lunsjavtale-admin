@@ -129,7 +129,7 @@ const FoodItem = () => {
 
   useEffect(() => {
     setPage(1)
-  }, [categoryId, status])
+  }, [categoryId, status,selectedVendor])
 
   return (
     <Box maxWidth='xl'>

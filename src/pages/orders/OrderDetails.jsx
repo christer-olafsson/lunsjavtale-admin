@@ -1,4 +1,4 @@
-import { Add, ArrowBack, ArrowDropDown, KeyboardDoubleArrowRightOutlined } from '@mui/icons-material';
+import { Add, ArrowBack, ArrowDropDown, Download, KeyboardDoubleArrowRightOutlined } from '@mui/icons-material';
 import { Avatar, Box, Button, Chip, Collapse, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import SlideDrawer from '../../common/drawer/SlideDrawer';
-import InvoiceTemplate from './InvoiceTemplate';
+import InvoiceTemplate, { downloadPDF } from './InvoiceTemplate';
 import CDialog from '../../common/dialog/CDialog';
 import CreatePayment from './CreatePayment';
 
@@ -123,9 +123,9 @@ const OrderDetails = () => {
       </CDialog>
 
       {/* invoice page */}
-      <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}>
-        <InvoiceTemplate data={order} toggleDrawer={toggleDrawer} />
-      </SlideDrawer>
+      {/* <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}> */}
+      <InvoiceTemplate data={order} toggleDrawer={toggleDrawer} />
+      {/* </SlideDrawer> */}
 
       <Box mt={3}>
         <Stack direction='row' gap={2} alignItems='center' mb={2}>
@@ -156,7 +156,17 @@ const OrderDetails = () => {
           }
           {
             (order?.status === 'Delivered' || order?.status === 'Payment-pending') &&
-            <Button size='small' onClick={toggleDrawer} sx={{ borderRadius: '50px', height: '30px' }} variant='outlined' startIcon={<KeyboardDoubleArrowRightOutlined />}>Invoice</Button>
+            <Button
+              size='small'
+              onClick={() => downloadPDF()}
+              // onClick={toggleDrawer}
+              sx={{ borderRadius: '50px', height: '30px' }}
+              variant='outlined'
+              startIcon={<Download />
+
+              }>
+              Invoice
+            </Button>
           }
 
         </Stack>

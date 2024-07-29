@@ -10,6 +10,34 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 
 
+export const downloadPDF = () => {
+  const invoiceBtn = document.getElementById('invoice-btn');
+  const input = document.getElementById('invoice');
+
+  // Hide the download button
+  invoiceBtn.style.visibility = 'hidden';
+
+  html2canvas(input, { scale: 3, useCORS: true }) // useCORS: true for show remote image
+    .then((canvas) => {
+      const imgData = canvas.toDataURL('image/jpeg', 0.7); // Lower the quality to reduce size
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, '', 'FAST'); // Add 'FAST' for additional compression
+      pdf.save('invoice.pdf');
+
+      // Show the download button again
+      invoiceBtn.style.visibility = 'visible';
+    })
+    .catch((error) => {
+      console.error('Error generating PDF:', error);
+      // Show the download button again in case of an error
+      invoiceBtn.style.visibility = 'visible';
+    });
+};
+
+
 const InvoiceTemplate = ({ data, toggleDrawer }) => {
   const [clientDetails, setClientDetails] = useState({})
 
@@ -21,36 +49,13 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
     },
   });
 
-  const downloadPDF = () => {
-    const invoiceBtn = document.getElementById('invoice-btn');
-    const input = document.getElementById('invoice');
-
-    // Hide the download button
-    invoiceBtn.style.visibility = 'hidden';
-
-    html2canvas(input, { scale: 3, useCORS: true }) // useCORS: true for show remote image
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/jpeg', 0.7); // Lower the quality to reduce size
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, '', 'FAST'); // Add 'FAST' for additional compression
-        pdf.save('invoice.pdf');
-
-        // Show the download button again
-        invoiceBtn.style.visibility = 'visible';
-      })
-      .catch((error) => {
-        console.error('Error generating PDF:', error);
-        // Show the download button again in case of an error
-        invoiceBtn.style.visibility = 'visible';
-      });
-  };
-
+  
   return (
     <Box sx={{
       width: '1100px',
+      position: 'absolute',
+      transform: 'translateY(-200%)',
+      bgcolor:'#fff',
       // minHeight: '1300px',
       py: 4, px: 10,
       color: 'black',

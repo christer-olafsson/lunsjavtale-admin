@@ -22,6 +22,7 @@ const Orders = () => {
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
   const [searchText, setSearchText] = useState('')
+  const [searchOrderId, setSearchOrderId] = useState('')
   const [statusFilter, setStatusFilter] = useState('');
   const [couponRowData, setCouponRowData] = useState({})
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
@@ -345,21 +346,6 @@ const Orders = () => {
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between'>
         <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: '300px',
-            bgcolor: '#fff',
-            width: '100%',
-            height: 'fit-content',
-            border: '1px solid lightgray',
-            borderRadius: '4px',
-            pl: 2
-          }}>
-            <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
-            <IconButton><Search /></IconButton>
-          </Box>
           <Box sx={{ minWidth: 200 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
@@ -373,9 +359,27 @@ const Orders = () => {
                 <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
                 <MenuItem value={'Delivered'}>Delivered</MenuItem>
                 <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+                <MenuItem value={'Payment-pending'}>Payment-Pending</MenuItem>
               </Select>
             </FormControl>
           </Box>
+
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: '300px',
+            bgcolor: '#fff',
+            width: '100%',
+            height: 'fit-content',
+            border: '1px solid lightgray',
+            borderRadius: '4px',
+            pl: 2
+          }}>
+            <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='ID / Name / Email' />
+            <IconButton><Search /></IconButton>
+          </Box>
+
         </Stack>
         <Button sx={{ mt: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>

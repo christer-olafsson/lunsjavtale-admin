@@ -16,13 +16,17 @@ import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuI
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
 import { useMutation, useQuery } from '@apollo/client';
-import { UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/graphql/query';
+import { ADMIN_NOTIFICATIONS, UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/graphql/query';
 import SmallNotification from './notification/SmallNotification';
+import { ORDERS } from './orders/graphql/query';
+import { COMPANIES } from '../graphql/query';
+import { FOOD_MEETINGS } from './meeting/graphql/query';
+import { WITHDRAW_REQ } from './withdraw-req/graphql/query';
 
 
 const drawerWidth = 264;
 
-const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expand, subItem }) => {
+const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expand, subItem, notification }) => {
   return (
     <Link onClick={onClick} className='link' to={link}>
       <Box sx={{
@@ -30,6 +34,7 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
         display: 'inline-flex',
         whiteSpace: 'nowrap',
         justifyContent: 'space-between',
+        alignItems: 'center',
         padding: '8px 12px',
         borderRadius: '4px',
         overflow: 'hidden',
@@ -64,6 +69,7 @@ const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expan
             fontWeight: 400, ml: 1
           }}>{text}</Typography>
         </Box>
+        {notification && <Badge sx={{ mr: .5 }} badgeContent={notification} color="error" />}
         {expandIcon && <KeyboardArrowRight sx={{
           transition: '.3s ease',
           transform: expand ? 'rotate(90deg)' : 'rotate(0deg)'
@@ -110,16 +116,59 @@ function Layout() {
   const [expandFoodMenu, setExpandFoodMenu] = useState(false)
   const [expandSuppliers, setExpandSuppliers] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState([])
+  const [placedOrders, setPlacedOrders] = useState([])
+  const [newCompanies, setNewCompanies] = useState([])
+  const [newMeetings, setNewMeetings] = useState([])
+  const [newWithdrawReq, setNewWithdrawReq] = useState([])
+  const [notifications, setNotifications] = useState([])
 
   const { pathname } = useLocation();
   const orderDetailsMatch = useMatch('/dashboard/orders/details/:id')
-  const customerDetailsMatch = useMatch('/dashboard/customers/details/:id')
   const foodDetailsMatchFromItem = useMatch('/dashboard/food-item/food-details/:id')
   const foodDetailsMatchFromCategories = useMatch('/dashboard/food-categories/food-details/:id')
 
   useQuery(UNREAD_ADMIN_NOTIFICATIONCOUNT, {
     onCompleted: (res) => {
       setUnreadNotifications(res.unreadAdminNotificationCount)
+    }
+  });
+
+  useQuery(ORDERS, {
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (res) => {
+      setPlacedOrders(res.orders.edges.filter(item => item.node.status === 'Placed').map(item => item.node));
+    }
+  });
+
+  useQuery(COMPANIES, {
+    fetchPolicy: "network-only",
+    onCompleted: (res) => {
+      setNewCompanies(res.companies.edges.filter(item => !item.node.isChecked).map(item => item.node))
+    },
+  });
+
+  useQuery(FOOD_MEETINGS, {
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (res) => {
+      setNewMeetings(res.foodMeetings.edges.filter(item => item.node.status === 'pending').map(item => item.node))
+    }
+  });
+
+  useQuery(WITHDRAW_REQ, {
+    fetchPolicy: "network-only",
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (res) => {
+      setNewWithdrawReq(res.withdrawRequests.edges.filter(item => item.node.status === 'pending').map(item => item.node))
+    },
+  });
+
+  useQuery(ADMIN_NOTIFICATIONS, {
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (res) => {
+      setNotifications(res.adminNotifications.edges.filter(item => !item.node.isSeen).map(item => item.node))
     }
   });
 
@@ -159,6 +208,13 @@ function Layout() {
       setMobileOpen(!mobileOpen);
     }
   };
+
+  useEffect(() => {
+    if (newWithdrawReq.length > 0) {
+      setExpandSuppliers(true)
+    }
+  }, [newWithdrawReq])
+
 
   useEffect(() => {
     if (pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories') {
@@ -214,6 +270,7 @@ function Layout() {
           link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
           selected={pathname === '/'} />
         <ListBtn
+          notification={notifications.length > 0 ? notifications.length : ''}
           onClick={handleDrawerClose}
           link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
           selected={pathname === '/dashboard/notifications'} />
@@ -248,12 +305,14 @@ function Layout() {
           </Box>
         </Collapse>
         <ListBtn onClick={handleDrawerClose}
+          notification={placedOrders.length > 0 ? placedOrders.length : ''}
           link='/dashboard/orders'
           icon={<ShoppingCartCheckoutOutlined fontSize='small' />}
           text='Orders'
           selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
         />
         <ListBtn onClick={handleDrawerClose}
+          notification={newCompanies.length > 0 ? newCompanies.length : ''}
           link='/dashboard/customers'
           icon={<People fontSize='small' />}
           text='Customers'
@@ -269,9 +328,10 @@ function Layout() {
           selected={pathname === '/dashboard/payments-history'}
         />
         <ListBtn onClick={handleDrawerClose}
+          notification={newMeetings.length > 0 ? newMeetings.length : ''}
           link='/dashboard/meetings'
           icon={<Diversity3 fontSize='small' />}
-          text='Meeting-Schedule'
+          text='Meetings'
           selected={pathname === '/dashboard/meetings'}
         />
         <ListBtn onClick={() => setExpandSuppliers(!expandSuppliers)}
@@ -299,6 +359,7 @@ function Layout() {
                 selected={pathname === '/dashboard/sales-history'}
               />
               <ListBtn
+                notification={newWithdrawReq.length > 0 ? newWithdrawReq.length : ''}
                 onClick={handleDrawerClose}
                 link='/dashboard/withdraw-req'
                 text='Withdraw-Req'

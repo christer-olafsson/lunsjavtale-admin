@@ -51,7 +51,7 @@ const UserManagemenet = () => {
           loading ? <Loader /> : error ? <ErrorMsg /> :
             systemUsers?.map((user, id) => (
               <Paper key={id} elevation={3} sx={{
-                width: { xs: '100%', md: '270px' },
+                width: { xs: '100%', md: '350px' },
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1, p: 2,
@@ -64,13 +64,8 @@ const UserManagemenet = () => {
                   height: '60px'
                 }} />
                 <Box>
-                  {
-                    user.firstName &&
-                    <Typography sx={{ fontSize: '16px', mr: 2, lineHeight: '15px' }}>
-                      {user.firstName + ' ' + user.lastName}
-                    </Typography>
-                  }
                   <Typography sx={{ fontSize: '13px' }}>@{user.username}</Typography>
+                  <Typography sx={{ fontSize: '13px' }}>{user.email}</Typography>
                   <Typography sx={{
                     fontSize: '13px',
                     fontWeight: 600,

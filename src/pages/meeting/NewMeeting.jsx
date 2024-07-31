@@ -8,6 +8,7 @@ import { MEETING_MUTATION } from './graphql/mutation';
 import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { Link } from 'react-router-dom';
+import { FOOD_MEETINGS } from './graphql/query';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -43,6 +44,7 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
   });
   
   const [meetingMutation, { loading: meetingLoading }] = useMutation(MEETING_MUTATION, {
+    refetchQueries: [FOOD_MEETINGS],
     onCompleted: (res) => {
       toast.success(res.foodMeetingMutation.message)
       fetchMeeting()

@@ -6,14 +6,16 @@ import { useEffect, useState } from 'react';
 import CButton from '../../common/CButton/CButton';
 import toast from 'react-hot-toast';
 import { ORDER_STATUS_UPDATE } from './graphql/mutation';
+import { ORDERS } from './graphql/query';
 
 
 const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [orderStatus, setOrderStatus] = useState('')
   const [note, setNote] = useState('')
-console.log(data)
+
   const [orderStatusUpdate, { loading }] = useMutation(ORDER_STATUS_UPDATE, {
+    refetchQueries: [ORDERS],
     onCompleted: (res) => {
       fetchOrders()
       toast.success(res.orderStatusUpdate.message)

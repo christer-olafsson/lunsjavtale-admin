@@ -46,6 +46,7 @@ const Meeting = () => {
   });
 
   const [foodMeetingDelete, { loading: deleteLoading }] = useMutation(FOOD_MEETING_DELETE, {
+    refetchQueries: [FOOD_MEETINGS],
     onCompleted: (res) => {
       fetchMeeting()
       toast.success(res.foodMeetingDelete.message)
@@ -232,7 +233,7 @@ const Meeting = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'dd-MM-yyyy',{locale:nb})}</Typography>
+          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'dd-MM-yyyy', { locale: nb })}</Typography>
           <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
             <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
           {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}

@@ -20,7 +20,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
     orders: '',
     note: '',
   })
-  console.log(orderData)
+ 
   const { loading: companiesLoading } = useQuery(COMPANIES, {
     onCompleted: (res) => {
       setCompanies(res.companies.edges.map(item => ({

@@ -38,6 +38,7 @@ const Customers = () => {
   });
 
   const [companyDelete, { loading: deleteLoading }] = useMutation(COMPANY_DELETE, {
+    refetchQueries: [COMPANIES],
     onCompleted: (res) => {
       fetchCompany()
       toast.success(res.companyDelete.message)
@@ -80,7 +81,7 @@ const Customers = () => {
       )
     },
     {
-      field: 'companyName', headerName: '', width: 200,
+      field: 'companyName', headerName: '', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company Name</Typography>
       ),
@@ -96,14 +97,18 @@ const Customers = () => {
                 color: params.row.isValid ? 'inherit' : 'darkgray',
                 display: 'inline-flex',
                 gap: '3px'
-              }}>{params.row.company}
-                {
-                  !params.row.isChecked &&
-                  <span style={{ fontSize: '10px', color: 'green' }}>new</span>
+              }}>{!params.row.isChecked &&
+                <span style={{ fontSize: '14px', color: 'green' }}>(new)</span>
                 }
+                {params.row.company}
               </Typography>
               {!params.row.isValid && <PriorityHighOutlined sx={{ color: 'red' }} fontSize='small' />}
-
+              {
+                params.row.isBlocked &&
+                <LockOutlined fontSize='small' sx={{
+                  color: params.row.isBlocked ? 'red' : 'gray'
+                }} />
+              }
             </Stack>
           </Box>
         </Stack>
@@ -122,9 +127,8 @@ const Customers = () => {
             fontWeight: 600,
             alignItems: 'center',
             gap: 1,
-            color: params.row.isValid ? 'inherit' : 'darkgray'
           }}>
-            <MailOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray', fontSize: '16px' }} />
+            <MailOutlined sx={{ fontSize: '16px' }} />
             {params.row.email}
           </Typography>
           <Typography sx={{
@@ -132,9 +136,8 @@ const Customers = () => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 1,
-            color: params.row.isValid ? 'inherit' : 'darkgray'
           }}>
-            <LocalPhoneOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray', fontSize: '16px' }} />
+            <LocalPhoneOutlined sx={{ fontSize: '16px' }} />
             {params.row?.contact}
           </Typography>
         </Stack>
@@ -207,24 +210,38 @@ const Customers = () => {
         )
       }
     },
+    // {
+    //   field: 'status', width: 150,
+    //   renderHeader: (params) => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
+    //   ),
+    //   renderCell: (params) => {
+    //     const { row } = params
+    //     return (
+    //       <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+    //         <Typography sx={{
+    //           fontSize: { xs: '12px', md: '16px' },
+    //           color: '#fff',
+    //           bgcolor: row.isBlocked ? 'red' : 'green',
+    //           px: 1, borderRadius: '4px',
+    //         }}>{row.isBlocked ? 'Locked' : 'Active'}</Typography>
+    //       </Stack>
+    //     )
+    //   }
+    // },
     {
-      field: 'status', width: 150,
-      renderHeader: (params) => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
-      ),
+      field: 'edit', headerName: '', width: 50,
       renderCell: (params) => {
-        const { row } = params
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{
-              fontSize: { xs: '12px', md: '16px' },
-              color: '#fff',
-              bgcolor: row.isBlocked ? 'red' : 'green',
-              px: 1, borderRadius: '4px',
-            }}>{row.isBlocked ? 'Locked' : 'Active'}</Typography>
-          </Stack>
+          <IconButton sx={{
+            borderRadius: '5px',
+            width: { xs: '30px', md: '40px' },
+            height: { xs: '30px', md: '40px' },
+          }} onClick={() => handleEdit(params.row)}>
+            <ModeEditOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
+          </IconButton>
         )
-      }
+      },
     },
     {
       field: 'delete', headerName: '', width: 50,
@@ -244,32 +261,12 @@ const Customers = () => {
     //   field: 'lock', headerName: '', width: 50,
     //   renderCell: (params) => {
     //     return (
-    //       <IconButton sx={{
-    //         borderRadius: '5px',
-    //         width: { xs: '30px', md: '40px' },
-    //         height: { xs: '30px', md: '40px' },
-    //       }}>
-    //         <LockOutlined fontSize='small' sx={{
-    //           color: params.row.isBlocked ? 'red' : 'gray'
-    //         }} />
-    //       </IconButton>
+    //       <LockOutlined fontSize='small' sx={{
+    //         color: params.row.isBlocked ? 'red' : 'gray'
+    //       }} />
     //     )
     //   },
     // },
-    {
-      field: 'edit', headerName: '', width: 50,
-      renderCell: (params) => {
-        return (
-          <IconButton sx={{
-            borderRadius: '5px',
-            width: { xs: '30px', md: '40px' },
-            height: { xs: '30px', md: '40px' },
-          }} onClick={() => handleEdit(params.row)}>
-            <ModeEditOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
-          </IconButton>
-        )
-      },
-    },
   ];
 
 

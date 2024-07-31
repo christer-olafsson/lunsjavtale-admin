@@ -43,6 +43,7 @@ const Orders = () => {
   });
 
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
+    refetchQueries: [ORDERS],
     onCompleted: (res) => {
       fetchOrders()
       toast.success(res.orderHistoryDelete.message)

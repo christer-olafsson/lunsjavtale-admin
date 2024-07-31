@@ -53,10 +53,10 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
       setErrors({ name: 'Company name required!' })
       return
     }
-    if (!payload.firstName) {
-      setErrors({ firstName: 'Owner name required!' })
-      return
-    }
+    // if (!payload.firstName) {
+    //   setErrors({ firstName: 'Owner name required!' })
+    //   return
+    // }
     if (!payload.email) {
       setErrors({ email: 'Email required!' })
       return

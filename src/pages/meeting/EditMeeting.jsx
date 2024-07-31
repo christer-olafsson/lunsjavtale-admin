@@ -10,6 +10,7 @@ import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { FOOD_MEETINGS } from './graphql/query';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -47,6 +48,7 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
   });
 
   const [meetingMutation, { loading: meetingLoading }] = useMutation(MEETING_MUTATION, {
+    refetchQueries: [FOOD_MEETINGS],
     onCompleted: (res) => {
       toast.success(res.foodMeetingMutation.message)
       fetchMeeting()

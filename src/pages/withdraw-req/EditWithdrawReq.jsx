@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { WITHDRAW_REQ_MUTATION } from './graphql/mutation';
 import CButton from '../../common/CButton/CButton';
+import { WITHDRAW_REQ } from './graphql/query';
 
 
 const EditWithdrawReq = ({ data, fetchWithdrawReq, closeDialog }) => {
@@ -17,6 +18,7 @@ const EditWithdrawReq = ({ data, fetchWithdrawReq, closeDialog }) => {
   })
 
   const [withdrawReqMutation, { loading }] = useMutation(WITHDRAW_REQ_MUTATION, {
+    refetchQueries: [WITHDRAW_REQ],
     onCompleted: (res) => {
       fetchWithdrawReq()
       toast.success(res.withdrawRequestMutation.message)
@@ -116,7 +118,7 @@ const EditWithdrawReq = ({ data, fetchWithdrawReq, closeDialog }) => {
           name='withdrawAmount'
           label='Withdraw Amount'
           type='number'
-          inputProps={{readOnly: true}}
+          inputProps={{ readOnly: true }}
         />
         <FormControl
           error={Boolean(errors.status)} fullWidth>

@@ -35,6 +35,7 @@ const WithdrawReq = () => {
   });
 
   const [withdrawReqDelete, { loading: deleteLoading }] = useMutation(WITHDRAW_REQ_DELETE, {
+    refetchQueries: [WITHDRAW_REQ],
     onCompleted: (res) => {
       fetchWithdrawReq()
       toast.success(res.withdrawRequestDelete.message)
@@ -50,7 +51,7 @@ const WithdrawReq = () => {
     setDeleteId(row.id)
   }
 
-  function handleDelete (){
+  function handleDelete() {
     withdrawReqDelete({
       variables: {
         id: deleteId
@@ -62,7 +63,7 @@ const WithdrawReq = () => {
     setWithdrawReqDialogOpen(true)
     setWithdrawReqData(row)
   }
-
+  console.log(withdrawReq)
 
   const columns = [
     {
@@ -72,8 +73,7 @@ const WithdrawReq = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-          {params.row.vendor.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> :
-            <StoreOutlined />}
+          <Avatar sx={{ borderRadius: '4px' }} src={params.row.vendor.logoUrl} />
           <Box >
             <Stack direction='row' alignItems='center'>
               <Link to={`/dashboard/suppliers/details/${params.row.vendor.id}`}>

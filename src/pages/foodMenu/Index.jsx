@@ -57,7 +57,6 @@ const FoodItem = () => {
   const [vendorProductShow, setVendorProductShow] = useState(false)
   const [vendors, setVendors] = useState([])
   const [selectedVendor, setSelectedVendor] = useState([])
-  const [foodDetailsData, setFoodDetailsData] = useState({})
 
 
   const { loading: vendorLoading } = useQuery(VENDORS, {
@@ -129,7 +128,7 @@ const FoodItem = () => {
 
   useEffect(() => {
     setPage(1)
-  }, [categoryId, status,selectedVendor])
+  }, [categoryId, status,selectedVendor,vendorProductShow])
 
   return (
     <Box maxWidth='xl'>

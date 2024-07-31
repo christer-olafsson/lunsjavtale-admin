@@ -1,8 +1,8 @@
 import { Add, ArrowBack, ArrowDropDown, Download, KeyboardDoubleArrowRightOutlined } from '@mui/icons-material';
-import { Avatar, Box, Button, Chip, Collapse, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Button, Chip, Collapse, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ORDER } from './graphql/query';
+import { ORDER, ORDERS } from './graphql/query';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
@@ -25,6 +25,7 @@ const OrderDetails = () => {
   const [orderStatus, setOrderStatus] = useState('')
   const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
   const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
+  const [note, setNote] = useState('')
 
 
   const toggleDrawer = (event) => {
@@ -51,6 +52,7 @@ const OrderDetails = () => {
     },
   });
   const [orderStatusUpdate, { loading: statusLoading }] = useMutation(ORDER_STATUS_UPDATE, {
+    refetchQueries: [ORDERS],
     onCompleted: (res) => {
       fetchOrder()
       toast.success(res.orderStatusUpdate.message)
@@ -76,7 +78,8 @@ const OrderDetails = () => {
     orderStatusUpdate({
       variables: {
         id: order.id,
-        status: orderStatus
+        status: orderStatus,
+        note
       }
     })
   }
@@ -106,7 +109,7 @@ const OrderDetails = () => {
   if (orderErr) {
     return <ErrorMsg />
   }
-
+  console.log(order)
 
   return (
     <Box maxWidth='xl'>
@@ -127,7 +130,11 @@ const OrderDetails = () => {
       <InvoiceTemplate data={order} toggleDrawer={toggleDrawer} />
       {/* </SlideDrawer> */}
 
-      <Box mt={3}>
+      <Box mt={2}>
+        <Stack direction='row' justifyContent='space-between' mb={2}>
+          <Box />
+          <Button sx={{ width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content', alignSelf: 'flex-end' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+        </Stack>
         <Stack direction='row' gap={2} alignItems='center' mb={2}>
           {
             order?.status &&
@@ -218,7 +225,8 @@ const OrderDetails = () => {
                 fontSize: '16px',
                 border: '1px solid lightgray',
                 p: 1, mt: 1, borderRadius: '8px',
-                maxWidth: '400px'
+                maxWidth: '400px',
+                color: 'coral'
               }}>
                 Note: <b>{order?.note}</b>
               </Typography>
@@ -285,28 +293,29 @@ const OrderDetails = () => {
             </Box>
           </Stack>
         </Stack>
-        <Stack direction='row' gap={2} alignItems='center'>
-          <Stack sx={{ width: '200px' }} direction='row' gap={2} my={2}>
-            <FormControl size='small' fullWidth>
-              <InputLabel>Order Status</InputLabel>
-              <Select
-                disabled={order?.status === 'Cancelled' || order?.status === 'Delivered'}
-                label="Order Status"
-                error={Boolean(errors.status)}
-                value={orderStatus}
-                onChange={e => setOrderStatus(e.target.value)}
-              >
-                <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
-                <MenuItem value={'Processing'}>Processing </MenuItem>
-                <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
-                <MenuItem value={'Delivered'}>Delivered </MenuItem>
-                <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-              </Select>
-            </FormControl>
-            <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
-          </Stack>
-          <Button sx={{ width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+        <Stack sx={{ width: '250px' }} direction='row' gap={2} my={2}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Order Status</InputLabel>
+            <Select
+              disabled={order?.status === 'Cancelled' || order?.status === 'Delivered'}
+              label="Order Status"
+              error={Boolean(errors.status)}
+              value={orderStatus}
+              onChange={e => setOrderStatus(e.target.value)}
+            >
+              <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
+              <MenuItem value={'Processing'}>Processing </MenuItem>
+              <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
+              <MenuItem value={'Delivered'}>Delivered </MenuItem>
+              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+            </Select>
+          </FormControl>
+          <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
         </Stack>
+        {
+          (orderStatus !== 'Placed') &&
+          <TextField onChange={e => setNote(e.target.value)} label='Note' sx={{ maxWidth: '300px', width: '100%' }} multiline rows={3} />
+        }
         <Divider sx={{ mt: 3 }} />
 
         <Stack direction={{ xs: 'column', lg: 'row' }} justifyContent='space-between' mt={3} gap={6}>

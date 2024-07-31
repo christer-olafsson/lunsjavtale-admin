@@ -7,6 +7,7 @@ import { useMutation } from '@apollo/client';
 import { MEETING_RESOLVE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import { FOOD_MEETINGS } from './graphql/query';
 
 
 const MeetingAction = ({ data, fetchMeeting, closeDialog }) => {
@@ -17,6 +18,7 @@ const MeetingAction = ({ data, fetchMeeting, closeDialog }) => {
   })
 
   const [meetingResolve, { loading }] = useMutation(MEETING_RESOLVE, {
+    refetchQueries: [FOOD_MEETINGS],
     onCompleted: (res) => {
       fetchMeeting()
       toast.success(res.foodMeetingResolve.message)

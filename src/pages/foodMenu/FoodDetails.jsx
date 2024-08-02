@@ -27,7 +27,7 @@ const FoodDetails = ({ data, toggleDrawer }) => {
 
 
   return (
-    <Box sx={{ p: 4 }} maxWidth='1000px'>
+    <Box sx={{ p: 4,width: '100vw' }} maxWidth='1000px'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>
         <IconButton onClick={toggleDrawer}>
           <Close />

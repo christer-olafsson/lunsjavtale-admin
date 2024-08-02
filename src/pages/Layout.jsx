@@ -120,7 +120,6 @@ function Layout() {
   const [newCompanies, setNewCompanies] = useState([])
   const [newMeetings, setNewMeetings] = useState([])
   const [newWithdrawReq, setNewWithdrawReq] = useState([])
-  const [notifications, setNotifications] = useState([])
 
   const { pathname } = useLocation();
   const orderDetailsMatch = useMatch('/dashboard/orders/details/:id')
@@ -164,13 +163,13 @@ function Layout() {
     },
   });
 
-  useQuery(ADMIN_NOTIFICATIONS, {
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (res) => {
-      setNotifications(res.adminNotifications.edges.filter(item => !item.node.isSeen).map(item => item.node))
-    }
-  });
+  // useQuery(ADMIN_NOTIFICATIONS, {
+  //   fetchPolicy: 'network-only',
+  //   notifyOnNetworkStatusChange: true,
+  //   onCompleted: (res) => {
+  //     setNotifications(res.adminNotifications.edges.filter(item => !item.node.isSeen).map(item => item.node))
+  //   }
+  // });
 
 
   const [logout, { loading }] = useMutation(LOGOUT, {
@@ -270,7 +269,7 @@ function Layout() {
           link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
           selected={pathname === '/'} />
         <ListBtn
-          notification={notifications.length > 0 ? notifications.length : ''}
+          notification={unreadNotifications.length > 0 ? unreadNotifications : ''}
           onClick={handleDrawerClose}
           link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
           selected={pathname === '/dashboard/notifications'} />
@@ -482,12 +481,15 @@ function Layout() {
                     <NotificationsNone sx={{ fontSize: '30px' }} />
                   </Badge>
                 </IconButton>
-                <Collapse sx={{
-                  position: 'absolute',
-                  right: 0,
-                }} in={openNotification}>
-                  <SmallNotification onClose={() => setOpenNotification(false)} />
-                </Collapse>
+                {
+                  openNotification &&
+                  <Collapse sx={{
+                    position: 'absolute',
+                    right: 0,
+                  }} in={openNotification}>
+                    <SmallNotification onClose={() => setOpenNotification(false)} />
+                  </Collapse>
+                }
               </Box>
             </ClickAwayListener>
             {/* user menu */}

@@ -203,21 +203,31 @@ const OrderDetails = () => {
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
               <Typography>{order?.paymentType}</Typography>
             </Stack>
-            <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
-              <Typography>{order?.discountAmount}</Typography>
-            </Stack>
+            {
+              order?.coupon &&
+              <Stack direction='row'>
+                <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Coupon:</b></Typography>
+                <Typography sx={{ bgcolor: 'coral', px: 1, borderRadius: '4px', color: '#fff' }}>{order?.coupon.name}</Typography>
+              </Stack>
+            }
+            {
+              order?.discountAmount &&
+              <Stack direction='row'>
+                <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
+                <Typography>{order?.discountAmount} kr</Typography>
+              </Stack>
+            }
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Allowance:</b></Typography>
               <Typography>{order?.companyAllowance ?? '0'} %</Typography>
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Due Amount:</b></Typography>
-              <Typography>{order?.dueAmount}</Typography>
+              <Typography>{order?.dueAmount} kr</Typography>
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Paid Amount:</b></Typography>
-              <Typography>{order?.paidAmount}</Typography>
+              <Typography>{order?.paidAmount} kr</Typography>
             </Stack>
             {
               order?.note &&

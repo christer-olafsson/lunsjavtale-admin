@@ -162,13 +162,19 @@ const SalesHistory = () => {
             display: 'inline-flex',
             padding: '1px 12px',
             bgcolor: row.order.status === 'Cancelled'
-              ? 'red'
-              : row.order.status === 'Confirmed'
-                ? 'lightgreen'
-                : row.order.status === 'Delivered'
-                  ? 'green'
-                  : 'yellow',
-            color: row.order.status === 'Placed' ? 'dark' : row.order.status === 'Payment-pending' ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
+                ? 'red'
+                : row.order.status === 'Confirmed'
+                  ? 'lightgreen'
+                  : row.order.status === 'Delivered'
+                    ? 'green'
+                    : row.order.status === 'Processing'
+                      ? '#8294C4'
+                      : row.order.status === 'Ready-to-deliver'
+                        ? '#01B8A9'
+                        : 'yellow',
+              color: row.order.status === 'Placed'
+                ? 'dark' : row.order.status === 'Payment-pending'
+                  ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.order.status}</Typography>

@@ -49,13 +49,13 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
     },
   });
 
-  
+
   return (
     <Box sx={{
       width: '1100px',
       position: 'absolute',
       transform: 'translateY(-200%)',
-      bgcolor:'#fff',
+      bgcolor: '#fff',
       // minHeight: '1300px',
       py: 4, px: 10,
       color: 'black',
@@ -160,6 +160,20 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
             <Typography sx={{ width: '200px' }}> <b>Payment Type:</b></Typography>
             <Typography>{data?.paymentType}</Typography>
           </Stack>
+          {
+            data?.coupon &&
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Coupon:</b></Typography>
+              <Typography sx={{ bgcolor: 'coral', px: 1, borderRadius: '4px', color: '#fff' }}>{data?.coupon.name}</Typography>
+            </Stack>
+          }
+          {
+            data?.discountAmount > 0.00 &&
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
+              <Typography>{data?.discountAmount} kr</Typography>
+            </Stack>
+          }
           <Divider />
           <Stack direction='row'>
             <Typography sx={{ width: '200px' }}> <b>Total Price:</b></Typography>
@@ -219,6 +233,15 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
               <td>$427.33 </td>
               <td>$200.00</td>
             </tr> */}
+            {
+              data?.discountAmount > 0.00 &&
+              <tr>
+                <td style={{ border: 'none' }}></td>
+                <td style={{ border: 'none' }}></td>
+                <td style={{ fontWeight: 'bold' }}>Discount </td>
+                <td style={{ fontWeight: 'bold', color: 'red' }}> - {data?.discountAmount} kr</td>
+              </tr>
+            }
             <tr>
               <td style={{ border: 'none' }}></td>
               <td style={{ border: 'none' }}></td>

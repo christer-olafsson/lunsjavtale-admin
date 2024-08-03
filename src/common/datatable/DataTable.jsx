@@ -3,7 +3,7 @@ import { Box, styled } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 
 
-const DataTable = ({loading, rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
+const DataTable = ({ loading, rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
   return (
     <Box
       maxWidth='1800px'
@@ -15,6 +15,13 @@ const DataTable = ({loading, rows, getRowId, rowHeight, columns, getRowHeight, c
         sx={{
           boxShadow: 2,
           minHeight: '650px',
+        }}
+        localeText={{
+          noRowsLabel: 'Empty',
+          footerRowSelected: (count) =>
+            count !== 1
+              ? `${count.toLocaleString()} Selected`
+              : `${count.toLocaleString()} Selected`,
         }}
         loading={loading}
         rows={rows}

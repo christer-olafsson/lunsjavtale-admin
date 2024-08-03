@@ -17,7 +17,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
     company: { id: '', email: '', name: '', logoUrl: '' },
     paymentFor: '',
     paidAmount: '',
-    orders: '',
+    orders: null,
     note: '',
   })
  
@@ -37,7 +37,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
       setPayload({
         ...payload,
         company: orderData?.company ?? {},
-        orders: orderData?.id ?? '',
+        orders: orderData?.id ?? null,
         paidAmount: orderData?.dueAmount ?? ''
       })
     }

@@ -151,7 +151,7 @@ const Areas = () => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 60,
+      field: 'delete', headerName: '', width: 60,flex:1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

@@ -58,7 +58,7 @@ const CustomersList = ({ data }) => {
       )
     },
     {
-      field: 'dueAmount', headerName: '', width: 150,
+      field: 'dueAmount', headerName: '', width: 150,flex:1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
       ),
@@ -79,7 +79,7 @@ const CustomersList = ({ data }) => {
       )
     },
   ];
-console.log(data)
+
   useEffect(() => {
     const rows = data?.users?.edges?.map(item => {
       const user = item?.node;
@@ -108,7 +108,14 @@ console.log(data)
     <Box>
       <Typography variant='h5' my={2}>All Staffs</Typography>
       <DataGrid
-        sx={{ my: 2 }}
+        sx={{
+          maxWidth:'900px',
+          my: 2,
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: '#1E293B',
+            color: '#fff'
+          },
+        }}
         rows={selectedRows ?? []}
         columns={columns}
         initialState={{

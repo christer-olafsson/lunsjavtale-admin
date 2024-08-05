@@ -320,7 +320,7 @@ const Orders = () => {
       },
     },
     {
-      field: 'timeUntil', headerName: '', width: 200,
+      field: 'timeUntil', headerName: '', width: 200,flex:1,
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>

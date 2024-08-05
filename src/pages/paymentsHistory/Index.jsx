@@ -124,7 +124,7 @@ const PaymentsHistory = () => {
       )
     },
     {
-      field: 'status', headerName: '', width: 200,
+      field: 'status', headerName: '', width: 200,flex:1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),

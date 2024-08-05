@@ -311,7 +311,7 @@ const Meeting = () => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 80,
+      field: 'delete', headerName: '', width: 80,flex:1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

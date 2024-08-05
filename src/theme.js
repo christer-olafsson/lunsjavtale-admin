@@ -3,8 +3,8 @@ import { createTheme } from "@mui/material";
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#1E293B'
-      // main: '#63883B'
+      // main: '#1E293B'
+      main: '#63883B'
       // main: '#0288d1'
       // main: '#5A66F1'
     },
@@ -29,7 +29,28 @@ export const theme = createTheme({
     //   white: '#efefef',
     // }
   },
+  mixins: {
+    MuiDataGrid: {
+      // Pinned columns sections
+      pinnedBackground: '#340606',
+      // Headers, and top & bottom fixed rows
+      containerBackground: '#343434',
+    },
+  },
   components: {
+    // MuiDataGrid: {
+    //   styleOverrides: {
+    //     columnHeaders: {
+    //       backgroundColor: 'red', // Header background color
+    //       // color: 'white', // Header text color
+    //     },
+    //     columnHeader: {
+    //       '& .MuiDataGrid-columnHeaderTitle': {
+    //         color: 'red', // Header text color
+    //       },
+    //     },
+    //   },
+    // },
     // MuiContainer: {
     //  styleOverrides:{
     //   // disableGutters:true

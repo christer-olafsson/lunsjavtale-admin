@@ -179,7 +179,7 @@ const Suppliers = () => {
       },
     },
     {
-      field: 'edit', headerName: '', width: 50,
+      field: 'edit', headerName: '', width: 50,flex:1,
       renderCell: (params) => {
         return (
           <IconButton sx={{

@@ -169,7 +169,7 @@ const Coupons = () => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 150,
+      field: 'delete', headerName: '', width: 150,flex:1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

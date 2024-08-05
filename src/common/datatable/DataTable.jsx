@@ -12,9 +12,17 @@ const DataTable = ({ loading, rows, getRowId, rowHeight, columns, getRowHeight, 
       }}
     >
       <DataGrid
+        // sx={{
+        //   boxShadow: 2,
+        //   minHeight: '650px',
+        // }}
         sx={{
           boxShadow: 2,
           minHeight: '650px',
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: '#1E293B',
+            color: '#fff'
+          },
         }}
         localeText={{
           noRowsLabel: 'Empty',

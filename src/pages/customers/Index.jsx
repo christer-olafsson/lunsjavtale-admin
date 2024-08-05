@@ -195,6 +195,7 @@ const Customers = () => {
       field: 'paidAmount',
       headerName: '',
       width: 150,
+      flex:1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px', ml: 5 } }}>Paid Amount</Typography>
       ),

@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import useIsMobile from '../../hook/useIsMobile';
 
 const Coupons = () => {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({});
@@ -25,6 +26,8 @@ const Coupons = () => {
   const [editCouponData, setEditCouponData] = useState({})
   const [deleteCouponData, setDeleteCouponData] = useState({})
   const [searchText, setSearchText] = useState('')
+
+  const isMobile = useIsMobile()
 
 
   const [fetchCoupons, { loading: couponsLoading, error: couponsErr }] = useLazyQuery(COUPONS, {
@@ -169,7 +172,9 @@ const Coupons = () => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 150,flex:1,
+      field: 'delete', headerName: '',
+      width: isMobile ? 150 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

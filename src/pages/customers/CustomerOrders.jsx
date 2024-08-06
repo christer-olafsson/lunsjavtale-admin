@@ -15,6 +15,7 @@ import ApplyCoupon from '../orders/ApplyCoupon';
 import UpdateOrder from '../orders/UpdateOrder';
 import CButton from '../../common/CButton/CButton';
 import { ORDERS } from '../orders/graphql/query';
+import useIsMobile from '../../hook/useIsMobile';
 
 const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
   const [orders, setOrders] = useState([])
@@ -26,6 +27,8 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
+
+  const isMobile = useIsMobile()
 
   // const [fetchOrders, { loading, error }] = useLazyQuery(ORDERS, {
   //   variables: {
@@ -237,7 +240,9 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 60,flex:1,
+      field: 'delete', headerName: '',
+      width: isMobile ? 60 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

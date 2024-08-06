@@ -232,7 +232,8 @@ function Layout() {
       // justifyContent: 'center',
       alignItems: 'center',
       bgcolor: '#1E293B',
-      height: '100%',
+      // height: '100%',
+      height:'100%',
     }}>
       <Toolbar sx={{
         display: 'flex',
@@ -420,7 +421,10 @@ function Layout() {
 
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ 
+      display: 'flex',
+      minHeight:'100vh'
+       }}>
       <CssBaseline />
       <AppBar
         color='white'

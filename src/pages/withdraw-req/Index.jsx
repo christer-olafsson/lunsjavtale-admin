@@ -13,6 +13,7 @@ import EditWithdrawReq from './EditWithdrawReq';
 import { WITHDRAW_REQ_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import useIsMobile from '../../hook/useIsMobile';
 
 const WithdrawReq = () => {
   const [withdrawReq, setWithdrawReq] = useState([])
@@ -22,6 +23,8 @@ const WithdrawReq = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState('')
   const [status, setStatus] = useState('')
+
+  const isMobile = useIsMobile()
 
   const [fetchWithdrawReq, { loading: WithdrawReqLoading, error: WithdrawReqErr }] = useLazyQuery(WITHDRAW_REQ, {
     variables: {
@@ -191,7 +194,9 @@ const WithdrawReq = () => {
       },
     },
     {
-      field: 'note', headerName: '', flex: 1,
+      field: 'note', headerName: '',
+      width: isMobile ? 400 : undefined,
+      flex: isMobile ? undefined : 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Note</Typography>
       ),
@@ -263,7 +268,7 @@ const WithdrawReq = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={{ xs: 10, md: 3 }}>
+      <Box mt={3}>
         {
           WithdrawReqLoading ? <LoadingBar /> : WithdrawReqErr ? <ErrorMsg /> :
             <DataTable

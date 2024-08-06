@@ -7,6 +7,7 @@ import CButton from '../../common/CButton/CButton';
 import toast from 'react-hot-toast';
 import { ORDER_STATUS_UPDATE } from './graphql/mutation';
 import { ORDERS } from './graphql/query';
+import { Link } from 'react-router-dom';
 
 
 const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
@@ -58,8 +59,11 @@ const UpdateOrder = ({ data, fetchOrders, closeDialog }) => {
   return (
     <Box>
 
-      <Stack direction='row' justifyContent='space-between' mb={4}>
-        <Typography variant='h5'>Order Status</Typography>
+      <Stack direction='row' justifyContent='space-between' mb={2}>
+        <Box>
+          <Typography variant='h5' mb={.5}>Order Status</Typography>
+          <Link to={`/dashboard/orders/details/${data.id}`} variant='h6'>Order ID: #{data?.id}</Link>
+        </Box>
         <IconButton onClick={closeDialog}>
           <Close />
         </IconButton>

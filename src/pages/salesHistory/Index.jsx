@@ -11,6 +11,7 @@ import DataTable from '../../common/datatable/DataTable';
 import { SALES_HISTORY_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import useIsMobile from '../../hook/useIsMobile';
 
 const SalesHistory = () => {
   const [salesHistories, setSalesHistories] = useState([])
@@ -18,9 +19,11 @@ const SalesHistory = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 
+  const isMobile = useIsMobile()
+
 
   const [fetchSalesHistory, { loading, error: salesHistoryErr }] = useLazyQuery(SALES_HISTORIES, {
-    fetchPolicy:'network-only',
+    fetchPolicy: 'network-only',
     variables: {
       supplierNameEmail: searchText
     },
@@ -151,7 +154,9 @@ const SalesHistory = () => {
       }
     },
     {
-      field: 'status', headerName: 'Status', width: 150,flex:1,
+      field: 'status', headerName: 'Status',
+      width: isMobile ? 150 : undefined,
+      flex: isMobile ? undefined : 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),
@@ -162,19 +167,19 @@ const SalesHistory = () => {
             display: 'inline-flex',
             padding: '1px 12px',
             bgcolor: row.order.status === 'Cancelled'
-                ? 'red'
-                : row.order.status === 'Confirmed'
-                  ? 'lightgreen'
-                  : row.order.status === 'Delivered'
-                    ? 'green'
-                    : row.order.status === 'Processing'
-                      ? '#8294C4'
-                      : row.order.status === 'Ready-to-deliver'
-                        ? '#01B8A9'
-                        : 'yellow',
-              color: row.order.status === 'Placed'
-                ? 'dark' : row.order.status === 'Payment-pending'
-                  ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
+              ? 'red'
+              : row.order.status === 'Confirmed'
+                ? 'lightgreen'
+                : row.order.status === 'Delivered'
+                  ? 'green'
+                  : row.order.status === 'Processing'
+                    ? '#8294C4'
+                    : row.order.status === 'Ready-to-deliver'
+                      ? '#01B8A9'
+                      : 'yellow',
+            color: row.order.status === 'Placed'
+              ? 'dark' : row.order.status === 'Payment-pending'
+                ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.order.status}</Typography>
@@ -189,7 +194,7 @@ const SalesHistory = () => {
   useEffect(() => {
     fetchSalesHistory()
   }, [])
-  
+
 
 
   return (
@@ -207,7 +212,7 @@ const SalesHistory = () => {
           }}>({salesHistories?.length})</Typography>
         </Stack>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems='center'>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems={{ xs: 'start', md: 'center' }}>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
@@ -222,31 +227,33 @@ const SalesHistory = () => {
           <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
           <IconButton><Search /></IconButton>
         </Box>
-        <Box sx={{ minWidth: 200 }}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Status"
-              onChange={e => setStatusFilter(e.target.value)}
-            >
-              <MenuItem value={'all'}>All </MenuItem>
-              <MenuItem value={'active'}>Active</MenuItem>
-              <MenuItem value={'rejected'}>rejected</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        {
+        <Stack direction='row' gap={2}>
+
+          <Box sx={{ minWidth: 200 }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value={'all'}>All </MenuItem>
+                <MenuItem value={'active'}>Active</MenuItem>
+                <MenuItem value={'rejected'}>rejected</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <CButton
             style={{
               visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
             }}
+            color='warning'
             isLoading={deleteLoading}
             onClick={handleSalesHistoryDelete}
             variant='contained'>
             Delete
           </CButton>
-        }
+        </Stack>
       </Stack>
       <Box mt={3}>
         {

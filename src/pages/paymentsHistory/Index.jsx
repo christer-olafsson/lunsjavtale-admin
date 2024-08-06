@@ -11,12 +11,15 @@ import { format } from 'date-fns';
 import { PAYMENT_HISTORY_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import useIsMobile from '../../hook/useIsMobile';
 
 const PaymentsHistory = () => {
   const [orderPayments, setOrderPayments] = useState([])
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState([]);
+
+  const isMobile = useIsMobile()
 
   const [fetchOrderPayment, { loading, error }] = useLazyQuery(ORDER_PAYMENTS, {
     variables: {
@@ -124,7 +127,9 @@ const PaymentsHistory = () => {
       )
     },
     {
-      field: 'status', headerName: '', width: 200,flex:1,
+      field: 'status', headerName: '',
+      width: isMobile ? 200 : undefined,
+      flex: isMobile ? undefined : 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),
@@ -157,12 +162,12 @@ const PaymentsHistory = () => {
           }}>({orderPayments?.length})</Typography>
         </Stack>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems='center'>
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems={{ xs: 'start', md: 'center' }}>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          maxWidth: '300px',
+          maxWidth: { xs: '100%', md: '300px' },
           bgcolor: '#fff',
           width: '100%',
           border: '1px solid lightgray',
@@ -172,22 +177,22 @@ const PaymentsHistory = () => {
           <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
           <IconButton><Search /></IconButton>
         </Box>
-        <Box sx={{ minWidth: 200 }}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Status"
-              onChange={e => setStatusFilter(e.target.value)}
-            >
-              <MenuItem value={'all'}>All</MenuItem>
-              <MenuItem value={'pending'}>Pending</MenuItem>
-              <MenuItem value={'completed'}>Completed</MenuItem>
-              <MenuItem value={'cancelled'}>Cancelled</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        {
+        <Stack direction='row' gap={2}>
+          <Box sx={{ minWidth: 200 }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value={'all'}>All</MenuItem>
+                <MenuItem value={'pending'}>Pending</MenuItem>
+                <MenuItem value={'completed'}>Completed</MenuItem>
+                <MenuItem value={'cancelled'}>Cancelled</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <CButton
             style={{
               visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
@@ -196,9 +201,9 @@ const PaymentsHistory = () => {
             color='warning'
             onClick={handlePaymentHistoryDelete}
             variant='contained'>
-            Delete Selected
+            Delete
           </CButton>
-        }
+        </Stack>
       </Stack>
       <Box mt={3}>
         {

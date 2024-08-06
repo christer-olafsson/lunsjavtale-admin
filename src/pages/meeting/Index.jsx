@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import MeetingDetails from './MeetingDetails';
 import EditMeeting from './EditMeeting';
 import { nb } from 'date-fns/locale';
+import useIsMobile from '../../hook/useIsMobile';
 
 const Meeting = () => {
   const [statusFilter, setStatusFilter] = useState('');
@@ -33,6 +34,8 @@ const Meeting = () => {
   const [meetings, setMeetings] = useState([])
   const [searchText, setSearchText] = useState('')
   const [status, setStatus] = useState('');
+
+  const isMobile = useIsMobile()
 
   const [fetchMeeting, { loading: meetingsLoading, error: meetingsErr }] = useLazyQuery(FOOD_MEETINGS, {
     variables: {
@@ -311,7 +314,9 @@ const Meeting = () => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 80,flex:1,
+      field: 'delete', headerName: '',
+      width: isMobile ? 80 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

@@ -11,10 +11,13 @@ import CButton from '../../common/CButton/CButton';
 import { NOTIFICATION_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import useIsMobile from '../../hook/useIsMobile';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([])
   const [selectedRowIds, setSelectedRowIds] = useState([]);
+
+  const isMobile = useIsMobile()
 
   const [fetchAdminNotifications, { loading, error }] = useLazyQuery(ADMIN_NOTIFICATIONS, {
     fetchPolicy: 'network-only',
@@ -83,7 +86,9 @@ const Notifications = () => {
       }
     },
     {
-      field: 'Message', flex: 1,
+      field: 'Message',
+      width: isMobile ? 400 : undefined,
+      flex: isMobile ? undefined : 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Message</Typography>
       ),
@@ -92,6 +97,7 @@ const Notifications = () => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Link
+            style={{color: row.isSeen ? 'gray' : 'inherit'}}
               to={row.notificationType === 'order-placed' ? '/dashboard/orders' :
                 row.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
                   row.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${row.objectId}` : ''

@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { VENDOR_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import useIsMobile from '../../hook/useIsMobile';
 
 
 const Suppliers = () => {
@@ -24,6 +25,8 @@ const Suppliers = () => {
   const [vendorDeleteId, setVendorDeleteId] = useState('')
   const [vendors, setVendors] = useState([])
   const [searchText, setSearchText] = useState('')
+
+  const isMobile = useIsMobile()
 
   const [fetchVendors, { loading, error: vendorsErr }] = useLazyQuery(VENDORS, {
     variables: {
@@ -179,7 +182,9 @@ const Suppliers = () => {
       },
     },
     {
-      field: 'edit', headerName: '', width: 50,flex:1,
+      field: 'edit', headerName: '', 
+      width: isMobile ? 50 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => {
         return (
           <IconButton sx={{

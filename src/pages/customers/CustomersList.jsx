@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import { MailOutline, PhoneInTalkOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import useIsMobile from '../../hook/useIsMobile';
 
 const CustomersList = ({ data }) => {
   const [selectedRows, setSelectedRows] = useState([])
+
+  const isMobile = useIsMobile()
 
   const columns = [
     {
@@ -58,7 +61,9 @@ const CustomersList = ({ data }) => {
       )
     },
     {
-      field: 'dueAmount', headerName: '', width: 150,flex:1,
+      field: 'dueAmount', headerName: '',
+      width: isMobile ? 150 : undefined,
+      flex: isMobile ? undefined : 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
       ),
@@ -109,7 +114,7 @@ const CustomersList = ({ data }) => {
       <Typography variant='h5' my={2}>All Staffs</Typography>
       <DataGrid
         sx={{
-          maxWidth:'900px',
+          maxWidth: '900px',
           my: 2,
           '& .MuiDataGrid-columnHeader': {
             backgroundColor: '#1E293B',

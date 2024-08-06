@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
+import useIsMobile from '../../hook/useIsMobile';
 
 
 const Areas = () => {
@@ -23,6 +24,8 @@ const Areas = () => {
   const [validAreas, setValidAreas] = useState([]);
   const [editAreaData, setEditAreaData] = useState({})
   const [deleteAreaId, setDeleteAreaId] = useState('')
+
+  const isMobile = useIsMobile()
 
 
   const [fetchValidAreas, { loading, error }] = useLazyQuery(VALID_AREAS, {
@@ -151,7 +154,9 @@ const Areas = () => {
       },
     },
     {
-      field: 'delete', headerName: '', width: 60,flex:1,
+      field: 'delete', headerName: '', 
+      width: isMobile ? 60 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDeleteDialog(params.row)}>

@@ -31,16 +31,20 @@ const SmallNotification = ({ onClose }) => {
       // minHeight: '500px',
       bgcolor: '#fff',
       border: '1px solid lightgray',
-      borderRadius: '8px', p: '10px 20px',
-    }} gap={2}>
+      borderRadius: '8px',
+    }} gap={1}>
       {
         loading ? <Loader /> : error ? <ErrorMsg /> :
           notifications?.length === 0 ?
             <Typography sx={{ textAlign: 'center', color: 'gray' }}>No Notification</Typography> :
             notifications?.slice(0, 5).map(item => (
-              <Box key={item.id}>
-                <Typography sx={{ fontSize: '16px', fontWeight: 600, color: 'green' }}>{item.title}</Typography>
+              <Box sx={{
+                borderBottom: '1px solid lightgray',
+                p: 2
+              }} key={item.id}>
+                <Typography sx={{ fontSize: '16px', fontWeight: 600, color: item.isSeen ? 'gray' : 'green' }}>{item.title}</Typography>
                 <Link
+                  style={{ color: item.isSeen ? 'gray' : 'inherit' }}
                   to={item.notificationType === 'order-placed' ? '/dashboard/orders' :
                     item.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
                       item.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${item.objectId}` : ''

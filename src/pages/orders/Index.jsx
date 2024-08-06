@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 import { ORDER_HISTORY_DELETE } from './graphql/mutation';
 import moment from 'moment-timezone';
 import CreatePayment from './CreatePayment';
+import useIsMobile from '../../hook/useIsMobile';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
@@ -29,6 +30,8 @@ const Orders = () => {
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
   const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
+
+  const isMobile = useIsMobile()
 
 
   const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
@@ -320,7 +323,9 @@ const Orders = () => {
       },
     },
     {
-      field: 'timeUntil', headerName: '', width: 200,flex:1,
+      field: 'timeUntil', headerName: '',
+      width: isMobile ? 200 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>
@@ -350,9 +355,9 @@ const Orders = () => {
           px: 1
         }}>({orders?.length})</Typography>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between'>
-        <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
-          <Box sx={{ minWidth: 200 }}>
+      <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between'>
+        <Stack direction='row' gap={2}>
+          <Box sx={{ minWidth: { xs: 150, md: 200 } }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -387,7 +392,7 @@ const Orders = () => {
           </Box>
 
         </Stack>
-        <Button sx={{ mt: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+        <Button sx={{ mb: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>
       {/* create payment */}
       <CDialog openDialog={openCreatePaymentDialog}>

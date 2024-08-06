@@ -13,6 +13,7 @@ import { COMPANIES } from '../../graphql/query';
 import { COMPANY_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import useIsMobile from '../../hook/useIsMobile';
 
 
 const Customers = () => {
@@ -25,6 +26,7 @@ const Customers = () => {
   const [deleteCompanyId, setDeleteCompanyId] = useState('')
   const [searchText, setSearchText] = useState('')
 
+  const isMobile = useIsMobile()
 
   const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANIES, {
     variables: {
@@ -81,20 +83,20 @@ const Customers = () => {
       )
     },
     {
-      field: 'companyName', headerName: '', width: 250,
+      field: 'companyName', headerName: '', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company Name</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
           {params.row.logoUrl ? <Avatar sx={{ borderRadius: '4px' }} src={params.row.logoUrl} /> :
-            <StoreOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} />}
+            <StoreOutlined />}
           <Box >
             <Stack direction='row' alignItems='center'>
               <Typography sx={{
                 fontSize: '14px',
                 fontWeight: 600,
-                color: params.row.isValid ? 'inherit' : 'darkgray',
+                // color: params.row.isValid ? 'inherit' : 'darkgray',
                 display: 'inline-flex',
                 gap: '3px'
               }}>{!params.row.isChecked &&
@@ -195,7 +197,6 @@ const Customers = () => {
       field: 'paidAmount',
       headerName: '',
       width: 150,
-      flex:1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px', ml: 5 } }}>Paid Amount</Typography>
       ),
@@ -239,13 +240,15 @@ const Customers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }} onClick={() => handleEdit(params.row)}>
-            <ModeEditOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
+            <ModeEditOutlineOutlined fontSize='small' />
           </IconButton>
         )
       },
     },
     {
-      field: 'delete', headerName: '', width: 50,
+      field: 'delete', headerName: '',
+      width: isMobile ? 50 : undefined,
+      flex: isMobile ? undefined : 1,
       renderCell: (params) => {
         return (
           <IconButton onClick={() => handleDelete(params.row)} sx={{
@@ -253,7 +256,7 @@ const Customers = () => {
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },
           }}>
-            <DeleteOutlineOutlined sx={{ color: params.row.isValid ? 'inherit' : 'darkgray' }} fontSize='small' />
+            <DeleteOutlineOutlined fontSize='small' />
           </IconButton>
         )
       },

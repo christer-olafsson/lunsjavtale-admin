@@ -53,13 +53,13 @@ const PaymentsHistory = () => {
 
   const columns = [
     {
-      field: 'id', headerName: '', width: 50,
+      field: 'id', headerName: '', width: 100,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-          <Link to={`/dashboard/payments-history/details/${params.row.id}`}>{params.row.id}</Link>
+          <Link style={{ textDecoration: 'none' }} to={`/dashboard/payments-history/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
         </Stack>
       )
     },

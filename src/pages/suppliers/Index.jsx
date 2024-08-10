@@ -72,19 +72,12 @@ const Suppliers = () => {
 
   const columns = [
     {
-      field: 'details', width: 70, headerName: '',
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Link to={`/dashboard/suppliers/details/${row.id}`}>
-              <IconButton>
-                <ArrowRightOutlined />
-              </IconButton>
-            </Link>
-          </Stack>
-        )
-      }
+      field: 'id', headerName: 'ID', width: 100,
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          <Link style={{textDecoration:'none'}} to={`/dashboard/suppliers/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
+        </Stack>
+      )
     },
     {
       field: 'supplierName', width: 200,

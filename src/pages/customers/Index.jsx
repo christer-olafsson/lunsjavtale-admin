@@ -73,13 +73,10 @@ const Customers = () => {
 
   const columns = [
     {
-      field: 'details', headerName: 'ID', width: 60,
+      field: 'id', headerName: 'ID', width: 100,
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} justifyContent='center'>
-          <Link to={`/dashboard/customers/details/${params.row.id}`}>
-            {/* <KeyboardArrowRight /> */}
-            {params.row.id}
-          </Link>
+          <Link style={{textDecoration:'none'}} to={`/dashboard/customers/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
         </Stack>
       )
     },
@@ -184,10 +181,9 @@ const Customers = () => {
             <Typography sx={{
               fontSize: '14px',
               fontWeight: 600,
-              bgcolor: row.dueAmount === '0.00' ? 'lightgray' : '#F7DCD9',
-              color: row.dueAmount === '0.00' ? 'black' : 'red',
+              // bgcolor: row.dueAmount === '0.00' ? 'lightgray' : '#F7DCD9',
+              color: row.dueAmount === '0.00' ? 'inherit' : 'red',
               borderRadius: '4px',
-              textAlign: 'center',
               p: .5
             }}>{row.dueAmount ?? <b>00 </b>} kr</Typography>
           </Stack>
@@ -207,7 +203,9 @@ const Customers = () => {
           <Stack sx={{ height: '100%' }} justifyContent='center'>
             <Typography sx={{
               fontSize: '14px',
+              color: row.dueAmount === '0.00' ? 'inherit' : 'green',
               fontWeight: 600,
+
             }}>{row.paidAmount ?? <b>00 </b>} kr</Typography>
           </Stack>
         )

@@ -86,8 +86,8 @@ const Coupons = () => {
         const { row } = params
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Link to={`/dashboard/coupons/details/${row.id}`}>
-              <Typography>{row.id}</Typography>
+            <Link style={{ textDecoration: 'none' }} to={`/dashboard/coupons/details/${row.id}`}>
+              <Typography>&#x2022; {row.id}</Typography>
             </Link>
           </Stack>
         )
@@ -129,7 +129,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.startDate,'dd-MM-yyyy')}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.startDate, 'dd-MM-yyyy')}</Typography>
         </Stack>
       )
     },
@@ -140,7 +140,7 @@ const Coupons = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.endDate,'dd-MM-yyyy')}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.endDate, 'dd-MM-yyyy')}</Typography>
         </Stack>
       )
     },

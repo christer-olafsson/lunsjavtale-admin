@@ -20,7 +20,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
     orders: null,
     note: '',
   })
- 
+
   const { loading: companiesLoading } = useQuery(COMPANIES, {
     onCompleted: (res) => {
       setCompanies(res.companies.edges.map(item => ({
@@ -144,6 +144,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
       <Autocomplete
         sx={{ mb: 2 }}
         options={users}
+        disabled={!payload.company?.id }
         loading={usersLoading}
         onChange={(_, value) => setPayload({ ...payload, paymentFor: value })}
         getOptionLabel={(option) => option.email}

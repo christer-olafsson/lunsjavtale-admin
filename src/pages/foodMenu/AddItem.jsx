@@ -100,6 +100,47 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     setPriceWithoutTax(inputPrice);
   };
 
+  const handlePriceWithTaxChange = (event) => {
+    const inputPriceWithTax = parseFloat(event.target.value);
+    const taxRate = 0.15; // 15% tax rate
+    const priceWithoutTax = inputPriceWithTax / (1 + taxRate);
+    setPriceWithoutTax(Math.round(priceWithoutTax * 100) / 100);
+    setPriceWithTax(inputPriceWithTax);
+  };
+
+
+  // const handlePriceWithTaxChange = (event) => {
+  //   const inputValue = event.target.value;
+
+  //   // Only parse and calculate if the value is a valid float
+  //   const inputPriceWithTax = parseFloat(inputValue);
+  //   if (!isNaN(inputPriceWithTax)) {
+  //     const taxRate = 0.15; // 15% tax rate
+  //     const priceWithoutTax = inputPriceWithTax / (1 + taxRate);
+
+  //     setPriceWithoutTax(Math.round(priceWithoutTax * 100) / 100);
+  //   }
+  //   setPriceWithTax(inputValue);
+  // };
+  // const handlePriceWithTaxChange = (event) => {
+  //   const inputValue = event.target.value;
+  
+  //   // Check if the input value is a valid number
+  //   if (!isNaN(inputValue) && inputValue !== '') {
+  //     const inputPriceWithTax = parseFloat(inputValue);
+  //     const taxRate = 0.15; // 15% tax rate
+  //     const priceWithoutTax = inputPriceWithTax / (1 + taxRate);
+  
+  //     // Update the state with rounded values
+  //     setPriceWithoutTax(Math.round(priceWithoutTax * 100) / 100);
+  //     setPriceWithTax(inputPriceWithTax);
+  //   } else {
+  //     // Handle the case where input is not a valid number (e.g., during typing)
+  //     setPriceWithTax(inputValue);
+  //   }
+  // };
+
+
   // const handleTaxRateChange = (event) => {
   //   const newTaxRate = parseFloat(event.target.value);
   //   setTaxRate(newTaxRate);
@@ -245,11 +286,13 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               placeholder='E.g: Todays..'
             />
             <TextField
+              type='number'
               size='small'
               error={Boolean(inputerr.price || errors.priceWithTax)}
               value={priceWithTax ? priceWithTax : ''}
-              InputProps={{ readOnly: true }}
+              // InputProps={{ readOnly: true }}
               label='Price (incl. Tax 15%)'
+              onChange={handlePriceWithTaxChange}
               helperText={errors.priceWithTax}
             />
           </Stack>

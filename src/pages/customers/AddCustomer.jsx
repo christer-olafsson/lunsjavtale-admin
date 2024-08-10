@@ -37,8 +37,6 @@ const AddCustomer = ({ fetchCompany, closeDialog }) => {
         const { extensions } = graphqlError;
         if (extensions && extensions.errors) {
           setErrors(extensions.errors)
-          // setErrors(Object.values(extensions.errors));
-          console.log(extensions.errors)
         }
       }
     }

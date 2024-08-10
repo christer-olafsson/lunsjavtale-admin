@@ -25,6 +25,7 @@ const AddUser = ({ fetchSystemUsers, closeDialog }) => {
       closeDialog()
     },
     onError: (err) => {
+      toast.error(err.message)
       if (err.graphQLErrors && err.graphQLErrors.length > 0) {
         const graphqlError = err.graphQLErrors[0];
         const { extensions } = graphqlError;
@@ -112,10 +113,9 @@ const AddUser = ({ fetchSystemUsers, closeDialog }) => {
               onChange={(e) => setPayload({ ...payload, role: e.target.value })}
             >
               <MenuItem value={'sub-admin'}>Sub Admin</MenuItem>
-              <MenuItem value={'editor'}>Editor</MenuItem>
-              <MenuItem value={'developer'}>Developer</MenuItem>
-              <MenuItem value={'seo-manager'}>SEO Manager</MenuItem>
               <MenuItem value={'system-manager'}>System Manager</MenuItem>
+              <MenuItem value={'seo-manager'}>SEO Manager</MenuItem>
+              <MenuItem value={'developer'}>Developer</MenuItem>
             </Select>
             {errors.role && <FormHelperText>{errors.role}</FormHelperText>}
           </FormControl>

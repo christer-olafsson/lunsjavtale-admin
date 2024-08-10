@@ -20,7 +20,7 @@ const EditUser = ({ fetchSystemUsers, data, closeDialog }) => {
     role: '',
     superUser: false,
   })
-
+console.log(data)
   const [newAdministrator, { loading }] = useMutation(ADD_NEW_ADMINISTRATOR, {
     onCompleted: (res) => {
       fetchSystemUsers()

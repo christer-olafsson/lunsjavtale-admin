@@ -19,6 +19,7 @@ export const ME = gql`
       photoUrl
       fileId
       isActive
+      isSuperuser
       company{
         id
         name
@@ -128,8 +129,8 @@ export const CHECk_POST_CODE = gql`
 `
 
 export const COMPANIES = gql`
-  query($nameEmail: String, $status: String){
-  companies(nameEmail: $nameEmail, status: $status){
+  query($nameEmail: String, $isBlocked: Boolean, $isValid: Boolean){
+  companies(nameEmail: $nameEmail, isBlocked: $isBlocked, isValid:$isValid){
     edges{
       node{
         id

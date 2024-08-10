@@ -17,7 +17,7 @@ import useIsMobile from '../../hook/useIsMobile';
 
 
 const Customers = () => {
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [addCustomerDialogOpen, setAddCustomerDialogOpen] = useState(false);
   const [editCustomerDialogOpen, setEditCustomerDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -31,7 +31,8 @@ const Customers = () => {
   const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANIES, {
     variables: {
       nameEmail: searchText,
-      status: statusFilter === 'all' ? null : statusFilter
+      isBlocked: statusFilter === 'blocked' ? true : null,
+      isValid: statusFilter === 'invalid' ? false : null
     },
     fetchPolicy: "network-only",
     onCompleted: (res) => {
@@ -325,7 +326,7 @@ const Customers = () => {
             <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
             <IconButton><Search /></IconButton>
           </Box>
-          {/* <Box sx={{ minWidth: 200 }}>
+          <Box sx={{ minWidth: 200 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -334,11 +335,11 @@ const Customers = () => {
                 onChange={e => setStatusFilter(e.target.value)}
               >
                 <MenuItem value={'all'}>All </MenuItem>
-                <MenuItem value={'active'}>Active</MenuItem>
-                <MenuItem value={'rejected'}>rejected</MenuItem>
+                <MenuItem value={'blocked'}>Blocked</MenuItem>
+                <MenuItem value={'invalid'}>Invalid-Area</MenuItem>
               </Select>
             </FormControl>
-          </Box> */}
+          </Box>
         </Stack>
         <Button onClick={() => setAddCustomerDialogOpen(true)} variant='contained' startIcon={<Add />}>New Customer</Button>
       </Stack>

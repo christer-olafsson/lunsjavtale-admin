@@ -1,13 +1,14 @@
-import { Add, DeleteOutline, EditOutlined, ErrorOutline, Lock, MoreVert, Search } from '@mui/icons-material'
+import { Add, DeleteOutline, EditOutlined, ErrorOutline, Lock, MoreVert, Search, Security } from '@mui/icons-material'
 import { Avatar, Box, Button, IconButton, Paper, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import CDialog from '../../../common/dialog/CDialog'
 import AddUser from './AddUser'
 import EditUser from './EditUser'
 import { SYSTEM_USERS } from '../graphql/query'
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import Loader from '../../../common/loader/Index'
 import ErrorMsg from '../../../common/ErrorMsg/ErrorMsg'
+import { ME } from '../../../graphql/query'
 
 
 const UserManagemenet = () => {
@@ -16,13 +17,15 @@ const UserManagemenet = () => {
   const [selectedUserId, setSelectedUserId] = useState('');
   const [systemUsers, setSystemUsers] = useState([])
 
+  const { data: user } = useQuery(ME)
+
   const [fetchSystemUsers, { loading, error }] = useLazyQuery(SYSTEM_USERS, {
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setSystemUsers(res.systemUsers.edges.map(item => item.node).filter(user => !user.isDeleted));
     }
   });
-
+  // console.log(systemUsers)
 
   function handleEditUser(id) {
     setSelectedUserId(id)
@@ -49,28 +52,36 @@ const UserManagemenet = () => {
       <Stack direction='row' gap={2} flexWrap='wrap' mt={5}>
         {
           loading ? <Loader /> : error ? <ErrorMsg /> :
-            systemUsers?.map((user, id) => (
+            systemUsers?.map((item, id) => (
               <Paper key={id} elevation={3} sx={{
                 width: { xs: '100%', md: '350px' },
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1, p: 2,
                 position: 'relative',
-                bgcolor: user.status === 'lock' ? '#FEE4E2' : 'none',
-                opacity: user.status === 'lock' ? '.6' : '1',
+                bgcolor: item.status === 'lock' ? '#FEE4E2' : 'none',
+                opacity: item.status === 'lock' ? '.6' : '1',
               }}>
                 <Avatar sx={{
                   width: '60px',
                   height: '60px'
                 }} />
                 <Box>
-                  <Typography sx={{ fontSize: '13px' }}>@{user.username}</Typography>
-                  <Typography sx={{ fontSize: '13px' }}>{user.email}</Typography>
+                  <Typography sx={{ fontSize: '13px' }}>@{item.username}</Typography>
+                  <Typography sx={{ fontSize: '13px' }}>{item.email}</Typography>
                   <Typography sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
                     fontSize: '13px',
+                    gap: .5,
                     fontWeight: 600,
-                    color: user.role === 'admin' ? 'purple' : 'black'
-                  }}>{user.role}</Typography>
+                    color: item.role === 'admin' ? 'purple' : 'black'
+                  }}>
+                    {item.role}
+                    {item.isSuperuser &&
+                      <Security fontSize='small' sx={{ color: 'purple' }} />
+                    }
+                  </Typography>
                 </Box>
                 <Box sx={{
                   position: 'absolute',
@@ -78,8 +89,8 @@ const UserManagemenet = () => {
                   right: 0,
                 }}>
                   {
-                    user.role !== 'admin' &&
-                    <IconButton onClick={() => handleEditUser(id)}>
+                    item.role !== 'admin' &&
+                    <IconButton disabled={user?.me?.role !== "admin"} onClick={() => handleEditUser(id)}>
                       <EditOutlined fontSize='small' />
                     </IconButton>
                   }
@@ -95,7 +106,7 @@ const UserManagemenet = () => {
                 {
                   selectedUserId === id &&
                   <CDialog openDialog={editUserDialogOpen}>
-                    <EditUser fetchSystemUsers={fetchSystemUsers} data={user} closeDialog={() => setEditUserDialogOpen(false)} />
+                    <EditUser fetchSystemUsers={fetchSystemUsers} data={item} closeDialog={() => setEditUserDialogOpen(false)} />
                   </CDialog>
                 }
 

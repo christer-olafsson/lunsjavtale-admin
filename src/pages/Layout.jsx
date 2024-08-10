@@ -11,7 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
-import { AccountCircle, Business, Description, Discount, Diversity3, FiberManualRecord, FiberManualRecordOutlined, History, HolidayVillage, Instagram, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
+import { AccountCircle, Business, Description, Discount, Diversity3, FiberManualRecord, FiberManualRecordOutlined, History, HolidayVillage, Instagram, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Security, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
 import toast from 'react-hot-toast';
@@ -19,7 +19,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { ADMIN_NOTIFICATIONS, UNREAD_ADMIN_NOTIFICATIONCOUNT } from './notification/graphql/query';
 import SmallNotification from './notification/SmallNotification';
 import { ORDERS } from './orders/graphql/query';
-import { COMPANIES } from '../graphql/query';
+import { COMPANIES, ME } from '../graphql/query';
 import { FOOD_MEETINGS } from './meeting/graphql/query';
 import { WITHDRAW_REQ } from './withdraw-req/graphql/query';
 
@@ -126,6 +126,9 @@ function Layout() {
   const foodDetailsMatchFromItem = useMatch('/dashboard/food-item/food-details/:id')
   const foodDetailsMatchFromCategories = useMatch('/dashboard/food-categories/food-details/:id')
 
+
+  const { data: user } = useQuery(ME)
+  console.log(user)
   useQuery(UNREAD_ADMIN_NOTIFICATIONCOUNT, {
     onCompleted: (res) => {
       setUnreadNotifications(res.unreadAdminNotificationCount)
@@ -233,7 +236,8 @@ function Layout() {
       alignItems: 'center',
       bgcolor: '#1E293B',
       // height: '100%',
-      height:'100%',
+      height: '200vh',
+      pb: 3
     }}>
       <Toolbar sx={{
         display: 'flex',
@@ -270,7 +274,7 @@ function Layout() {
           link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
           selected={pathname === '/'} />
         <ListBtn
-          notification={unreadNotifications.length > 0 ? unreadNotifications : ''}
+          notification={unreadNotifications > 0 ? unreadNotifications : ''}
           onClick={handleDrawerClose}
           link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
           selected={pathname === '/dashboard/notifications'} />
@@ -304,13 +308,24 @@ function Layout() {
             />
           </Box>
         </Collapse>
-        <ListBtn onClick={handleDrawerClose}
-          notification={placedOrders.length > 0 ? placedOrders.length : ''}
-          link='/dashboard/orders'
-          icon={<ShoppingCartCheckoutOutlined fontSize='small' />}
-          text='Orders'
-          selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
-        />
+        {
+          user?.me?.role !== 'seo-manager' &&
+          <>
+            < ListBtn onClick={handleDrawerClose}
+              notification={placedOrders.length > 0 ? placedOrders.length : ''}
+              link='/dashboard/orders'
+              icon={<ShoppingCartCheckoutOutlined fontSize='small' />}
+              text='Orders'
+              selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
+            />
+            <ListBtn onClick={handleDrawerClose}
+              link='/dashboard/payments-history'
+              icon={<History fontSize='small' />}
+              text='Payment-History'
+              selected={pathname === '/dashboard/payments-history'}
+            />
+          </>
+        }
         <ListBtn onClick={handleDrawerClose}
           notification={newCompanies.length > 0 ? newCompanies.length : ''}
           link='/dashboard/customers'
@@ -319,13 +334,6 @@ function Layout() {
           selected={pathname === '/dashboard/customers'
             // || pathname === customerDetailsMatch?.pathname
           }
-        />
-
-        <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/payments-history'
-          icon={<History fontSize='small' />}
-          text='Payment-History'
-          selected={pathname === '/dashboard/payments-history'}
         />
         <ListBtn onClick={handleDrawerClose}
           notification={newMeetings.length > 0 ? newMeetings.length : ''}
@@ -351,21 +359,26 @@ function Layout() {
                 subItem
                 selected={pathname === '/dashboard/suppliers'}
               />
-              <ListBtn
-                onClick={handleDrawerClose}
-                link='/dashboard/sales-history'
-                text='Sales-History'
-                subItem
-                selected={pathname === '/dashboard/sales-history'}
-              />
-              <ListBtn
-                notification={newWithdrawReq.length > 0 ? newWithdrawReq.length : ''}
-                onClick={handleDrawerClose}
-                link='/dashboard/withdraw-req'
-                text='Withdraw-Req'
-                subItem
-                selected={pathname === '/dashboard/withdraw-req'}
-              />
+              {
+                user?.me?.role !== 'seo-manager' &&
+                <>
+                  <ListBtn
+                    onClick={handleDrawerClose}
+                    link='/dashboard/sales-history'
+                    text='Sales-History'
+                    subItem
+                    selected={pathname === '/dashboard/sales-history'}
+                  />
+                  <ListBtn
+                    notification={newWithdrawReq.length > 0 ? newWithdrawReq.length : ''}
+                    onClick={handleDrawerClose}
+                    link='/dashboard/withdraw-req'
+                    text='Withdraw-Req'
+                    subItem
+                    selected={pathname === '/dashboard/withdraw-req'}
+                  />
+                </>
+              }
             </Box>
           </Collapse>
         }
@@ -421,10 +434,10 @@ function Layout() {
 
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       display: 'flex',
-      minHeight:'100vh'
-       }}>
+      minHeight: '100vh'
+    }}>
       <CssBaseline />
       <AppBar
         color='white'
@@ -497,7 +510,75 @@ function Layout() {
               </Box>
             </ClickAwayListener>
             {/* user menu */}
-            <Box>
+            <ClickAwayListener onClickAway={() => setUsermenuOpen(false)}>
+              <Box sx={{ position: 'relative' }}>
+                <Stack direction='row' alignItems='center'
+                  onClick={() => setUsermenuOpen(!userMenuOpen)}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <Avatar src={user?.me.photoUrl ? user?.me.photoUrl : ''} sx={{ width: 32, height: 32 }} />
+                  <Box ml={1}>
+                    <Typography sx={{ fontSize: '16px', fontWeight: 600,lineHeight:'20px' }}>{user?.me.username}</Typography>
+                    <Typography sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: .3,
+                      fontSize: '12px',
+                      textAlign: 'center',
+                      bgcolor: user?.me.role === 'admin' || user?.me.isSuperuser ?
+                        'purple' : 'darkgray',
+                      pl: 1,
+                      pr: user?.me.isSuperuser ? .5 : 1,
+                      borderRadius: '50px',
+                      color: '#fff'
+                    }}>
+                      {user?.me.role}
+                      {user?.me.isSuperuser &&
+                        <Security fontSize='small' />
+                      }
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Collapse sx={{
+                  position: 'absolute',
+                  top: 65,
+                  right: 0,
+                  minWidth: '250px',
+                  pt: 2,
+                  bgcolor: '#fff',
+                  boxShadow: 3,
+                  borderRadius: '8px'
+                }} in={userMenuOpen}>
+                  <Stack sx={{ width: '100%' }} alignItems='center'>
+                    <Avatar src={user?.me.photoUrl ?? ''} sx={{ width: '100px', height: '100px', mb: 2 }} />
+                    <Typography sx={{ fontSize: '20px', textAlign: 'center' }}>{user?.me.username}</Typography>
+                    <Typography sx={{ textAlign: 'center', fontSize: '14px' }}>{user?.me.email}</Typography>
+                    <Typography sx={{ textAlign: 'center', fontSize: '14px', mb: 2 }}>{user?.me.phone}</Typography>
+                    {/* <MenuItem onClick={() => setUsermenuOpen(false)}>
+                      <ListItemIcon>
+                        <Settings fontSize="small" />
+                      </ListItemIcon>
+                      Settings
+                    </MenuItem> */}
+                    <Divider sx={{ width: '100%' }} />
+                    <MenuItem onClick={() => (
+                      setUsermenuOpen(false),
+                      handleLogout()
+                    )}>
+                      <ListItemIcon>
+                        <Logout fontSize="small" />
+                      </ListItemIcon>
+                      Logout
+                    </MenuItem>
+                  </Stack>
+                </Collapse>
+
+              </Box>
+            </ClickAwayListener>
+            {/* user menu end */}
+
+            {/* <Box>
               <IconButton
                 onClick={handleUserMenuOpen}
                 size="small"
@@ -536,8 +617,8 @@ function Layout() {
                   Logout
                 </MenuItem>
               </Menu>
-            </Box>
-            {/* user menu end */}
+            </Box> */}
+
           </Box>
         </Toolbar>
         <Divider />

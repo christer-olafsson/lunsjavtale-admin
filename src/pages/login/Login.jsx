@@ -17,9 +17,16 @@ const Login = () => {
 
   const [loginUser, { loading, error: loginErr }] = useMutation(LOGIN_USER, {
     onCompleted: (res) => {
-      if (!res.loginUser.user.isAdmin) {
+      const role = res.loginUser.user.role
+      if (
+        role !== 'admin' &&
+        role !== 'sub-admin' &&
+        role !== 'developer' &&
+        role !== 'seo-manager' &&
+        role !== 'system-manager'
+      ) {
         toast.error('Access Denied');
-        return
+        return;
       }
       localStorage.setItem("admin_lunsjavtale", res.loginUser.access);
       toast.success('Login Success!');

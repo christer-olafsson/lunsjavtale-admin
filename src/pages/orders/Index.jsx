@@ -100,9 +100,9 @@ const Orders = () => {
     const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 
     if (diffInDays === 0) {
-      return 'Delivered Today';
+      return 'Delivery Today';
     } else {
-      return `Delivered in ${diffInDays} days`;
+      return `Delivery in ${diffInDays} days`;
     }
   }
 
@@ -234,6 +234,8 @@ const Orders = () => {
                     ? 'green'
                     : row.status === 'Processing'
                       ? '#8294C4'
+                      : row.status === 'Payment-completed'
+                      ? 'blue'
                       : row.status === 'Ready-to-deliver'
                         ? '#01B8A9'
                         : 'yellow',

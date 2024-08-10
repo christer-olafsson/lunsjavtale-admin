@@ -147,11 +147,13 @@ const OrderDetails = () => {
                   ? 'lightgreen'
                   : order.status === 'Delivered'
                     ? 'green'
-                    : order.status === 'Processing'
-                      ? '#8294C4'
-                      : order.status === 'Ready-to-deliver'
-                        ? '#01B8A9'
-                        : 'yellow',
+                    : order.status === 'Payment-completed'
+                      ? 'blue'
+                      : order.status === 'Processing'
+                        ? '#8294C4'
+                        : order.status === 'Ready-to-deliver'
+                          ? '#01B8A9'
+                          : 'yellow',
               color: order?.status === 'Placed'
                 ? 'dark' : order?.status === 'Payment-pending'
                   ? 'dark' : order?.status === 'Confirmed' ? 'dark' : '#fff',

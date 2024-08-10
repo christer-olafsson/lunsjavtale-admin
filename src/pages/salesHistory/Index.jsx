@@ -170,13 +170,15 @@ const SalesHistory = () => {
               ? 'red'
               : row.order.status === 'Confirmed'
                 ? 'lightgreen'
-                : row.order.status === 'Delivered'
-                  ? 'green'
-                  : row.order.status === 'Processing'
-                    ? '#8294C4'
-                    : row.order.status === 'Ready-to-deliver'
-                      ? '#01B8A9'
-                      : 'yellow',
+                : row.order.status === 'Payment-completed'
+                  ? 'blue'
+                  : row.order.status === 'Delivered'
+                    ? 'green'
+                    : row.order.status === 'Processing'
+                      ? '#8294C4'
+                      : row.order.status === 'Ready-to-deliver'
+                        ? '#01B8A9'
+                        : 'yellow',
             color: row.order.status === 'Placed'
               ? 'dark' : row.order.status === 'Payment-pending'
                 ? 'dark' : row.order.status === 'Confirmed' ? 'dark' : '#fff',

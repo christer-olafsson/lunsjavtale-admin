@@ -164,13 +164,15 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
               ? 'red'
               : row.status === 'Confirmed'
                 ? 'lightgreen'
-                : row.status === 'Delivered'
-                  ? 'green'
-                  : row.status === 'Processing'
-                    ? '#8294C4'
-                    : row.status === 'Ready-to-deliver'
-                      ? '#01B8A9'
-                      : 'yellow',
+                : row.status === 'Payment-completed'
+                  ? 'blue'
+                  : row.status === 'Delivered'
+                    ? 'green'
+                    : row.status === 'Processing'
+                      ? '#8294C4'
+                      : row.status === 'Ready-to-deliver'
+                        ? '#01B8A9'
+                        : 'yellow',
             color: row.status === 'Placed'
               ? 'dark' : row.status === 'Payment-pending'
                 ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',

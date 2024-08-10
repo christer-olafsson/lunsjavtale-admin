@@ -69,8 +69,16 @@ const RecentOrders = ({ data }) => {
                 ? 'lightgreen'
                 : row.status === 'Delivered'
                   ? 'green'
-                  : 'yellow',
-            color: row.status === 'Placed' ? 'dark' : row.status === 'Payment-pending' ? 'dark' : '#fff',
+                  : row.status === 'Processing'
+                    ? '#8294C4'
+                    : row.status === 'Payment-completed'
+                      ? 'blue'
+                      : row.status === 'Ready-to-deliver'
+                        ? '#01B8A9'
+                        : 'yellow',
+            color: row.status === 'Placed'
+              ? 'dark' : row.status === 'Payment-pending'
+                ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.status}</Typography>

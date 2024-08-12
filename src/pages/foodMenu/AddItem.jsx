@@ -298,7 +298,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           </Stack>
 
         </Stack>
-        {/* all vendors */}
+        {/* all supplier */}
         <Autocomplete
           size='small'
           options={vendors}
@@ -315,7 +315,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
             </li>
           )}
           renderInput={(params) => (
-            <TextField {...params} label="Added for (Vendor)" />
+            <TextField {...params} label="Added for (Supplier)" />
           )}
         />
         <TextField

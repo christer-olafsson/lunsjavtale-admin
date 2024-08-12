@@ -349,7 +349,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
             </li>
           )}
           renderInput={(params) => (
-            <TextField {...params} label="Added for (Vendor)" />
+            <TextField {...params} label="Added for (Supplier)" />
           )}
         />
         {/* all allAllergies */}

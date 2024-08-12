@@ -1,4 +1,4 @@
-import { Add, ArrowRightOutlined, DeleteForeverOutlined, LockOutlined, ModeEditOutlineOutlined, Search } from '@mui/icons-material'
+import { Add, ArrowRightOutlined, DeleteForeverOutlined, LockOutlined, ModeEditOutlineOutlined, PhoneOutlined, Search } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import AddSupplier from './AddSupplier';
@@ -37,7 +37,7 @@ const Suppliers = () => {
       setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => item.node))
     }
   })
-
+  console.log(vendors)
   const [vendorDelete, { loading: deleteLoading }] = useMutation(VENDOR_DELETE, {
     onCompleted: (res) => {
       fetchVendors()
@@ -75,7 +75,7 @@ const Suppliers = () => {
       field: 'id', headerName: 'ID', width: 100,
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} justifyContent='center'>
-          <Link style={{textDecoration:'none'}} to={`/dashboard/suppliers/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
+          <Link style={{ textDecoration: 'none' }} to={`/dashboard/suppliers/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
         </Stack>
       )
     },
@@ -117,13 +117,13 @@ const Suppliers = () => {
       }
     },
     {
-      field: 'phone', headerName: '', width: 170,
+      field: 'postcode', headerName: '', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Phone</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Post Code</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.contact}</Typography>
+          <Typography sx={{ fontSize: '14px' }}>{params.row.postCode}</Typography>
         </Stack>
       )
     },
@@ -133,8 +133,10 @@ const Suppliers = () => {
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Email</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
+        <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>
+            <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
+            <Typography sx={{ fontSize: '14px',display:'inline-flex',alignItems:'center' }}> <PhoneOutlined fontSize='small'/> {params.row.contact}</Typography>
+          
         </Stack>
       )
     },
@@ -150,13 +152,13 @@ const Suppliers = () => {
       )
     },
     {
-      field: 'totalRevenue', headerName: '', width: 150,
+      field: 'soldamount', headerName: '', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Total Revenue</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Sold Amount</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>${params.row.soldAMount}</Typography>
+          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}> {params.row.soldAmount ?? '00'} <i>kr</i></Typography>
         </Stack>
       )
     },
@@ -175,7 +177,7 @@ const Suppliers = () => {
       },
     },
     {
-      field: 'edit', headerName: '', 
+      field: 'edit', headerName: '',
       width: isMobile ? 50 : undefined,
       flex: isMobile ? undefined : 1,
       renderCell: (params) => {

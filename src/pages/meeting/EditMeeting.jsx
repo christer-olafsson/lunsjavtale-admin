@@ -162,7 +162,7 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="For (Company)"
+              label="For (Customer)"
               error={Boolean(errors.company)}
               helperText={errors.company}
             />

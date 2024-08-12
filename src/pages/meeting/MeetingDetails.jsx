@@ -19,7 +19,7 @@ const MeetingDetails = ({ data, closeDialog }) => {
         {
           data.company !== null ?
             <Box>
-              <Typography> <b>Company: </b>
+              <Typography> <b>Customer: </b>
                 <Link to={`/dashboard/customers/details/${data.company?.id}`} target='_blank'>
                   {data.company.name}
                 </Link>
@@ -59,7 +59,7 @@ const MeetingDetails = ({ data, closeDialog }) => {
       <Divider sx={{ my: 3 }} />
       <Stack direction='row' justifyContent='space-between'>
         <Box flex={1}>
-          <Typography><b>Company Name: </b>{data?.companyName}</Typography>
+          <Typography><b>Customer Name: </b>{data?.companyName}</Typography>
           <Typography><b>Email: </b>{data?.email}</Typography>
           <Typography><b>Phone: </b>{data?.phone}</Typography>
           <Typography><b>First Name: </b>{data?.firstName}</Typography>

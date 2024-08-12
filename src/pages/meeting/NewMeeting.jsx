@@ -124,7 +124,7 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
             </li>
           )}
           renderInput={(params) => (
-            <TextField error={Boolean(errors.company)} helperText={errors.company} {...params} label="For (Company)" />
+            <TextField error={Boolean(errors.company)} helperText={errors.company} {...params} label="For (Customer)" />
           )}
         />
         <Stack direction='row' gap={2} my={2}>

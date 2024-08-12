@@ -220,7 +220,7 @@ const OrderDetails = () => {
               </Stack>
             }
             <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Allowance:</b></Typography>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Customer Allowance:</b></Typography>
               <Typography>{order?.companyAllowance ?? '0'} %</Typography>
             </Stack>
             <Stack direction='row'>

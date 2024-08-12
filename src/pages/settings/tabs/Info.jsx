@@ -155,9 +155,9 @@ const Info = () => {
           <TextField disabled={!editOn} value={payload.slogan} onChange={handleInputChange} name='slogan' size='small' fullWidth label='Slogan' />
         </Stack>
         <Stack sx={{ flex: 1 }} gap={2}>
-          <TextField disabled={!editOn} value={socialPayload.facebook} onChange={handleSicialInputChange} name='facebook' size='small' fullWidth label='Facebook' />
-          <TextField disabled={!editOn} value={socialPayload.instagram} onChange={handleSicialInputChange} name='instagram' size='small' fullWidth label='Instagram' />
-          <TextField disabled={!editOn} value={socialPayload.linkedIn} onChange={handleSicialInputChange} name='linkedIn' size='small' fullWidth label='LinkedIn' />
+          <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.facebook} onChange={handleSicialInputChange} name='facebook' size='small' fullWidth label='Facebook' />
+          <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.instagram} onChange={handleSicialInputChange} name='instagram' size='small' fullWidth label='Instagram' />
+          <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.linkedIn} onChange={handleSicialInputChange} name='linkedIn' size='small' fullWidth label='LinkedIn' />
           <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
             {
               (logo || clientDetails?.logoUrl) && <Box sx={{

@@ -86,7 +86,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
 
   const handleSave = () => {
     if (!payload.company.id) {
-      setErrors({ company: 'Please select a Company!' })
+      setErrors({ company: 'Please select a Customer!' })
       return
     }
     if (!payload.paidAmount) {
@@ -136,7 +136,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
           </li>
         )}
         renderInput={(params) => (
-          <TextField error={Boolean(errors.company)} helperText={errors.company} {...params} label="Payment for (Company)" />
+          <TextField error={Boolean(errors.company)} helperText={errors.company} {...params} label="Payment for (Customer)" />
         )}
       />
 

@@ -59,7 +59,7 @@ const CustomerDetails = () => {
                   borderRadius: '4px',
                 }} src={company?.logoUrl ? company?.logoUrl : "/noImage.png"} alt="" />
                 <Box>
-                  <Typography sx={{ display: 'inline-flex', gap: 1 }}>Company: <b>{company?.name}</b> <LockOutlined sx={{
+                  <Typography sx={{ display: 'inline-flex', gap: 1 }}>Customer: <b>{company?.name}</b> <LockOutlined sx={{
                     display: company?.isBlocked ? 'block' : 'none',
                     color: 'red'
                   }} /> </Typography>

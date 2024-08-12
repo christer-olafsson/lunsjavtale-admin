@@ -53,7 +53,7 @@ const RecentOrders = ({ data }) => {
       )
     },
     {
-      field: 'status', headerName: 'Status', width: 150,
+      field: 'status', headerName: 'Status', width: 180,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status</Typography>
       ),

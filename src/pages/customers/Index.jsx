@@ -83,7 +83,7 @@ const Customers = () => {
     {
       field: 'companyName', headerName: '', width: 200,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company Name</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Customer Name</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
@@ -117,7 +117,7 @@ const Customers = () => {
     {
       field: 'info', headerName: '', width: 300,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Company Info</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Customer Info</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>

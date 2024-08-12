@@ -143,9 +143,9 @@ const Meeting = () => {
       }
     },
     {
-      field: 'info', width: 250,
+      field: 'Customer', width: 300,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Customer</Typography>
       ),
       renderCell: (params) => {
         const { row } = params;

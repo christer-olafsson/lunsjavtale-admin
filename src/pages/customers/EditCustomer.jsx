@@ -125,7 +125,7 @@ const EditCustomer = ({ data, fetchCompany, closeDialog }) => {
       </Stack>
 
       <FormGroup>
-        <TextField error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} value={payload.name} name='name' label='Company Name' />
+        <TextField error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} value={payload.name} name='name' label='Customer Name' />
         <Stack direction='row' gap={2} my={2}>
           <Stack flex={1} gap={2}>
             <TextField error={Boolean(errors.email)} helperText={errors.email} onChange={handleInputChange} value={payload.email} name='email' label='Email' />

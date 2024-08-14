@@ -53,14 +53,21 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
       }
       <Stack sx={{ height: '100%' }} justifyContent='space-between'>
         <Stack >
-          <img style={{
+          <Box sx={{
             width: '100%',
             height: '138px',
-            objectFit: 'cover',
-            borderRadius: '4px',
-            opacity: data.node.availability ? '1' : '.6',
-          }}
-            src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="" />
+            boxShadow: 3
+          }}>
+            <img style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '4px',
+              opacity: data.node.availability ? '1' : '.6',
+            }}
+              src={data?.node.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png'} alt="no img"
+            />
+          </Box>
           <Typography sx={{ fontSize: '14px', fontWeight: '600', mt: 1 }}>
             {data?.node.name.substring(0, 60)}
             {data?.node.name.length > 60 ? '...' : ''}
@@ -92,14 +99,21 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
             data.node?.vendor &&
             <Stack direction='row' gap={.5}>
               <Link
-                style={{ fontSize: '14px' }}
+                style={{ fontSize: '14px', textDecoration: 'none' }}
                 to={`/dashboard/suppliers/details/${data.node?.vendor.id}`}>
                 {data.node?.vendor?.name}
               </Link>
               {data.node?.vendor?.isDeleted && <i style={{ color: 'coral' }}>(deleted)</i>}
             </Stack>
           }
-          <Typography sx={{ fontSize: '13px', fontWeight: 500, mt: 1 }}>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</Typography>
+          <Stack direction='row' gap={2}>
+            <Typography sx={{ fontSize: '13px', fontWeight: 500 }}>id: #
+              <Link style={{ textDecoration: 'none' }} to={`/dashboard/food-item/details/${data.node.id}`}>
+                {data.node.id}
+              </Link>
+            </Typography>
+            <Typography sx={{ fontSize: '13px', fontWeight: 500 }}>Category: <i>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</i> </Typography>
+          </Stack>
 
           <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1}>
             <Typography sx={{ fontSize: '16px' }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.priceWithTax}
@@ -114,7 +128,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
       </Stack>
       {/* food details page */}
       <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}>
-        <FoodDetails data={data.node} toggleDrawer={toggleDrawer} />
+        <FoodDetails fetchCategory={fetchCategory} data={data.node} toggleDrawer={toggleDrawer} />
       </SlideDrawer>
       {/* product edit dialog */}
       <CDialog openDialog={editDialogOpen}>

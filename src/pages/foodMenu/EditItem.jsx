@@ -111,10 +111,10 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   // product create update
   const [productMutation, { loading: productMutationLoading }] = useMutation(PRODUCT_MUTATION, {
     onCompleted: (res) => {
+      closeDialog()
       fetchCategory()
       fetchProducts()
       toast.success(res.productMutation.message)
-      closeDialog()
     },
     onError: (err) => {
       if (err.graphQLErrors && err.graphQLErrors.length > 0) {

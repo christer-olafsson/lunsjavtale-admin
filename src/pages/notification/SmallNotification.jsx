@@ -22,7 +22,7 @@ const SmallNotification = ({ onClose }) => {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-
+  console.log(notifications)
   return (
     <Stack className='custom-scrollbar' justifyContent={notifications?.length === 0 ? 'center' : 'none'} sx={{
       width: { xs: '300px', sm: '300px', md: '350px' },
@@ -32,7 +32,7 @@ const SmallNotification = ({ onClose }) => {
       bgcolor: '#fff',
       border: '1px solid lightgray',
       borderRadius: '8px',
-      boxShadow:3,
+      boxShadow: 3,
       px: '20px',
       pt: 2
     }} gap={1}>
@@ -41,16 +41,22 @@ const SmallNotification = ({ onClose }) => {
           notifications?.length === 0 ?
             <Typography sx={{ textAlign: 'center', color: 'gray' }}>No Notification</Typography> :
             notifications?.slice(0, 5).map(item => (
-              <Link className='link' key={item.id} to={item.notificationType === 'order-placed' ? '/dashboard/orders' :
-                item.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
-                  item.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${item.objectId}` : ''
-              }
+              <Link className='link' key={item.id}
+                to={item.notificationType === 'order-placed' ?
+                  '/dashboard/orders' :
+                  item.notificationType === 'vendor-product-added' ?
+                    `/dashboard/food-item/details/${item.objectId}` :
+                    item.notificationType === 'vendor-product-ordered' ?
+                      '/dashboard/sales-history' :
+                      item.notificationType === 'order-status-changed' ?
+                        `/dashboard/orders/details/${item.objectId}` : null
+                }
               >
                 <Box sx={{
                   // borderBottom: '1px solid lightgray',
                   p: 1,
                   boxShadow: 3,
-                  borderRadius:'4px',
+                  borderRadius: '4px',
                   bgcolor: item.isSeen ? '#fff' : '#F5F5F5'
                 }} >
                   <Typography sx={{ fontSize: '16px', fontWeight: 600, color: item.isSeen ? 'gray' : 'green' }}>{item.title}</Typography>

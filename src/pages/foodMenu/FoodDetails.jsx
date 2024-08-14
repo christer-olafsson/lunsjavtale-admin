@@ -9,11 +9,15 @@ import { PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import { useTheme } from '@emotion/react'
+import CDialog from '../../common/dialog/CDialog'
+import EditItem from './EditItem'
 
-const FoodDetails = ({ data, toggleDrawer }) => {
+const FoodDetails = ({fetchCategory, data, toggleDrawer }) => {
   const [tabValue, setTabValue] = useState('1');
   const [product, setProduct] = useState({});
   const [selectedImg, setSelectedImg] = useState(0)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+
 
   const theme = useTheme()
 
@@ -21,18 +25,30 @@ const FoodDetails = ({ data, toggleDrawer }) => {
     setTabValue(newValue);
   };
 
+  const handleClose = () => {
+    setEditDialogOpen(false)
+    toggleDrawer()
+  }
+
   useEffect(() => {
     setProduct(data)
   }, [data])
 
 
   return (
-    <Box sx={{ p: 4,width: '100vw' }} maxWidth='1000px'>
-      <Stack direction='row' alignItems='center' gap={2} mb={2}>
-        <IconButton onClick={toggleDrawer}>
-          <Close />
-        </IconButton>
-        <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
+    <Box sx={{ p: 4, width: '100vw' }} maxWidth='1000px'>
+      {/* product edit dialog */}
+      <CDialog openDialog={editDialogOpen}>
+        <EditItem fetchCategory={fetchCategory} data={data} closeDialog={handleClose} />
+      </CDialog>
+      <Stack direction='row' alignItems='center' justifyContent='space-between' mb={2}>
+        <Stack direction='row' alignItems='center' gap={2}>
+          <IconButton onClick={toggleDrawer}>
+            <Close />
+          </IconButton>
+          <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
+        </Stack>
+        <Button variant='contained' onClick={()=> setEditDialogOpen(true)}>Edit</Button>
       </Stack>
       <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
         <Stack direction={{ xs: 'column-reverse', md: 'row' }} gap={2}>

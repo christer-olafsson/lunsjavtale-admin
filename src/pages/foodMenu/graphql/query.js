@@ -125,6 +125,7 @@ export const PRODUCTS = gql`
           title
           contains
           isFeatured
+          status
           vendor{
             id
             name

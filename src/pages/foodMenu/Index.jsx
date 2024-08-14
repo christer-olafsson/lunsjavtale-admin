@@ -115,7 +115,7 @@ const FoodItem = () => {
       setProducts(data)
     },
   });
-
+console.log(products)
   const handleProductEditDialogOpen = (id) => {
     setSelectedProductId(id)
     setProductEditDialogOpen(true);
@@ -123,7 +123,7 @@ const FoodItem = () => {
 
   useEffect(() => {
     fetchCategory()
-    fetchProducts()
+    // fetchProducts()
   }, [])
 
   useEffect(() => {

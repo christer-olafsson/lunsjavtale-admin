@@ -27,6 +27,7 @@ import StaffDetails from './pages/customers/StaffDetails'
 import Social from './pages/social/Index'
 import PaymentDetails from './pages/paymentsHistory/PaymentDetails'
 import CouponDetails from './pages/coupons/CouponDetails'
+import FoodDetailsPage from './pages/foodMenu/FoodDetailsPage'
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
         <Route path='/dashboard/notifications' element={<Notifications />} />
         <Route path='/dashboard/areas' element={<Areas />} />
         <Route path='/dashboard/food-item' element={<FoodItem />} />
+        <Route path='/dashboard/food-item/details/:id' element={<FoodDetailsPage />} />
         <Route path='/dashboard/food-categories' element={<FoodCategories />} />
         <Route path='/dashboard/orders' element={<Orders />} />
         <Route path='/dashboard/orders/details/:id' element={<OrderDetails />} />

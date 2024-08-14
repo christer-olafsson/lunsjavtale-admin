@@ -218,7 +218,7 @@ const Info = () => {
               flex: 1
             }}>
               <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Cover Image (jpg,png) (Max 500KB)</Typography>
+                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Hero Background (jpg,png) (Max 500KB)</Typography>
                 <Button
                   component="label"
                   role={undefined}

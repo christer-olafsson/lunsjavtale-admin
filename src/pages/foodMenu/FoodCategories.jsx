@@ -83,7 +83,7 @@ const FoodCategories = () => {
 
   useEffect(() => {
     fetchCategory()
-    fetchProducts()
+    // fetchProducts()
   }, [])
 
   useEffect(() => {

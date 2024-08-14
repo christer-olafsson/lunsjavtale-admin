@@ -108,14 +108,14 @@ const Orders = () => {
 
   const columns = [
     {
-      field: 'id', headerName: '', width: 50,
+      field: 'id', headerName: '', width: 100,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Link to={`/dashboard/orders/details/${params.row.id}`}>
-            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{params.row.id}</Typography>
+            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>&#x2022; {params.row.id}</Typography>
           </Link>
         </Stack>
       ),

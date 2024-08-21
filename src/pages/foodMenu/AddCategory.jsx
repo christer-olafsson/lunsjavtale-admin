@@ -59,6 +59,7 @@ const AddCategory = ({ fetchCategory, closeDialog }) => {
       variables: {
         input: {
           ...payload,
+          order: parseInt(payload.order),
           ...attachments,
           isActive
         }

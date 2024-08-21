@@ -16,6 +16,7 @@ const AddCategory = ({ fetchCategory, closeDialog }) => {
   const [nameErr, setNameErr] = useState('')
   const [fileUploadLoading, setFileUploadLoading] = useState(false)
   const [payload, setPayload] = useState({
+    order: 0,
     name: '',
     description: '',
   })
@@ -103,6 +104,7 @@ const AddCategory = ({ fetchCategory, closeDialog }) => {
             }} type="file" />
           </Stack>
         </Stack>
+        <TextField value={payload.order} onChange={handleInputChange} name='order' type='number' label='Order' sx={{ mb: 2 ,maxWidth:'150px'}} />
         <TextField value={payload.name} error={Boolean(nameErr)} helperText={nameErr} onChange={handleInputChange} name='name' label='Category Name' sx={{ mb: 2 }} />
         <TextField onChange={handleInputChange} name='description' sx={{ mb: 2 }} label='Description' placeholder='Products details' rows={4} multiline />
         <FormControlLabel sx={{ mb: 1, width: 'fit-content' }} control={<Switch checked={isActive} onChange={e => setIsActive(e.target.checked)} />} label="Status Available" />

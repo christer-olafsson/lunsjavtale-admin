@@ -156,7 +156,8 @@ const OrderDetails = () => {
                           : 'yellow',
               color: order?.status === 'Placed'
                 ? 'dark' : order?.status === 'Payment-pending'
-                  ? 'dark' : order?.status === 'Confirmed' ? 'dark' : '#fff',
+                  ? 'dark' : order?.status === 'Confirmed' ? 'dark' :
+                  order.status === 'Updated' ? 'dark' : '#fff',
               borderRadius: '50px',
               minWidth: '200px',
             }}>
@@ -164,7 +165,7 @@ const OrderDetails = () => {
             </Stack>
           }
           {
-            (order?.status === 'Delivered' || order?.status === 'Payment-pending') &&
+            order?.status === 'Delivered' &&
             <Button
               size='small'
               onClick={() => downloadPDF()}
@@ -203,7 +204,7 @@ const OrderDetails = () => {
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
-              <Typography>{order?.paymentType}</Typography>
+              <Typography>{order?.paymentType === 'online' ? 'Vipps' : order?.paymentType}</Typography>
             </Stack>
             {
               order?.coupon &&

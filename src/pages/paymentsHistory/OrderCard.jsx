@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { KeyboardDoubleArrowRightOutlined } from '@mui/icons-material';
 
 const OrderCard = ({ item }) => {
-  
+
   const data = item.node;
   console.log(data)
   const orderCarts = item.node.orderCarts.edges.map(item => item.node);
@@ -26,7 +26,7 @@ const OrderCard = ({ item }) => {
           <Typography sx={{ whiteSpace: 'nowrap' }}>Total Price:<b>{data.finalPrice}</b></Typography>
         </Box>
         <Box>
-          <Typography sx={{
+          <Typography mb={1} sx={{
             whiteSpace: 'nowrap',
             px: 1, borderRadius: '4px',
             width: 'fit-content',
@@ -40,22 +40,24 @@ const OrderCard = ({ item }) => {
                     ? '#8294C4'
                     : data.status === 'Ready-to-deliver'
                       ? '#01B8A9'
-                      : 'yellow',
+                      : data.status === 'Payment-completed'
+                        ? 'Green'
+                        : 'yellow',
             color: data.status === 'Placed'
               ? 'dark' : data.status === 'Payment-pending'
                 ? 'dark' : data.status === 'Confirmed' ? 'dark' :
-                data.status === 'Payment-completed' ? 'dark' :'#fff',
-          }}>Status:<b>{data.status}</b></Typography>
-          <Typography sx={{ whiteSpace: 'nowrap' }}>Payment Type:<b>{data.paymentType}</b></Typography>
+                  data.status === 'Payment-completed' ? '#fff' : '#fff',
+          }}><b>{data.status}</b></Typography>
+          <Typography sx={{ whiteSpace: 'nowrap' }}>Payment Type:<b>{data?.paymentType === 'online' ? 'Vipps' : data?.paymentType}</b></Typography>
           {data.coupon && <Typography sx={{ whiteSpace: 'nowrap' }}>Coupon:<b style={{ backgroundColor: 'coral', color: '#fff', paddingLeft: '5px', paddingRight: '5px' }}>{data.coupon?.name}</b></Typography>}
           {data.note && <Typography sx={{ whiteSpace: 'nowrap' }}>Note:<b>{data.note}</b></Typography>}
 
         </Box>
-      </Stack>
-      
+      </Stack >
 
 
-    </Box>
+
+    </Box >
   )
 }
 

@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Link, Outlet, useLocation, useMatch } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useMatch } from 'react-router-dom';
 import { AccountCircle, Business, Description, Discount, Diversity3, FiberManualRecord, FiberManualRecordOutlined, History, HolidayVillage, Instagram, KeyboardArrowRight, LiveHelp, Logout, LunchDining, MailOutline, MapOutlined, Notifications, NotificationsNone, People, PinDrop, Recommend, RequestPageOutlined, Search, Security, Settings, ShoppingCartCheckoutOutlined, SpaceDashboard, Timeline, TimelineOutlined, } from '@mui/icons-material';
 import { Avatar, Badge, ClickAwayListener, Collapse, InputAdornment, Menu, MenuItem, Stack, TextField, Tooltip } from '@mui/material';
 import { LOGOUT } from './login/graphql/mutation';
@@ -26,86 +26,62 @@ import { WITHDRAW_REQ } from './withdraw-req/graphql/query';
 
 const drawerWidth = 264;
 
-const ListBtn = ({ style, text, icon, link, selected, onClick, expandIcon, expand, subItem, notification }) => {
+const LinkBtn = ({ style, text, icon, link, onClick, expandIcon, expand, subItem, notification }) => {
   return (
-    <Link onClick={onClick} className='link' to={link}>
-      <Box sx={{
-        width: '100%',
-        display: 'inline-flex',
-        whiteSpace: 'nowrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '8px 12px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        // mb: 1,
-        color: selected ? 'primary.main' : '#95A2B0',
-        bgcolor: selected ? 'light.main' : '',
-        ...style,
-        position: 'relative',
-        cursor: 'pointer',
-        ":hover": {
-          color: selected ? 'inherit' : '#fff'
-        },
-        ":before": {
-          position: 'absolute',
-          display: selected ? 'block' : 'none',
-          top: 0,
-          left: 0,
-          content: '""',
-          height: '100%',
-          width: '3px',
-          bgcolor: 'primary.main',
-        }
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {subItem ?
-            <FiberManualRecord sx={{ fontSize: '13px' }} /> :
-            icon
-          }
-          <Typography sx={{
-            color: 'gray',
-            fontSize: '15px',
-            fontWeight: 400, ml: 1
-          }}>{text}</Typography>
-        </Box>
-        {notification && <Badge sx={{ mr: .5 }} badgeContent={notification} color="error" />}
-        {expandIcon && <KeyboardArrowRight sx={{
-          transition: '.3s ease',
-          transform: expand ? 'rotate(90deg)' : 'rotate(0deg)'
-        }} />}
-      </Box>
-    </Link>
+    <NavLink onClick={onClick} className='link' to={link}>
+      {
+        ({ isActive }) => (
+          <Box sx={{
+            width: '100%',
+            display: 'inline-flex',
+            whiteSpace: 'nowrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            // mb: 1,
+            color:!expandIcon && isActive ? 'primary.main' : '#95A2B0',
+            bgcolor: !expandIcon && isActive ? 'light.main' : '',
+            ...style,
+            position: 'relative',
+            cursor: 'pointer',
+            ":hover": {
+              color: isActive ? '' : '#fff'
+            },
+            ":before": {
+              position: 'absolute',
+              display: !expandIcon && isActive ? 'block' : 'none',
+              top: 0,
+              left: 0,
+              content: '""',
+              height: '100%',
+              width: '3px',
+              bgcolor: 'primary.main',
+            }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {subItem ?
+                <FiberManualRecord sx={{ fontSize: '13px' }} /> :
+                icon
+              }
+              <Typography sx={{
+                color: 'gray',
+                fontSize: subItem ? '12px' : '15px',
+                fontWeight: 400, ml: 1
+              }}>{text}</Typography>
+            </Box>
+            {notification && <Badge sx={{ mr: .5 }} badgeContent={notification} color="error" />}
+            {expandIcon && <KeyboardArrowRight sx={{
+              transition: '.3s ease',
+              transform: expand ? 'rotate(90deg)' : 'rotate(0deg)'
+            }} />}
+          </Box>
+        )
+      }
+    </NavLink>
   )
 };
-
-const paperProps = {
-  elevation: 0,
-  sx: {
-    overflow: 'visible',
-    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-    mt: 1.5,
-    '& .MuiAvatar-root': {
-      width: 32,
-      height: 32,
-      ml: -0.5,
-      mr: 1,
-    },
-    '&::before': {
-      content: '""',
-      display: 'block',
-      position: 'absolute',
-      top: 0,
-      right: 14,
-      width: 10,
-      height: 10,
-      bgcolor: 'background.paper',
-      transform: 'translateY(-50%) rotate(45deg)',
-      zIndex: 0,
-    },
-  },
-};
-
 
 function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -122,10 +98,6 @@ function Layout() {
   const [newWithdrawReq, setNewWithdrawReq] = useState([])
 
   const { pathname } = useLocation();
-  const orderDetailsMatch = useMatch('/dashboard/orders/details/:id')
-  const foodDetailsMatchFromItem = useMatch('/dashboard/food-item/food-details/:id')
-  const foodDetailsMatchFromCategories = useMatch('/dashboard/food-categories/food-details/:id')
-
 
   const { data: user } = useQuery(ME)
   console.log(user)
@@ -166,15 +138,6 @@ function Layout() {
     },
   });
 
-  // useQuery(ADMIN_NOTIFICATIONS, {
-  //   fetchPolicy: 'network-only',
-  //   notifyOnNetworkStatusChange: true,
-  //   onCompleted: (res) => {
-  //     setNotifications(res.adminNotifications.edges.filter(item => !item.node.isSeen).map(item => item.node))
-  //   }
-  // });
-
-
   const [logout, { loading }] = useMutation(LOGOUT, {
     onCompleted: (res) => {
       localStorage.clear()
@@ -188,15 +151,6 @@ function Layout() {
     localStorage.clear()
     window.location.href = '/'
   }
-
-  const open = Boolean(userMenuOpen);
-  const handleUserMenuOpen = (event) => {
-    setUsermenuOpen(event.currentTarget);
-  };
-  const handleUserMenuClose = () => {
-    setUsermenuOpen(null);
-  };
-
 
   const handleDrawerClose = () => {
     setDrawerOpen(true);
@@ -269,41 +223,33 @@ function Layout() {
       <Stack sx={{
         width: '80%'
       }}>
-        <ListBtn
+        <LinkBtn
           onClick={handleDrawerClose}
           link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
-          selected={pathname === '/'} />
-        <ListBtn
+          />
+        <LinkBtn
           notification={unreadNotifications > 0 ? unreadNotifications : ''}
           onClick={handleDrawerClose}
           link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
-          selected={pathname === '/dashboard/notifications'} />
-        <ListBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
+          />
+        <LinkBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
           expandIcon
           expand={expandFoodMenu || pathname === '/dashboard/food-item'}
           icon={<LunchDining fontSize='small' />}
           text='Food Menu'
-        // selected={
-        //   pathname === '/dashboard/food-item'
-        //   || pathname === '/dashboard/food-categories'
-        //   || pathname === foodDetailsMatchFromItem?.pathname
-        //   || pathname === foodDetailsMatchFromCategories?.pathname
-        // }
         />
         <Collapse in={expandFoodMenu} timeout="auto" unmountOnExit>
           <Box sx={{ ml: 3 }}>
-            <ListBtn
+            <LinkBtn
               onClick={handleDrawerClose}
               link='/dashboard/food-item'
               text='Food Item'
               subItem
-              selected={pathname === '/dashboard/food-item' || pathname === foodDetailsMatchFromItem?.pathname}
             />
-            <ListBtn
+            <LinkBtn
               onClick={handleDrawerClose}
               link='/dashboard/food-categories'
               text='Food Categories'
-              selected={pathname === '/dashboard/food-categories' || pathname === foodDetailsMatchFromCategories?.pathname}
               subItem
             />
           </Box>
@@ -311,122 +257,101 @@ function Layout() {
         {
           user?.me?.role !== 'seo-manager' &&
           <>
-            < ListBtn onClick={handleDrawerClose}
+            < LinkBtn onClick={handleDrawerClose}
               notification={placedOrders.length > 0 ? placedOrders.length : ''}
               link='/dashboard/orders'
               icon={<ShoppingCartCheckoutOutlined fontSize='small' />}
               text='Orders'
-              selected={pathname === '/dashboard/orders' || pathname === orderDetailsMatch?.pathname}
             />
-            <ListBtn onClick={handleDrawerClose}
+            <LinkBtn onClick={handleDrawerClose}
               link='/dashboard/payments-history'
               icon={<History fontSize='small' />}
               text='Payment-History'
-              selected={pathname === '/dashboard/payments-history'}
             />
           </>
         }
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           notification={newCompanies.length > 0 ? newCompanies.length : ''}
           link='/dashboard/customers'
           icon={<People fontSize='small' />}
           text='Customers'
-          selected={pathname === '/dashboard/customers'
-            // || pathname === customerDetailsMatch?.pathname
-          }
+         
         />
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           notification={newMeetings.length > 0 ? newMeetings.length : ''}
           link='/dashboard/meetings'
           icon={<Diversity3 fontSize='small' />}
           text='Meetings'
-          selected={pathname === '/dashboard/meetings'}
         />
-        <ListBtn onClick={() => setExpandSuppliers(!expandSuppliers)}
+        <LinkBtn onClick={() => setExpandSuppliers(!expandSuppliers)}
           icon={<HolidayVillage fontSize='small' />}
           text='Suppliers'
           expandIcon
           expand={expandSuppliers}
-        // selected={pathname === '/dashboard/suppliers'}
         />
         {
           <Collapse in={expandSuppliers}>
             <Box sx={{ ml: 3 }}>
-              <ListBtn
+              <LinkBtn
                 onClick={handleDrawerClose}
                 link='/dashboard/suppliers'
                 text='All Suppliers'
                 subItem
-                selected={pathname === '/dashboard/suppliers'}
               />
               {
                 user?.me?.role !== 'seo-manager' &&
                 <>
-                  <ListBtn
+                  <LinkBtn
                     onClick={handleDrawerClose}
                     link='/dashboard/sales-history'
                     text='Sales-History'
                     subItem
-                    selected={pathname === '/dashboard/sales-history'}
                   />
-                  <ListBtn
+                  <LinkBtn
                     notification={newWithdrawReq.length > 0 ? newWithdrawReq.length : ''}
                     onClick={handleDrawerClose}
                     link='/dashboard/withdraw-req'
                     text='Withdraw-Req'
                     subItem
-                    selected={pathname === '/dashboard/withdraw-req'}
                   />
                 </>
               }
             </Box>
           </Collapse>
         }
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/coupons'
           icon={<Discount fontSize='small' />}
           text='Coupons'
-          selected={pathname === '/dashboard/coupons'}
         />
-        <ListBtn
+        <LinkBtn
           onClick={handleDrawerClose}
           link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
-          selected={pathname === '/dashboard/areas'} />
-        {/* <ListBtn onClick={handleDrawerClose}
-          link='/dashboard/invoice'
-          icon={<Description fontSize='small' />}
-          text='Invoice'
-          selected={pathname === '/dashboard/invoice'}
-        /> */}
-        <ListBtn onClick={handleDrawerClose}
+           />
+        <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/brand'
           icon={<Business fontSize='small' />}
           text='Brand'
-          selected={pathname === '/dashboard/brand'}
         />
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/faq'
           icon={<LiveHelp fontSize='small' />}
           text='Faq'
-          selected={pathname === '/dashboard/faq'}
         />
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/social'
           icon={<Instagram fontSize='small' />}
           text='Social'
-          selected={pathname === '/dashboard/social'}
         />
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/promotion'
           icon={<Recommend fontSize='small' />}
           text='Promotion'
-          selected={pathname === '/dashboard/promotion'}
         />
-        <ListBtn onClick={handleDrawerClose}
+        <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/settings'
           icon={<Settings fontSize='small' />}
           text='Settings'
-          selected={pathname === '/dashboard/settings'}
         />
       </Stack>
     </Box>
@@ -518,7 +443,7 @@ function Layout() {
                 >
                   <Avatar src={user?.me.photoUrl ? user?.me.photoUrl : ''} sx={{ width: 32, height: 32 }} />
                   <Box ml={1}>
-                    <Typography sx={{ fontSize: '16px', fontWeight: 600,lineHeight:'20px' }}>{user?.me.username}</Typography>
+                    <Typography sx={{ fontSize: '16px', fontWeight: 600, lineHeight: '20px' }}>{user?.me.username}</Typography>
                     <Typography sx={{
                       display: 'inline-flex',
                       alignItems: 'center',

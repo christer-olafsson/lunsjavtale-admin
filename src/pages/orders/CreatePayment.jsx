@@ -192,7 +192,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
         />
       </FormGroup>
 
-      <CButton isLoading={loading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>
+      <CButton disable={payload?.paidAmount ==='0.00'} isLoading={loading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>
         Confirm
       </CButton>
 

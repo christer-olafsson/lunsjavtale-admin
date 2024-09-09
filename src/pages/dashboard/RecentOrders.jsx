@@ -78,7 +78,7 @@ const RecentOrders = ({ data }) => {
                         : 'yellow',
             color: row.status === 'Placed'
               ? 'dark' : row.status === 'Payment-pending'
-                ? 'dark' : row.status === 'Confirmed' ? 'dark' : '#fff',
+                ? 'dark' : row.status === 'Confirmed' ? 'dark' :row.status === 'Updated' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.status}</Typography>

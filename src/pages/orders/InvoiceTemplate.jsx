@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from '@apollo/client';
-import { ArrowBackIos, ArrowBackIosNewOutlined, BorderColor, CloseOutlined, FileDownloadOutlined } from '@mui/icons-material'
+import { ArrowBackIos, ArrowBackIosNewOutlined, BorderColor, CloseOutlined, DoneAll, FileDownloadOutlined } from '@mui/icons-material'
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from '@mui/lab'
 import { Avatar, Box, Button, Divider, IconButton, Stack, TextField, Typography } from '@mui/material'
 import html2canvas from 'html2canvas';
@@ -69,7 +69,7 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
         <Button onClick={downloadPDF} sx={{ borderRadius: '50px', height: '32px' }} variant='outlined' startIcon={<FileDownloadOutlined />}>Save</Button>
       </Stack>
 
-      <Stack direction='row' justifyContent='space-between' alignItems='center'>
+      <Stack direction='row' justifyContent='space-between' alignItems='center' gap={6}>
         <Stack direction='row' gap={4}>
           <img style={{ width: '200px' }} src="/Logo.svg" alt="" />
           <Stack>
@@ -81,15 +81,15 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
         </Stack>
         <Box>
           <Stack direction='row'>
-            <Typography sx={{ width: '130px' }}> <b>Company:</b></Typography>
+            <Typography sx={{ width: '100px' }}> <b>Company:</b></Typography>
             <Typography>{data?.company?.name}</Typography>
           </Stack>
           <Stack direction='row'>
-            <Typography sx={{ width: '130px' }}> <b>Email:</b></Typography>
+            <Typography sx={{ width: '100px' }}> <b>Email:</b></Typography>
             <Typography>{data?.company?.email}</Typography>
           </Stack>
           <Stack direction='row'>
-            <Typography sx={{ width: '130px' }}> <b>Post Code:</b></Typography>
+            <Typography sx={{ width: '100px' }}> <b>Post Code:</b></Typography>
             <Typography>{data?.company?.postCode}</Typography>
           </Stack>
         </Box>
@@ -110,30 +110,14 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
           <Typography>{data?.billingAddress?.firstName + " " + data?.billingAddress?.lastName ?? ''}</Typography>
           <Typography>{data?.billingAddress?.address}</Typography>
         </Stack>
-        <Stack alignItems='center' sx={{
-          display: 'inline-flex',
-          height: '30px',
-          width: 'fit-content',
-          px: 4,
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: data.status === 'Cancelled'
-            ? 'red'
-            : data.status === 'Confirmed'
-              ? 'lightgreen'
-              : data.status === 'Delivered'
-                ? 'green'
-                : data.status === 'Processing'
-                  ? '#8294C4'
-                  : data.status === 'Ready-to-deliver'
-                    ? '#01B8A9'
-                    : 'yellow',
-          color: data?.status === 'Placed'
-            ? 'dark' : data?.status === 'Payment-pending'
-              ? 'dark' : data?.status === 'Confirmed' ? 'dark' : '#fff',
-          borderRadius: '50px',
-        }}>
-          <Typography sx={{ fontWeight: 600 }} variant='body2'>{data?.status}</Typography>
+        <Stack>
+          <Typography sx={{ fontWeight: 600, mb: 2 }}>Status</Typography>
+
+          {
+            data?.status === 'Delivered' &&
+            <Typography sx={{ fontWeight: 600, display: 'inline-flex', color: 'green', alignItems: 'center', gap: 1 }} variant='body2'>{data?.status} <DoneAll fontSize='small' /> </Typography>
+          }
+
         </Stack>
       </Stack>
 
@@ -158,7 +142,7 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
           <Divider />
           <Stack direction='row'>
             <Typography sx={{ width: '200px' }}> <b>Payment Type:</b></Typography>
-            <Typography>{data?.paymentType}</Typography>
+            <Typography>{data?.paymentType === 'online' ? 'Vipps' : data?.paymentType}</Typography>
           </Stack>
           {
             data?.coupon &&

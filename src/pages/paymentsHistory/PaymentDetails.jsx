@@ -38,12 +38,11 @@ const PaymentDetails = () => {
             mb: 2,
             display: 'inline-flex',
             padding: '5px 12px',
-            bgcolor: 'green',
-            color: '#fff',
+            border: '1px solid lightgray',
             borderRadius: '50px',
             minWidth: '200px',
           }}>
-            <Typography sx={{ fontWeight: 600 }} variant='body2'>{payment?.status}</Typography>
+            <Typography sx={{ fontWeight: 600 }} variant='body2'>Payment: {payment?.status}</Typography>
           </Stack>
         </Stack>
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
@@ -57,7 +56,7 @@ const PaymentDetails = () => {
               </Stack>
               <Stack gap={1}>
                 <Typography sx={{ whiteSpace: 'nowrap' }}>{payment?.createdOn && <b>{format(payment?.createdOn, 'dd-MM-yyyy')}</b>}</Typography>
-                <Typography sx={{ whiteSpace: 'nowrap' }}><b>{payment?.paymentType}</b></Typography>
+                <Typography sx={{ whiteSpace: 'nowrap' }}><b>{payment?.paymentType === 'online' ? 'Vipps' : payment?.paymentType}</b></Typography>
                 <Typography sx={{ whiteSpace: 'nowrap' }}> <b>{payment?.paidAmount}</b> kr</Typography>
                 <Typography sx={{ whiteSpace: 'nowrap' }}> {payment?.note}</Typography>
               </Stack>

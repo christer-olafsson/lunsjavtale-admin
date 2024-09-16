@@ -109,7 +109,7 @@ const OrderDetails = () => {
   if (orderErr) {
     return <ErrorMsg />
   }
-  console.log(order)
+
 
   return (
     <Box maxWidth='xl'>

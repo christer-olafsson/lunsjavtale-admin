@@ -9,7 +9,7 @@ import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { USERS } from './graphql/query';
 
-const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }) => {
+const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [companies, setCompanies] = useState([]);
   const [users, setUsers] = useState([])
@@ -17,9 +17,9 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
     company: { id: '', email: '', name: '', logoUrl: '' },
     paidAmount: '',
     orders: null,
+    paymentFor: {},
     note: '',
   })
-
 
   const { loading: companiesLoading } = useQuery(COMPANIES, {
     onCompleted: (res) => {
@@ -32,6 +32,33 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
     },
   });
 
+  useEffect(() => {
+    if (orderData) {
+      setPayload({
+        ...payload,
+        company: orderData?.company ?? {},
+        orders: [orderData?.id] ?? null,
+        paidAmount: orderData?.companyDueAmount ?? ''
+      })
+    }
+  }, [orderData])
+
+
+  const { loading: usersLoading } = useQuery(USERS, {
+    variables: {
+      company: payload.company?.id
+    },
+    onCompleted: (res) => {
+      setUsers(res.users.edges.map(item => ({
+        id: item.node.id,
+        username: item.node.username,
+        photoUrl: item.node.photoUrl,
+        dueAmount: item.node.dueAmount,
+        email: item.node.email
+      })))
+    },
+  });
+
 
   const [createPayment, { loading }] = useMutation(CREATE_PAYMENT, {
     onCompleted: (res) => {
@@ -39,8 +66,8 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
       if (fetchOrder) {
         fetchOrder()
       }
-      if (fetchOrderPayment) {
-        fetchOrderPayment()
+      if (fetchOrders) {
+        fetchOrders()
       }
       closeDialog()
     },
@@ -71,21 +98,11 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
         input: {
           ...payload,
           company: payload.company.id,
+          paymentFor: payload.paymentFor.id ?? null
         }
       }
     })
   }
-
-  useEffect(() => {
-    if (orderData) {
-      setPayload({
-        ...payload,
-        company: orderData?.company ?? {},
-        orders: [orderData?.id] ?? null,
-        paidAmount: orderData?.companyDueAmount ?? ''
-      })
-    }
-  }, [orderData])
 
 
   return (
@@ -123,10 +140,36 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
         )}
       />
 
+      {/* user select */}
+      <Autocomplete
+        sx={{ mb: 2, display: orderData ? 'none' : 'block' }}
+        options={users}
+        disabled={!payload.company?.id}
+        loading={usersLoading}
+        onChange={(_, value) => setPayload({ ...payload, paymentFor: value })}
+        getOptionLabel={(option) => option.email}
+        renderOption={(props, option, { selected }) => (
+          <li {...props}>
+            <Stack direction='row' gap={2}>
+              <Avatar src={option.photoUrl ?? ''} />
+              <Box>
+                <Typography sx={{ fontSize: '14px' }}> <b>Email: </b> {option.email}</Typography>
+                <Typography sx={{ fontSize: '14px' }}><b>Username: </b>{option.username}</Typography>
+                <Typography sx={{ fontSize: '14px' }}> <b>Due: </b> {option.dueAmount}</Typography>
+              </Box>
+            </Stack>
+
+          </li>
+        )}
+        renderInput={(params) => (
+          <TextField {...params} label="Payment for (User)" />
+        )}
+      />
+
       <FormGroup sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField
-          sx={{ display: !orderData ? 'none' : 'block' }}
-          inputProps={{ readOnly: orderData ? true : false }}
+          sx={{ display: !orderData ? 'none' : 'flex' }}
+          disabled={orderData}
           onChange={e => setPayload({ ...payload, orders: e.target.value })}
           error={Boolean(errors.orders)}
           helperText={errors.orders}

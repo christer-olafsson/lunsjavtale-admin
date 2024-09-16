@@ -46,6 +46,7 @@ export const ORDER_PAYMENT = gql`
     paymentInfo
     status
     note
+    
     paymentFor{
       id
       isDeleted

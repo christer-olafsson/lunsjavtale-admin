@@ -46,7 +46,7 @@ const OrderCard = ({ item }) => {
             color: data.status === 'Placed'
               ? 'dark' : data.status === 'Payment-pending'
                 ? 'dark' : data.status === 'Confirmed' ? 'dark' :
-                  data.status === 'Payment-completed' ? '#fff' : '#fff',
+                  data.status === 'Payment-completed' ? '#fff' : data.status === 'Updated' ? 'dark' : '#fff',
           }}><b>{data.status}</b></Typography>
           <Typography sx={{ whiteSpace: 'nowrap' }}>Payment Type:<b>{data?.paymentType === 'online' ? 'Vipps' : data?.paymentType}</b></Typography>
           {data.coupon && <Typography sx={{ whiteSpace: 'nowrap' }}>Coupon:<b style={{ backgroundColor: 'coral', color: '#fff', paddingLeft: '5px', paddingRight: '5px' }}>{data.coupon?.name}</b></Typography>}

@@ -29,7 +29,6 @@ const Orders = () => {
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
-  const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
 
   const isMobile = useIsMobile()
 
@@ -235,13 +234,13 @@ const Orders = () => {
                     : row.status === 'Processing'
                       ? '#8294C4'
                       : row.status === 'Payment-completed'
-                      ? 'blue'
-                      : row.status === 'Ready-to-deliver'
-                        ? '#01B8A9'
-                        : 'yellow',
+                        ? 'blue'
+                        : row.status === 'Ready-to-deliver'
+                          ? '#01B8A9'
+                          : 'yellow',
               color: row.status === 'Placed'
                 ? 'dark' : row.status === 'Payment-pending'
-                  ? 'dark' : row.status === 'Confirmed' ? 'dark' : row.status === 'Updated' ? 'dark' :'#fff',
+                  ? 'dark' : row.status === 'Confirmed' ? 'dark' : row.status === 'Updated' ? 'dark' : '#fff',
               borderRadius: '4px',
             }}>
               <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>{row.status}</Typography>
@@ -345,7 +344,7 @@ const Orders = () => {
 
 
   return (
-    <Box maxWidth='xxl'>
+    <Box maxWidth='1600px'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
         <Typography sx={{
@@ -394,12 +393,8 @@ const Orders = () => {
           </Box>
 
         </Stack>
-        <Button sx={{ mb: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+
       </Stack>
-      {/* create payment */}
-      <CDialog openDialog={openCreatePaymentDialog}>
-        <CreatePayment fetchOrders={fetchOrders} closeDialog={() => setOpenCreatePaymentDialog(false)} />
-      </CDialog>
       {/* apply coupon */}
       <CDialog openDialog={couponDialogOpen}>
         <ApplyCoupon fetchOrders={fetchOrders} data={couponRowData} closeDialog={() => setCouponDialogOpen(false)} />

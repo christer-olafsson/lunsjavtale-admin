@@ -1,5 +1,5 @@
 import { Search, StoreOutlined } from '@mui/icons-material'
-import { Avatar, Box, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import DataTable from '../../common/datatable/DataTable';
@@ -12,12 +12,16 @@ import { PAYMENT_HISTORY_DELETE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import useIsMobile from '../../hook/useIsMobile';
+import CDialog from '../../common/dialog/CDialog';
+import CreatePayment from '../orders/CreatePayment';
 
 const PaymentsHistory = () => {
   const [orderPayments, setOrderPayments] = useState([])
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
+
 
   const isMobile = useIsMobile()
 
@@ -94,7 +98,7 @@ const PaymentsHistory = () => {
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Typography sx={{ fontSize: '14px', fontWeight: 600, bgcolor: 'lightgray', px: 2, borderRadius: '4px' }}>
-          {params.row.paymentType === 'online' ? 'vipps' : params.row.paymentType}
+            {params.row.paymentType === 'online' ? 'vipps' : params.row.paymentType}
           </Typography>
         </Stack>
       )
@@ -162,48 +166,55 @@ const PaymentsHistory = () => {
           }}>({orderPayments?.length})</Typography>
         </Stack>
       </Stack>
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2} alignItems={{ xs: 'start', md: 'center' }}>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          maxWidth: { xs: '100%', md: '300px' },
-          bgcolor: '#fff',
-          width: '100%',
-          border: '1px solid lightgray',
-          borderRadius: '4px',
-          pl: 2
-        }}>
-          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
-          <IconButton><Search /></IconButton>
-        </Box>
-        <Stack direction='row' gap={2}>
-          <Box sx={{ minWidth: 200 }}>
-            <FormControl size='small' fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Status"
-                onChange={e => setStatusFilter(e.target.value)}
-              >
-                <MenuItem value={'all'}>All</MenuItem>
-                <MenuItem value={'pending'}>Pending</MenuItem>
-                <MenuItem value={'completed'}>Completed</MenuItem>
-                <MenuItem value={'cancelled'}>Cancelled</MenuItem>
-              </Select>
-            </FormControl>
+      {/* create payment */}
+      <CDialog openDialog={openCreatePaymentDialog}>
+        <CreatePayment fetchOrderPayment={fetchOrderPayment} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+      </CDialog>
+      <Stack mt={2} direction={{ xs: 'column', md: 'row' }} gap={2} alignItems={{ xs: 'flex-start', md: 'center' }} justifyContent='space-between'>
+        <Stack direction={{ xs: 'column', md: 'row' }} gap={2} alignItems={{ xs: 'start', md: 'center' }}>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: { xs: '100%', md: '300px' },
+            bgcolor: '#fff',
+            width: '100%',
+            border: '1px solid lightgray',
+            borderRadius: '4px',
+            pl: 2
+          }}>
+            <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
+            <IconButton><Search /></IconButton>
           </Box>
-          <CButton
-            style={{
-              visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
-            }}
-            isLoading={deleteLoading}
-            color='warning'
-            onClick={handlePaymentHistoryDelete}
-            variant='contained'>
-            Delete
-          </CButton>
+          <Stack direction='row' gap={2}>
+            <Box sx={{ minWidth: 200 }}>
+              <FormControl size='small' fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={statusFilter}
+                  label="Status"
+                  onChange={e => setStatusFilter(e.target.value)}
+                >
+                  <MenuItem value={'all'}>All</MenuItem>
+                  <MenuItem value={'pending'}>Pending</MenuItem>
+                  <MenuItem value={'completed'}>Completed</MenuItem>
+                  <MenuItem value={'cancelled'}>Cancelled</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            <CButton
+              style={{
+                visibility: selectedRowIds.length > 0 ? 'visible' : 'hidden'
+              }}
+              isLoading={deleteLoading}
+              color='warning'
+              onClick={handlePaymentHistoryDelete}
+              variant='contained'>
+              Delete
+            </CButton>
+          </Stack>
         </Stack>
+        <Button sx={{ mb: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
       </Stack>
       <Box mt={3}>
         {

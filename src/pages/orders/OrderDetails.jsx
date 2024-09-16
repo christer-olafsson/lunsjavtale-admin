@@ -157,7 +157,7 @@ const OrderDetails = () => {
               color: order?.status === 'Placed'
                 ? 'dark' : order?.status === 'Payment-pending'
                   ? 'dark' : order?.status === 'Confirmed' ? 'dark' :
-                  order.status === 'Updated' ? 'dark' : '#fff',
+                    order.status === 'Updated' ? 'dark' : '#fff',
               borderRadius: '50px',
               minWidth: '200px',
             }}>
@@ -200,7 +200,7 @@ const OrderDetails = () => {
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Delivery Date:</b></Typography>
-              <Typography>{order?.deliveryDate}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{order?.deliveryDate}</Typography>
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
@@ -225,12 +225,24 @@ const OrderDetails = () => {
               <Typography>{order?.companyAllowance ?? '0'} %</Typography>
             </Stack>
             <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Due Amount:</b></Typography>
-              <Typography>{order?.dueAmount} kr</Typography>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Final Price:</b></Typography>
+              <Typography sx={{ color: 'Highlight', fontWeight: 600 }}>{order?.finalPrice ?? '0'} kr</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Due Amount:</b></Typography>
+              <Stack direction='row'>
+                <Typography sx={{ fontWeight: 600, color: 'coral' }} mr={1}>{order?.companyDueAmount} kr </Typography>
+              </Stack>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Staffs Due Amount:</b></Typography>
+              <Stack direction='row'>
+                <Typography sx={{ fontWeight: 600, color: 'coral' }} mr={1}>{order?.employeeDueAmount} kr </Typography>
+              </Stack>
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Paid Amount:</b></Typography>
-              <Typography>{order?.paidAmount} kr</Typography>
+              <Typography sx={{ fontWeight: 600, color: 'green' }}>{order?.paidAmount} kr</Typography>
             </Stack>
             {
               order?.note &&

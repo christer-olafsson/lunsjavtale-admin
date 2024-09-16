@@ -9,7 +9,7 @@ import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { USERS } from './graphql/query';
 
-const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
+const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [companies, setCompanies] = useState([]);
   const [users, setUsers] = useState([])
@@ -66,8 +66,8 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrders, closeDialog }) => {
       if (fetchOrder) {
         fetchOrder()
       }
-      if (fetchOrders) {
-        fetchOrders()
+      if (fetchOrderPayment) {
+        fetchOrderPayment()
       }
       closeDialog()
     },

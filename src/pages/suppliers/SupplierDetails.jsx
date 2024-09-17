@@ -20,10 +20,11 @@ const SupplierDetails = () => {
       id
     },
     onCompleted: (res) => {
+      console.log(res)
       setVendor(res.vendor)
     },
   });
- 
+
   return (
     <Box maxWidth='xl'>
       <Stack direction='row' alignItems='center' gap={2} mb={2}>

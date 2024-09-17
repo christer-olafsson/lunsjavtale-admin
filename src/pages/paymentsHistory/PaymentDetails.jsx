@@ -23,6 +23,7 @@ const PaymentDetails = () => {
       setPayment(res.orderPayment)
     }
   });
+  console.log(payment)
   return (
     <Box maxWidth='xl'>
 
@@ -92,36 +93,6 @@ const PaymentDetails = () => {
               </Box>
             </Stack>
           </Stack>
-          {/* <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 4, md: 3, lg: 10 }}>
-            <Box>
-              <Typography variant='h5' mb={1}>Billing Address</Typography>
-              <Typography sx={{ fontSize: '16px' }}>Address: <b>{order?.billingAddress?.address}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>First Name: <b>{order?.billingAddress?.firstName}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Last Name: <b>{order?.billingAddress?.lastName}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Phone: <b>{order?.billingAddress?.phone}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Sector: <b>{order?.billingAddress?.sector}</b></Typography>
-            </Box>
-            <Divider sx={{ display: { xs: 'none', md: 'block' } }} orientation="vertical" />
-            <Box>
-              <Typography variant='h5' mb={1}>Shipping Address</Typography>
-              <Typography sx={{ fontSize: '16px' }}>Address: <b>{order?.shippingAddress?.address}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>First Name: <b>{order?.shippingAddress?.fullName}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>City: <b>{order?.shippingAddress?.city}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Phone: <b>{order?.shippingAddress?.phone}</b></Typography>
-              <Typography sx={{ fontSize: '16px' }}>Post Code: <b>{order?.shippingAddress?.postCode}</b></Typography>
-              {
-                order?.shippingAddress?.instruction &&
-                <Typography sx={{
-                  fontSize: '16px',
-                  border: '1px solid lightgray',
-                  p: 1, mt: 1, borderRadius: '8px',
-                  maxWidth: '400px'
-                }}>
-                  Instruction: <b>{order?.shippingAddress?.instruction}</b>
-                </Typography>
-              }
-            </Box>
-          </Stack> */}
         </Stack>
         <Divider sx={{ mt: 3 }} />
 

@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { useQuery } from '@apollo/client';
 import DataTable from '../../common/datatable/DataTable';
 
-const SelectedStaffs = ({ users, closeDialog }) => {
+const SelectedStaffs = ({ data, closeDialog }) => {
   // const [rows, setRows] = useState([])
 
   const columns = [
@@ -61,7 +61,7 @@ const SelectedStaffs = ({ users, closeDialog }) => {
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
+            <Typography sx={{ color: 'coral', fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
               {params.row.dueAmount} kr
             </Typography>
           </Stack>
@@ -70,7 +70,7 @@ const SelectedStaffs = ({ users, closeDialog }) => {
     },
   ];
 
-  const rows = users?.map(item => {
+  const rows = data?.users?.edges.map(item => {
     const user = item?.node.addedFor;
     return ({
       id: item?.node.id,
@@ -79,7 +79,7 @@ const SelectedStaffs = ({ users, closeDialog }) => {
       username: user?.username,
       phone: user?.phone,
       email: user?.email,
-      dueAmount: user?.dueAmount,
+      dueAmount: item?.node?.dueAmount,
       photoUrl: user?.photoUrl,
       role: user?.role,
     })

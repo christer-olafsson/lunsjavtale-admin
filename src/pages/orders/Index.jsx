@@ -167,9 +167,9 @@ const Orders = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            <span style={{ fontWeight: 400 }}>kr </span>
+          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: 'Highlight', fontWeight: 600 }}>
             {params.row.finalPrice}
+            <span style={{ fontWeight: 400 }}> kr</span>
           </Typography>
         </Stack>
       )

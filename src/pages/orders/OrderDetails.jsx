@@ -96,8 +96,10 @@ const OrderDetails = () => {
 
   useEffect(() => {
     setOrderStatus(order?.status ?? '')
+    setNote(order?.note ?? '')
   }, [order])
 
+  console.log(order)
 
   useEffect(() => {
     fetchOrder()
@@ -109,7 +111,7 @@ const OrderDetails = () => {
   if (orderErr) {
     return <ErrorMsg />
   }
-
+  console.log(order)
 
   return (
     <Box maxWidth='xl'>
@@ -339,7 +341,7 @@ const OrderDetails = () => {
         </Stack>
         {
           (orderStatus !== 'Placed') &&
-          <TextField onChange={e => setNote(e.target.value)} label='Note' sx={{ maxWidth: '300px', width: '100%' }} multiline rows={3} />
+          <TextField value={note} onChange={e => setNote(e.target.value)} label='Note' sx={{ maxWidth: '300px', width: '100%' }} multiline rows={3} />
         }
         <Divider sx={{ mt: 3 }} />
 
@@ -371,14 +373,18 @@ const OrderDetails = () => {
                             <Typography sx={{ fontSize: { xs: '14', md: '18px' }, fontWeight: 600 }}>{data?.node.item.name}</Typography>
                             <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
                             <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
-                            <Typography>Ingredients: </Typography>
                             {
-                              data?.node.item.ingredients?.edges &&
-                              data?.node.item.ingredients?.edges.map(item => (
-                                <ul key={item.node.id}>
-                                  <li>{item.node.name}</li>
-                                </ul>
-                              ))
+                              data?.node.ingredients?.edges &&
+                              <Box>
+                                <Typography sx={{ fontWeight: 600 }}>Ingredients: </Typography>
+                                {
+                                  data?.node.ingredients?.edges.map(item => (
+                                    <ul key={item.node.id}>
+                                      <li>{item.node.name}</li>
+                                    </ul>
+                                  ))
+                                }
+                              </Box>
                             }
                             {
                               data?.node.item.vendor &&
@@ -400,7 +406,7 @@ const OrderDetails = () => {
                         </Stack>
                       </Stack>
                       <Collapse in={selectedStaffDetailsId === data.node.id}>
-                        <SelectedStaffs users={data?.node.users?.edges} />
+                        <SelectedStaffs data={data?.node} />
                       </Collapse>
                     </Stack>
                   ))

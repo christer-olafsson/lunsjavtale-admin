@@ -41,7 +41,7 @@ const LinkBtn = ({ style, text, icon, link, onClick, expandIcon, expand, subItem
             borderRadius: '4px',
             overflow: 'hidden',
             // mb: 1,
-            color:!expandIcon && isActive ? 'primary.main' : '#95A2B0',
+            color: !expandIcon && isActive ? 'primary.main' : '#95A2B0',
             bgcolor: !expandIcon && isActive ? 'light.main' : '',
             ...style,
             position: 'relative',
@@ -100,7 +100,7 @@ function Layout() {
   const { pathname } = useLocation();
 
   const { data: user } = useQuery(ME)
-  console.log(user)
+
   useQuery(UNREAD_ADMIN_NOTIFICATIONCOUNT, {
     onCompleted: (res) => {
       setUnreadNotifications(res.unreadAdminNotificationCount)
@@ -226,12 +226,12 @@ function Layout() {
         <LinkBtn
           onClick={handleDrawerClose}
           link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
-          />
+        />
         <LinkBtn
           notification={unreadNotifications > 0 ? unreadNotifications : ''}
           onClick={handleDrawerClose}
           link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
-          />
+        />
         <LinkBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
           expandIcon
           expand={expandFoodMenu || pathname === '/dashboard/food-item'}
@@ -275,7 +275,7 @@ function Layout() {
           link='/dashboard/customers'
           icon={<People fontSize='small' />}
           text='Customers'
-         
+
         />
         <LinkBtn onClick={handleDrawerClose}
           notification={newMeetings.length > 0 ? newMeetings.length : ''}
@@ -327,7 +327,7 @@ function Layout() {
         <LinkBtn
           onClick={handleDrawerClose}
           link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
-           />
+        />
         <LinkBtn onClick={handleDrawerClose}
           link='/dashboard/brand'
           icon={<Business fontSize='small' />}

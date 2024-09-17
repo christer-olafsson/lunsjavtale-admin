@@ -84,7 +84,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
   });
 
 
-  const handleSave = () => {
+  const handlePay = () => {
     if (!payload.company.id) {
       setErrors({ company: 'Please select a Customer!' })
       return
@@ -98,7 +98,8 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
         input: {
           ...payload,
           company: payload.company.id,
-          paymentFor: payload.paymentFor.id ?? null
+          paymentFor: payload.paymentFor.id ?? null,
+          paidAmount: payload.paidAmount
         }
       }
     })
@@ -194,7 +195,7 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
         />
       </FormGroup>
 
-      <CButton disable={payload?.paidAmount === '0.00'} isLoading={loading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>
+      <CButton disable={payload?.paidAmount === '0.00'} isLoading={loading} onClick={handlePay} variant='contained' style={{ width: '100%', mt: 2 }}>
         Confirm
       </CButton>
 

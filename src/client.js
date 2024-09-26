@@ -48,7 +48,7 @@ const link = from([
   errorLink,
   new createUploadLink({uri: BASE_URL})
 ]);
-
+//url
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: authLink.concat(link),

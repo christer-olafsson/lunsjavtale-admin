@@ -41,12 +41,10 @@ const errorLink = onError(
     }
   }
 );
-const BASE_URL = import.meta.env.BASE_URL;
 
 const link = from([
   errorLink,
-  new createUploadLink({uri: 'https://api.lunsjavtale.no/graphql/'})
-  // new HttpLink({ uri: 'https://api.lunsjavtale.no/graphql/' }),
+  new createUploadLink({uri: import.meta.env.VITE_API_URL})
 ]);
 
 export const client = new ApolloClient({

@@ -76,7 +76,7 @@ const Customers = () => {
       field: 'id', headerName: 'ID', width: 100,
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} justifyContent='center'>
-          <Link style={{textDecoration:'none'}} to={`/dashboard/customers/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
+          <Link style={{ textDecoration: 'none' }} to={`/dashboard/customers/details/${params.row.id}`}>&#x2022; {params.row.id}</Link>
         </Stack>
       )
     },

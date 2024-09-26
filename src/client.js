@@ -42,9 +42,11 @@ const errorLink = onError(
   }
 );
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const link = from([
   errorLink,
-  new createUploadLink({uri: import.meta.env.VITE_API_URL})
+  new createUploadLink({uri: BASE_URL})
 ]);
 
 export const client = new ApolloClient({

@@ -357,7 +357,6 @@ function Layout() {
     </Box>
   );
 
-
   return (
     <Box sx={{
       display: 'flex',
@@ -409,7 +408,7 @@ function Layout() {
             alignItems: 'center',
           }}>
             {
-              import.meta.env.VITE_PRODUCTION === false &&
+              import.meta.env.VITE_ENVIRONMENT === 'production' &&
               <Typography sx={{ fontSize: '18px', fontWeight: 600, color: 'red' }}>(Test Mode)</Typography>
             }
             {/* small notification */}

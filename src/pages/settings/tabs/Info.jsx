@@ -189,10 +189,10 @@ const Info = () => {
                   <input onChange={(e) => {
                     const file = e.target.files[0];
                     const maxFileSize = 500 * 1024; // 500KB in bytes
-                    if (file.size > maxFileSize) {
-                      alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
-                      return
-                    }
+                    // if (file.size > maxFileSize) {
+                    //   alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                    //   return
+                    // }
                     setLogo(e.target.files[0])
                   }} type="file" hidden />
                   {/* <VisuallyHiddenInput type="file" /> */}

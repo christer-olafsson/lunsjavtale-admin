@@ -408,7 +408,7 @@ function Layout() {
             alignItems: 'center',
           }}>
             {
-              import.meta.env.VITE_ENVIRONMENT === 'production' &&
+              import.meta.env.VITE_ENVIRONMENT === 'stage' &&
               <Typography sx={{ fontSize: '18px', fontWeight: 600, color: 'red' }}>(Test Mode)</Typography>
             }
             {/* small notification */}

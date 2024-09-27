@@ -111,15 +111,15 @@ const Info = () => {
   useEffect(() => {
     if (clientDetails) {
       setPayload({
-        address: clientDetails?.address ?? '',
-        contact: clientDetails?.contact ?? '',
-        email: clientDetails?.email ?? '',
-        formationDate: clientDetails?.formationDate ?? '',
-        logoUrl: clientDetails?.logoUrl ?? '',
-        name: clientDetails?.name ?? '',
-        slogan: clientDetails?.slogan ?? '',
+        address: clientDetails?.address ?? null,
+        contact: clientDetails?.contact ?? null,
+        email: clientDetails?.email ?? null,
+        formationDate: clientDetails?.formationDate ?? null,
+        logoUrl: clientDetails?.logoUrl ?? null,
+        name: clientDetails?.name ?? null,
+        slogan: clientDetails?.slogan ?? null,
       });
-      setSocialLinkJson(JSON.parse(clientDetails.socialMediaLinks ?? null))
+      setSocialLinkJson(JSON.parse(clientDetails.socialMediaLinks ?? '{}'))
     }
   }, [clientDetails])
 
@@ -177,7 +177,7 @@ const Info = () => {
               flex: 1
             }}>
               <Stack sx={{ width: '100%', p: 2, border: '1px solid lightgray', borderRadius: '8px' }}>
-                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Company Logo (jpg,png,gif) (Max 500KB)</Typography>
+                <Typography sx={{ fontSize: '14px', textAlign: 'center', mb: 2 }}>Company Logo (jpg,png,gif)</Typography>
                 <Button
                   component="label"
                   role={undefined}

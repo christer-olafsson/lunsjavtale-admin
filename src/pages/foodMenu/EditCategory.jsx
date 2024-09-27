@@ -141,7 +141,7 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
             }} type="file" />
           </Stack>
         </Stack>
-        <TextField value={payload.order} onChange={handleInputChange} name='order' type='number' label='Order' sx={{ mb: 2 ,maxWidth:'150px'}} />
+        <TextField value={payload.order} onChange={handleInputChange} name='order' type='number' label='Order' sx={{ mb: 2, maxWidth: '150px' }} />
         <TextField value={payload.name} error={Boolean(nameErr)} helperText={nameErr} onChange={handleInputChange} name='name' label='Category Name' sx={{ mb: 2 }} />
         <TextField value={payload.description} onChange={handleInputChange} name='description' sx={{ mb: 2 }} label='Description' placeholder='Products details' rows={4} multiline />
         <FormControlLabel sx={{ mb: 1, width: 'fit-content' }} control={<Switch checked={isActive} onChange={e => setIsActive(e.target.checked)} />} label="Status Available" />
@@ -171,7 +171,7 @@ const EditCategory = ({ fetchCategory, data, closeDialog }) => {
           </Box>
         </CDialog>
 
-        <Button disabled={data?.node.id === "4"} onClick={() => setDeleteBtnOn(true)} color="error">Delete this Category</Button>
+        <Button disabled={import.meta.env.VITE_STATIC_CATEGORY_ID === '5'} onClick={() => setDeleteBtnOn(true)} color="error">Delete this Category</Button>
 
         <CButton isLoading={loading || fileUploadLoading} onClick={handleUpdate} variant='contained' sx={{ width: '100%', mt: 2 }}>
           Update

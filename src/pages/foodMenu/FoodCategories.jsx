@@ -26,10 +26,6 @@ const FoodCategories = () => {
   const [productsLength, setProductsLength] = useState([])
   const [vendorProductShow, setVendorProductShow] = useState(false)
 
-
-  const [productEditDialogOpen, setProductEditDialogOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState(null);
-
   const theme = useTheme();
 
   const [fetchCategory, { loading: loadingCategory, error: categoryErr }] = useLazyQuery(GET_ALL_CATEGORY, {
@@ -43,7 +39,7 @@ const FoodCategories = () => {
       fetchProducts()
     },
   });
-
+  console.log(allCategorys)
   useQuery(PRODUCTS, {
     variables: {
       isVendorProduct: vendorProductShow ? vendorProductShow : null
@@ -128,7 +124,7 @@ const FoodCategories = () => {
           </FormControl>
         </Box>
       </Stack>
-      <FormGroup sx={{ my: 1 }}>
+      <FormGroup sx={{ my: 1, width: 'fit-content' }}>
         <FormControlLabel control={<Switch
           size='small'
           checked={vendorProductShow}
@@ -154,7 +150,7 @@ const FoodCategories = () => {
             width: '50px',
             height: '50px',
             objectFit: 'cover'
-          }} src='/Breakfast.png' alt="" />
+          }} src='/All.png' alt="" />
           <Divider orientation="vertical" />
           <Box>
             <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>All Products</Typography>

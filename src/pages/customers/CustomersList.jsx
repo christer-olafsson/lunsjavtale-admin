@@ -26,7 +26,7 @@ const CustomersList = ({ data }) => {
             <Stack direction='row' gap={1} alignItems='center'>
               <Avatar src={params.row?.photoUrl ? row.photoUrl : ''} />
               <Box>
-                <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.firstName + row.lastName}</Typography>
+                <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.firstName}</Typography>
                 <Stack direction='row' alignItems='center' gap={2}>
                   <Link to={`/dashboard/customers/staff/details/${row.id}`}>
                     <Typography sx={{ fontSize: '14px' }}>@{row.username}</Typography>

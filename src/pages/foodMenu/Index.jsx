@@ -6,7 +6,7 @@ import CDialog from '../../common/dialog/CDialog';
 import AddItem from './AddItem';
 import EditItem from './EditItem';
 import { Link } from 'react-router-dom';
-import { GET_ALL_CATEGORY, PRODUCTS } from './graphql/query';
+import { GET_ALL_CATEGORY, PRODUCTS, WEEKLY_VARIANTS } from './graphql/query';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
@@ -16,6 +16,7 @@ import { VENDORS } from '../suppliers/graphql/query';
 import SlideDrawer from './SlideDrawer';
 import FoodDetails from './FoodDetails';
 import FoodCard from './FoodCard';
+import AddWeeklyFood from './AddWeeklyFood';
 
 
 function CustomTabPanel(props) {
@@ -46,7 +47,7 @@ CustomTabPanel.propTypes = {
 
 const FoodItem = () => {
   const [productAddDialogOpen, setAddItemDialogOpen] = useState(false)
-  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [weeklyFoodAddDialogOpen, setWeeklyFoodAddDialogOpen] = useState(false)
   const [allCategorys, setAllCategorys] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [products, setProducts] = useState([]);
@@ -57,6 +58,8 @@ const FoodItem = () => {
   const [vendorProductShow, setVendorProductShow] = useState(false)
   const [vendors, setVendors] = useState([])
   const [selectedVendor, setSelectedVendor] = useState([])
+  const [allWeeklyVariants, setAllWeeklyVariants] = useState([])
+  const [selectedWeeklyVariantId, setSelectedWeeklyVariantId] = useState(null)
 
 
   const { loading: vendorLoading } = useQuery(VENDORS, {
@@ -68,6 +71,13 @@ const FoodItem = () => {
       setVendors(data)
     }
   })
+
+  useQuery(WEEKLY_VARIANTS, {
+    onCompleted: (res) => {
+      const data = res.weeklyVariants.edges.map(item => item.node)
+      setAllWeeklyVariants(data)
+    },
+  });
 
 
   const [fetchCategory] = useLazyQuery(GET_ALL_CATEGORY, {
@@ -89,14 +99,14 @@ const FoodItem = () => {
       vendor: selectedVendor ? selectedVendor.id : null,
       isVendorProduct: vendorProductShow ? vendorProductShow : null,
       availability: status === 'available' ? true : status === 'not-available' ? false : null,
-      isFeatured: status === 'featured' ? true : null
+      isFeatured: status === 'featured' ? true : null,
     },
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item.node)
       setProductsLength(data.length)
     },
   });
-
+  console.log(selectedWeeklyVariantId)
 
   const [fetchProducts, { loading: loadingProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
@@ -109,18 +119,14 @@ const FoodItem = () => {
       availability: status === 'available' ? true : status === 'not-available' ? false : null,
       isVendorProduct: vendorProductShow ? vendorProductShow : null,
       vendor: selectedVendor ? selectedVendor.id : null,
+      weeklyVariants: selectedWeeklyVariantId ?? null
     },
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item)
       setProducts(data)
     },
   });
-console.log(products)
-  const handleProductEditDialogOpen = (id) => {
-    setSelectedProductId(id)
-    setProductEditDialogOpen(true);
-  };
-
+  // console.log(products)
   useEffect(() => {
     fetchCategory()
     // fetchProducts()
@@ -128,11 +134,11 @@ console.log(products)
 
   useEffect(() => {
     setPage(1)
-  }, [categoryId, status,selectedVendor,vendorProductShow])
+  }, [categoryId, status, selectedVendor, vendorProductShow])
 
   return (
     <Box maxWidth='xl'>
-      <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between' mb={2} gap={2}>
+      <Stack direction={{ xs: 'column-reverse', lg: 'row' }} justifyContent='space-between' mb={2} gap={2}>
         <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
           <Box sx={{
             display: 'flex',
@@ -148,65 +154,90 @@ console.log(products)
             <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
             <IconButton><Search /></IconButton>
           </Box>
-          <Box sx={{ minWidth: 200 }}>
-            <FormControl size='small' fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={status}
-                label="Status"
-                onChange={e => setStatus(e.target.value)}
-              >
-                <MenuItem value={'all'}>All </MenuItem>
-                <MenuItem value={'featured'}>Featured</MenuItem>
-                <MenuItem value={'available'}>Available</MenuItem>
-                <MenuItem value={'not-available'}>Not Available</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          {/* all vendors */}
-          <Autocomplete
-            sx={{ minWidth: '300px' }}
-            size='small'
-            loading={vendorLoading}
-            options={vendors}
-            onChange={(_, value) => setSelectedVendor(value)}
-            getOptionLabel={(option) => option.name}
-            renderOption={(props, option, { selected }) => (
-              <li {...props}>
-                <Stack direction='row' alignItems='center'>
-                  <IconButton>
-                    <Link to={`/dashboard/suppliers/details/${option.id}`}>
-                      <ChevronRight fontSize='small' />
-                    </Link>
-                  </IconButton>
-                  <Stack direction='row' alignItems='center' gap={1}>
-                    <Avatar src={option.logoUrl ?? ''} />
-                    <Box>
-                      <Typography>{option.name}</Typography>
-                      <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
-                    </Box>
-                  </Stack>
-                </Stack>
-              </li>
-            )}
-            renderInput={(params) => (
-              <TextField {...params} label="Select Supplier" />
-            )}
-          />
-          <FormGroup sx={{ my: 1 }}>
-            <FormControlLabel control={<Switch
-              size='small'
-              checked={vendorProductShow}
-              onChange={e => setVendorProductShow(e.target.checked)}
-            />} label="Supplier" />
-          </FormGroup>
         </Stack>
-        <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Items</Button>
+        <Stack direction='row' gap={2}>
+          <Button onClick={() => setWeeklyFoodAddDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }} variant='outlined' startIcon={<Add />}>Add Weekly Food</Button>
+          <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Item</Button>
+        </Stack>
       </Stack>
+
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={status}
+              label="Status"
+              onChange={e => setStatus(e.target.value)}
+            >
+              <MenuItem value={'all'}>All </MenuItem>
+              <MenuItem value={'featured'}>Featured</MenuItem>
+              <MenuItem value={'available'}>Available</MenuItem>
+              <MenuItem value={'not-available'}>Not Available</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+        <FormControl size='small' sx={{ minWidth: 170 }}>
+          <InputLabel>Weekly Foods</InputLabel>
+          <Select
+            value={selectedWeeklyVariantId || ''}
+            label="Weekly Foods"
+            onChange={(e) => setSelectedWeeklyVariantId(e.target.value)}
+          >
+            <MenuItem value='none'>None</MenuItem>
+            {allWeeklyVariants?.map(item => (
+              <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {/* all vendors */}
+        <Autocomplete
+          sx={{ minWidth: '200px' }}
+          size='small'
+          loading={vendorLoading}
+          options={vendors}
+          onChange={(_, value) => setSelectedVendor(value)}
+          getOptionLabel={(option) => option.name}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Stack direction='row' alignItems='center'>
+                <IconButton>
+                  <Link to={`/dashboard/suppliers/details/${option.id}`}>
+                    <ChevronRight fontSize='small' />
+                  </Link>
+                </IconButton>
+                <Stack direction='row' alignItems='center' gap={1}>
+                  <Avatar src={option.logoUrl ?? ''} />
+                  <Box>
+                    <Typography>{option.name}</Typography>
+                    <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+                  </Box>
+                </Stack>
+              </Stack>
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Select Supplier" />
+          )}
+        />
+      </Stack>
+      <FormGroup sx={{ my: 1 }}>
+        <FormControlLabel control={<Switch
+          size='small'
+          checked={vendorProductShow}
+          onChange={e => setVendorProductShow(e.target.checked)}
+        />} label="Supplier" />
+      </FormGroup>
+
       {/* product add dialog */}
       {
         <CDialog openDialog={productAddDialogOpen}>
           <AddItem fetchCategory={fetchCategory} closeDialog={() => setAddItemDialogOpen(false)} />
+        </CDialog>
+      }
+      {
+        <CDialog openDialog={weeklyFoodAddDialogOpen}>
+          <AddWeeklyFood fetchCategory={fetchCategory} closeDialog={() => setWeeklyFoodAddDialogOpen(false)} />
         </CDialog>
       }
       <Stack direction='row' gap={2} flexWrap='wrap' mt={4}>

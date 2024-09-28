@@ -72,7 +72,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
             {data?.node.name.substring(0, 60)}
             {data?.node.name.length > 60 ? '...' : ''}
           </Typography>
-          <Stack direction='row' alignItems='center' gap={1} mt={1}>
+          <Stack direction='row' alignItems='center' gap={.5} flexWrap='wrap'>
             <Typography
               sx={{
                 fontSize: '12px',
@@ -80,10 +80,25 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
                 color: '#fff',
                 px: 1, borderRadius: '4px',
               }}>
-              {data.node.availability ? 'Available' : 'Not Available'}
+              {data?.node.availability ? 'Available' : 'Not Available'}
             </Typography>
             {
-              data.node?.vendor !== null &&
+              data?.node.weeklyVariants.edges.length > 0 &&
+              data?.node.weeklyVariants.edges.map((item, id) => (
+                <Typography
+                  key={id}
+                  sx={{
+                    fontSize: '12px',
+                    bgcolor: 'brown',
+                    color: '#fff',
+                    px: 1, borderRadius: '4px',
+                  }}>
+                  {item.node.name}
+                </Typography>
+              ))
+            }
+            {
+              data?.node?.vendor !== null &&
               <Typography
                 sx={{
                   fontSize: '12px',
@@ -116,7 +131,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
           </Stack>
 
           <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1}>
-            <Typography sx={{ fontSize: '16px' }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.priceWithTax}
+            <Typography sx={{ fontSize: '14px' }}><i style={{ fontWeight: 600 }}>kr </i> {data.node.priceWithTax}
               <i style={{ fontWeight: 400, fontSize: '13px' }}> (tax)</i> </Typography>
             <Typography sx={{ fontSize: { xs: '14px', lg: '14px', color: '#848995' } }}><i style={{ fontWeight: 600 }}>kr </i>{data.node.actualPrice} </Typography>
           </Stack>

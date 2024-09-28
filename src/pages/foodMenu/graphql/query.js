@@ -98,7 +98,8 @@ export const PRODUCTS = gql`
         $offset:Int,
         $first: Int,
         $vendor: String,
-        $isFeatured: Boolean
+        $isFeatured: Boolean,
+        $weeklyVariants: String
        ) {
         products(
           id:$id, 
@@ -110,7 +111,8 @@ export const PRODUCTS = gql`
           offset: $offset,
           first: $first,
           vendor: $vendor,
-          isFeatured: $isFeatured
+          isFeatured: $isFeatured,
+          weeklyVariants: $weeklyVariants
         ){
         edges{
           node{
@@ -126,6 +128,15 @@ export const PRODUCTS = gql`
           contains
           isFeatured
           status
+          weeklyVariants {
+            edges {
+              node {
+                id
+                name
+                days
+              }
+            }
+          }
           vendor{
             id
             name
@@ -160,9 +171,17 @@ export const PRODUCTS = gql`
     }
       }
   }
-
 `
 
-// export const PRODUCTS = gql`
-//   query Products = ($category: String)
-// `
+export const WEEKLY_VARIANTS = gql`
+  query WeeklyVariants {
+    weeklyVariants {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`

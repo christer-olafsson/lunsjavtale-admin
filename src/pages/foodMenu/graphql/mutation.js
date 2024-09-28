@@ -51,3 +51,12 @@ export const INGREDIENT_DELETE = gql`
     }
   }
 `
+
+export const WEEKLY_VARIANT_PRODUCTS = gql`
+  mutation WeeklyVariantProducts($id: ID, $products: [ID]){
+    weeklyVariantProducts(id: $id, products: $products){
+    success
+    message
+  }
+  }
+`

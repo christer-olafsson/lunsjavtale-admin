@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useMutation, useQuery } from '@apollo/client';
 import { Add, ArrowDropDown, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, ListItemText, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
-import { GET_ALL_CATEGORY } from './graphql/query';
+import { GET_ALL_CATEGORY, WEEKLY_VARIANTS } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
 import toast from 'react-hot-toast';
@@ -33,6 +33,8 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   const [selectedCoverImgId, setSelectedCoverImgId] = useState(null);
   const [vendors, setVendors] = useState([])
   const [selectedVendor, setSelectedVendor] = useState('')
+  const [allWeeklyVariants, setAllWeeklyVariants] = useState([])
+  const [selectedWeeklyVariant, setSelectedWeeklyVariant] = useState([])
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -156,6 +158,14 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
     }
   })
 
+  // weekly variants
+  const { loading: weeklyVariantsLoading } = useQuery(WEEKLY_VARIANTS, {
+    onCompleted: (res) => {
+      const data = res.weeklyVariants.edges.map(item => item.node)
+      setAllWeeklyVariants(data)
+    },
+  });
+
 
   // set cover image
   const handleSetCoverImgId = (index) => {
@@ -211,7 +221,8 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
             taxPercent: 15,
             priceWithTax: priceWithTax.toString(),
             category: categoryId,
-            vendor: selectedVendor?.id
+            vendor: selectedVendor?.id,
+            weeklyVariants: selectedWeeklyVariant.map(item => item.id)
           },
           ingredients: selectedAllergies,
           attachments: [...productImgFromData, ...attachments],
@@ -219,7 +230,6 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
       })
     }
   }
-
 
   const handleProductDelete = async () => {
     const fileIds = data.attachments.edges.map(item => item.node.fileId);
@@ -259,6 +269,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
       isCover: item.node.isCover,
     })));
     setSelectedVendor(data.vendor ? data.vendor : '')
+    setSelectedWeeklyVariant(data.weeklyVariants.edges.map(item => item.node) ?? [])
   }, [])
 
 
@@ -324,6 +335,33 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
             />
           </Stack>
         </Stack>
+        {/* weekly variants */}
+        <Autocomplete
+          sx={{ mb: 2 }}
+          size='small'
+          loading={weeklyVariantsLoading}
+          options={allWeeklyVariants ?? []}
+          value={selectedWeeklyVariant}
+          multiple
+          disableCloseOnSelect
+          onChange={(_, value) => setSelectedWeeklyVariant(value)}
+          getOptionLabel={(option) => option.name}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={<CheckBoxOutlineBlank fontSize="small" />}
+                checkedIcon={<CheckBox fontSize="small" />}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              <ListItemText primary={option.name} />
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Weekly Variants" />
+          )}
+        />
         {/* all vendors */}
         <Autocomplete
           sx={{ mb: 2 }}

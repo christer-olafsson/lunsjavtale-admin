@@ -52,7 +52,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
         }} />
       }
       <Stack sx={{ height: '100%' }} justifyContent='space-between'>
-        <Stack >
+        <Stack gap={.5}>
           <Box sx={{
             width: '100%',
             height: '138px',
@@ -76,7 +76,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
             <Typography
               sx={{
                 fontSize: '12px',
-                bgcolor: data.node.availability ? 'primary.main' : 'darkgray',
+                bgcolor: data.node.availability ? 'green' : 'darkgray',
                 color: '#fff',
                 px: 1, borderRadius: '4px',
               }}>
@@ -89,7 +89,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
                   key={id}
                   sx={{
                     fontSize: '12px',
-                    bgcolor: 'brown',
+                    bgcolor: 'Highlight',
                     color: '#fff',
                     px: 1, borderRadius: '4px',
                   }}>

@@ -145,15 +145,15 @@ const Orders = () => {
       }
     },
     {
-      field: 'Date', width: 250,
+      field: 'Date', width: 280,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Date</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b>
-              <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(params.row?.createdOn, 'HH:mm')}</span>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Ordered: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b>
+              <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(params.row?.createdOn, 'hh:mm a')}</span>
             </Typography>
             <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate, 'dd-MM-yyyy')}</b> </Typography>
           </Stack>
@@ -219,31 +219,31 @@ const Orders = () => {
       ),
       renderCell: (params) => {
         const { row } = params
+        const relevantStatuses = ['Placed', 'Updated', 'Payment-pending', 'Payment-completed']
+        const isNew = relevantStatuses.includes(row.status)
         return (
           <Stack sx={{ height: '100%' }} alignItems='center' direction='row' gap={.5}>
             <Box sx={{
               ml: 5,
               display: 'inline-flex',
               padding: '5px 12px',
-              bgcolor: row.status === 'Cancelled'
-                ? 'red'
-                : row.status === 'Confirmed'
-                  ? 'lightgreen'
-                  : row.status === 'Delivered'
-                    ? 'green'
-                    : row.status === 'Processing'
-                      ? '#8294C4'
-                      : row.status === 'Payment-completed'
-                        ? 'blue'
-                        : row.status === 'Ready-to-deliver'
-                          ? '#01B8A9'
-                          : 'yellow',
-              color: row.status === 'Placed'
-                ? 'dark' : row.status === 'Payment-pending'
-                  ? 'dark' : row.status === 'Confirmed' ? 'dark' : row.status === 'Updated' ? 'dark' : '#fff',
+              bgcolor:
+                row.status === 'Cancelled' ? 'red' :          // Deep Red for Cancelled
+                  row.status === 'Placed' ? '#6251DA' :            // Strong Blue for Placed
+                    row.status === 'Updated' ? '#828BFF' :            // Deep Orange for Updated
+                      row.status === 'Confirmed' ? '#1976d2' :          // Dark Green for Confirmed
+                        row.status === 'Delivered' ? 'green' :          // Strong Blue for Delivered
+                          row.status === 'Processing' ? '#6A9C89' :         // Deep Purple for Processing
+                            row.status === 'Payment-completed' ? '#00695c' :  // Dark Teal for Payment Completed
+                              row.status === 'Ready-to-deliver' ? '#283593' :   // Deep Indigo for Ready to Deliver
+                                row.status === 'Payment-pending' ? '#c2185b' :    // Deep Pink for Payment Pending
+                                  '#616161',                                         // Dark Grey for Default
+              color: '#FFFFFF', // White text
               borderRadius: '4px',
             }}>
-              <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>{row.status}</Typography>
+              <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>
+                {row.status}
+              </Typography>
             </Box>
             {row.status === 'Placed' &&
               <Typography sx={{ color: 'green' }} variant='body2'>new</Typography>

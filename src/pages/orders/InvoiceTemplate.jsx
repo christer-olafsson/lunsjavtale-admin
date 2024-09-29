@@ -132,7 +132,7 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
           <Divider />
           <Stack direction='row'>
             <Typography sx={{ width: '200px' }}> <b>Order Date:</b></Typography>
-            {data?.createdOn && <Typography>{format(data?.createdOn, 'dd-MMMM-yyyy')}</Typography>}
+            {data?.createdOn && <Typography>{format(data?.createdOn, 'dd-MMMM-yyyy hh:mm a')}</Typography>}
           </Stack>
           <Divider />
           <Stack direction='row'>

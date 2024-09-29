@@ -122,13 +122,13 @@ const WithdrawReq = () => {
     },
 
     {
-      field: 'reqOn', headerName: '', width: 200,
+      field: 'reqOn', headerName: '', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Placed On</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontWeight: 600 }} > {format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
+          <Typography sx={{ fontWeight: 600 }} > {format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</Typography>
         </Stack >
       )
     },

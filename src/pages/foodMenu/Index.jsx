@@ -106,7 +106,7 @@ const FoodItem = () => {
       setProductsLength(data.length)
     },
   });
-  console.log(selectedWeeklyVariantId)
+
 
   const [fetchProducts, { loading: loadingProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
@@ -156,7 +156,7 @@ const FoodItem = () => {
           </Box>
         </Stack>
         <Stack direction='row' gap={2}>
-          <Button onClick={() => setWeeklyFoodAddDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }} variant='outlined' startIcon={<Add />}>Add Weekly Food</Button>
+          <Button onClick={() => setWeeklyFoodAddDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }} variant='outlined' startIcon={<Add />}>Weekly Food</Button>
           <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Item</Button>
         </Stack>
       </Stack>
@@ -181,10 +181,10 @@ const FoodItem = () => {
           <InputLabel>Weekly Foods</InputLabel>
           <Select
             value={selectedWeeklyVariantId || ''}
-            label="Weekly Foods"
+            label="Weekly Variants"
             onChange={(e) => setSelectedWeeklyVariantId(e.target.value)}
           >
-            <MenuItem value='none'>None</MenuItem>
+            <MenuItem value=''>None</MenuItem>
             {allWeeklyVariants?.map(item => (
               <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
             ))}
@@ -221,7 +221,7 @@ const FoodItem = () => {
           )}
         />
       </Stack>
-      <FormGroup sx={{ my: 1 }}>
+      <FormGroup sx={{ my: 1, width: 'fit-content' }}>
         <FormControlLabel control={<Switch
           size='small'
           checked={vendorProductShow}

@@ -12,14 +12,14 @@ const RecentOrders = ({ data }) => {
 
   const columns = [
     {
-      field: 'orderDate', width: 150,
+      field: 'orderDate', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Date</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</Typography>
           </Stack>
         )
       }
@@ -78,7 +78,7 @@ const RecentOrders = ({ data }) => {
                         : 'yellow',
             color: row.status === 'Placed'
               ? 'dark' : row.status === 'Payment-pending'
-                ? 'dark' : row.status === 'Confirmed' ? 'dark' :row.status === 'Updated' ? 'dark' : '#fff',
+                ? 'dark' : row.status === 'Confirmed' ? 'dark' : row.status === 'Updated' ? 'dark' : '#fff',
             borderRadius: '4px',
           }}>
             <Typography sx={{ fontWeight: 500 }} variant='body2'>{row.status}</Typography>

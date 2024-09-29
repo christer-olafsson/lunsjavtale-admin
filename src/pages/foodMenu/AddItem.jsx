@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ArrowDownward, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
-import { GET_ALL_CATEGORY } from './graphql/query';
+import { GET_ALL_CATEGORY, WEEKLY_VARIANTS } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
 import { GET_INGREDIENTS } from '../../graphql/query';
 import toast from 'react-hot-toast';
@@ -29,6 +29,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [vendors, setVendors] = useState([])
   const [selectedVendor, setSelectedVendor] = useState('')
   const [allergiesSecOpen, setAllergiesSecOpen] = useState(false)
+  const [allWeeklyVariants, setAllWeeklyVariants] = useState([])
+  const [selectedWeeklyVariant, setSelectedWeeklyVariant] = useState([])
   const [inputerr, setInputerr] = useState({
     name: '',
     category: '',
@@ -91,6 +93,14 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     }
   })
 
+  // weekly variants
+  const { loading: weeklyVariantsLoading } = useQuery(WEEKLY_VARIANTS, {
+    onCompleted: (res) => {
+      const data = res.weeklyVariants.edges.map(item => item.node)
+      setAllWeeklyVariants(data)
+    },
+  });
+
   const handlePriceWithoutTaxChange = (event) => {
     const inputPrice = parseFloat(event.target.value);
     const taxRate = 0.15; // 15% tax rate
@@ -124,13 +134,13 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   // };
   // const handlePriceWithTaxChange = (event) => {
   //   const inputValue = event.target.value;
-  
+
   //   // Check if the input value is a valid number
   //   if (!isNaN(inputValue) && inputValue !== '') {
   //     const inputPriceWithTax = parseFloat(inputValue);
   //     const taxRate = 0.15; // 15% tax rate
   //     const priceWithoutTax = inputPriceWithTax / (1 + taxRate);
-  
+
   //     // Update the state with rounded values
   //     setPriceWithoutTax(Math.round(priceWithoutTax * 100) / 100);
   //     setPriceWithTax(inputPriceWithTax);
@@ -219,7 +229,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           taxPercent: 15,
           priceWithTax: priceWithTax.toString(),
           category: categoryId,
-          vendor: selectedVendor.id
+          vendor: selectedVendor.id,
+          weeklyVariants: selectedWeeklyVariant.map(item => item.id)
         },
         ingredients: selectedAllergies,
         attachments
@@ -298,6 +309,33 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           </Stack>
 
         </Stack>
+        {/* weekly variants */}
+        <Autocomplete
+          sx={{ mb: 2 }}
+          size='small'
+          loading={weeklyVariantsLoading}
+          options={allWeeklyVariants ?? []}
+          value={selectedWeeklyVariant}
+          multiple
+          disableCloseOnSelect
+          onChange={(_, value) => setSelectedWeeklyVariant(value)}
+          getOptionLabel={(option) => option.name}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={<CheckBoxOutlineBlank fontSize="small" />}
+                checkedIcon={<CheckBox fontSize="small" />}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              <ListItemText primary={option.name} />
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Weekly Variants" />
+          )}
+        />
         {/* all supplier */}
         <Autocomplete
           size='small'

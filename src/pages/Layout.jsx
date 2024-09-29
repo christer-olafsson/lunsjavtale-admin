@@ -111,7 +111,11 @@ function Layout() {
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true,
     onCompleted: (res) => {
-      setPlacedOrders(res.orders.edges.filter(item => item.node.status === 'Placed').map(item => item.node));
+      const relevantStatuses = ['Placed', 'Updated', 'Payment-pending', 'Payment-completed'];
+      setPlacedOrders(res.orders.edges
+        .filter(item => relevantStatuses.includes(item.node.status))
+        .map(item => item.node)
+      );
     }
   });
 
@@ -406,6 +410,7 @@ function Layout() {
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
+            position: 'relative',
           }}>
             {
               import.meta.env.VITE_ENVIRONMENT === 'stage' &&
@@ -414,7 +419,7 @@ function Layout() {
             {/* small notification */}
             <ClickAwayListener onClickAway={() => setOpenNotification(false)}>
               <Box sx={{
-                position: 'relative'
+                mr: 1
               }}>
                 <IconButton onClick={() => (
                   setOpenNotification(!openNotification),
@@ -429,7 +434,7 @@ function Layout() {
                   openNotification &&
                   <Collapse sx={{
                     position: 'absolute',
-                    right: 0,
+                    right: 10,
                   }} in={openNotification}>
                     <SmallNotification onClose={() => setOpenNotification(false)} />
                   </Collapse>

@@ -93,14 +93,14 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
       ),
     },
     {
-      field: 'Date', width: 250,
+      field: 'Date', width: 280,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Date</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Order: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b> </Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Ordered: <b>{format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</b> </Typography>
             <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate, 'dd-MM-yyyy')}</b> </Typography>
           </Stack>
         )

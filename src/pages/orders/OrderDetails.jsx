@@ -51,6 +51,9 @@ const OrderDetails = () => {
       setOrder(res.order)
     },
   });
+
+  console.log(order)
+
   const [orderStatusUpdate, { loading: statusLoading }] = useMutation(ORDER_STATUS_UPDATE, {
     refetchQueries: [ORDERS],
     onCompleted: (res) => {
@@ -189,13 +192,13 @@ const OrderDetails = () => {
               <Typography>#{order?.id}</Typography>
             </Stack>
             <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Created On:</b></Typography>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Ordered On:</b></Typography>
               <Box >
                 {
                   order?.createdOn &&
                   <Typography sx={{ whiteSpace: 'nowrap' }}>
                     <b>{format(order?.createdOn, 'dd-MM-yyyy')}</b>
-                    <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(order?.createdOn, 'HH:mm')}</span>
+                    <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(order?.createdOn, 'hh:mm a')}</span>
                   </Typography>
                 }
               </Box>
@@ -347,71 +350,115 @@ const OrderDetails = () => {
 
         <Stack direction={{ xs: 'column', lg: 'row' }} justifyContent='space-between' mt={3} gap={6}>
 
-          <Stack gap={3}>
-            {
-              loading ? <LoadingBar /> : orderErr ? <ErrorMsg /> :
-                !order?.orderCarts?.edges ? <Typography>Not Found!</Typography> :
-                  order?.orderCarts?.edges.map(data => (
-                    <Stack key={data.node.id}>
+          <Box>
 
-                      <Stack sx={{
-                        border: '1px solid lightgray',
-                        maxWidth: '800px',
-                        borderRadius: '8px',
-                        p: 1
-                      }} direction={{ xs: 'column', md: 'row' }} gap={{ xs: 0, md: 2 }} alignItems={{ xs: 'start', md: 'center' }} justifyContent='space-between'>
-                        <Stack direction={{ xs: 'row', md: 'row' }} gap={{ xs: 0, md: 1 }} alignItems='center'>
-                          <img style={{
-                            width: '100px',
-                            height: '100px',
-                            objectFit: 'cover',
-                            borderRadius: '4px',
-                            margin: '10px',
-                            border: '1px solid lightgray'
-                          }} src={data?.node.item.attachments?.edges.find(item => item.node.isCover)?.node.fileUrl ?? "/noImage.png"} alt="" />
-                          <Box mb={{ xs: 0, md: 2 }}>
-                            <Typography sx={{ fontSize: { xs: '14', md: '18px' }, fontWeight: 600 }}>{data?.node.item.name}</Typography>
-                            <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
-                            <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
-                            {
-                              data?.node.ingredients?.edges &&
-                              <Box>
-                                <Typography sx={{ fontWeight: 600 }}>Ingredients: </Typography>
-                                {
-                                  data?.node.ingredients?.edges.map(item => (
-                                    <ul key={item.node.id}>
-                                      <li>{item.node.name}</li>
-                                    </ul>
-                                  ))
-                                }
-                              </Box>
-                            }
-                            {
-                              data?.node.item.vendor &&
-                              <Stack direction='row' gap={1}>
-                                <Typography>Supplier: </Typography>
-                                <Link to={`/dashboard/suppliers/details/${data?.node.item.vendor?.id}`}>
-                                  {data?.node.item.vendor?.name}
-                                </Link>
-                              </Stack>
-                            }
-                          </Box>
+            <Stack gap={3}>
+              {
+                loading ? <LoadingBar /> : orderErr ? <ErrorMsg /> :
+                  !order?.orderCarts?.edges ? <Typography>Not Found!</Typography> :
+                    order?.orderCarts?.edges.map(data => (
+                      <Stack key={data.node.id}>
+
+                        <Stack sx={{
+                          border: '1px solid lightgray',
+                          maxWidth: '800px',
+                          borderRadius: '8px',
+                          p: 1
+                        }} direction={{ xs: 'column', md: 'row' }} gap={{ xs: 0, md: 2 }} alignItems={{ xs: 'start', md: 'center' }} justifyContent='space-between'>
+                          <Stack direction={{ xs: 'row', md: 'row' }} gap={{ xs: 0, md: 1 }} alignItems='center'>
+                            <img style={{
+                              width: '100px',
+                              height: '100px',
+                              objectFit: 'cover',
+                              borderRadius: '4px',
+                              margin: '10px',
+                              border: '1px solid lightgray'
+                            }} src={data?.node.item.attachments?.edges.find(item => item.node.isCover)?.node.fileUrl ?? "/noImage.png"} alt="" />
+                            <Box mb={{ xs: 0, md: 2 }}>
+                              <Typography sx={{ fontSize: { xs: '14', md: '18px' }, fontWeight: 600 }}>{data?.node.item.name}</Typography>
+                              <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
+                              <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
+                              {
+                                data?.node.ingredients?.edges &&
+                                <Box>
+                                  <Typography sx={{ fontWeight: 600 }}>Ingredients: </Typography>
+                                  {
+                                    data?.node.ingredients?.edges.map(item => (
+                                      <ul key={item.node.id}>
+                                        <li>{item.node.name}</li>
+                                      </ul>
+                                    ))
+                                  }
+                                </Box>
+                              }
+                              {
+                                data?.node.item.vendor &&
+                                <Stack direction='row' gap={1}>
+                                  <Typography>Supplier: </Typography>
+                                  <Link to={`/dashboard/suppliers/details/${data?.node.item.vendor?.id}`}>
+                                    {data?.node.item.vendor?.name}
+                                  </Link>
+                                </Stack>
+                              }
+                            </Box>
+                          </Stack>
+                          <Stack gap={.5} mr={2}>
+                            <Typography>Quantity: <b>{data?.node.orderedQuantity}</b> </Typography>
+                            <Typography>Total Price: <b>{data?.node.totalPriceWithTax}</b> kr</Typography>
+                            <Button sx={{ whiteSpace: 'nowrap' }} onClick={() => handleSelectedStaffsDetails(data.node)} variant='outlined' size='small' endIcon={<ArrowDropDown />}>
+                              Selected Staffs ({data?.node.users?.edges?.length})
+                            </Button>
+                          </Stack>
                         </Stack>
-                        <Stack gap={.5} mr={2}>
-                          <Typography>Quantity: <b>{data?.node.orderedQuantity}</b> </Typography>
-                          <Typography>Total Price: <b>{data?.node.totalPriceWithTax}</b> kr</Typography>
-                          <Button sx={{ whiteSpace: 'nowrap' }} onClick={() => handleSelectedStaffsDetails(data.node)} variant='outlined' size='small' endIcon={<ArrowDropDown />}>
-                            Selected Staffs ({data?.node.users?.edges?.length})
-                          </Button>
-                        </Stack>
+                        <Collapse in={selectedStaffDetailsId === data.node.id}>
+                          <SelectedStaffs data={data?.node} />
+                        </Collapse>
                       </Stack>
-                      <Collapse in={selectedStaffDetailsId === data.node.id}>
-                        <SelectedStaffs data={data?.node} />
-                      </Collapse>
-                    </Stack>
-                  ))
-            }
-          </Stack>
+                    ))
+              }
+            </Stack>
+
+            {/* order timeline */}
+            <Stack mt={4}>
+              <Typography variant='h5' sx={{ px: 3, mb: 2 }}>Order Timeline</Typography>
+              <Box sx={{ px: 3 }}>
+                {order?.statuses?.edges.map((status, index) => (
+                  <Box key={status.node.id} sx={{ display: 'flex', mb: 2 }}>
+                    <Box sx={{
+                      width: 2,
+                      bgcolor: 'primary.main',
+                      mr: 2,
+                      position: 'relative',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: -4,
+                        width: 10,
+                        height: 10,
+                        borderRadius: '50%',
+                        bgcolor: 'primary.main',
+                      }
+                    }} />
+                    <Box>
+                      <Typography variant='subtitle1' sx={{ fontWeight: 'bold' }}>
+                        {status.node.status}
+                      </Typography>
+                      <Typography variant='body2' color='text.secondary'>
+                        {format(new Date(status.node.createdOn), 'dd-MM-yyyy hh:mm a')}
+                      </Typography>
+                      {status.node.note && (
+                        <Typography variant='body2' sx={{ mt: 1 }}>
+                          {status.node.note}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Stack>
+          </Box>
+
           <Stack sx={{
             px: 3
           }} gap={2}>
@@ -427,7 +474,9 @@ const OrderDetails = () => {
                 <Typography sx={{ fontSize: '16px' }}>PostCode: <b>{order?.company?.postCode}</b></Typography>
               </Box>
             </Stack>
+
           </Stack>
+
 
         </Stack>
 

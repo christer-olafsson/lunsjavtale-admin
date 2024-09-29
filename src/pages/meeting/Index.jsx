@@ -205,6 +205,34 @@ const Meeting = () => {
       }
     },
     {
+      field: 'Created On', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Created On</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', }} justifyContent='center'>
+          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
+          <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
+            <AccessTime sx={{ fontSize: '14px', mr: .5 }} /> {format(params.row.createdOn, 'hh:mm a')}</Typography>
+          {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}
+        </Stack>
+      )
+    },
+    {
+      field: 'meeting-time', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Meeting time</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', }} justifyContent='center'>
+          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.meetingTime, 'dd-MM-yyyy')}</Typography>
+          <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
+            <AccessTime sx={{ fontSize: '14px', mr: .5 }} /> {format(params.row.meetingTime, 'hh:mm a')}
+          </Typography>
+        </Stack>
+      )
+    },
+    {
       field: 'title', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Meeting Title</Typography>
@@ -226,34 +254,6 @@ const Meeting = () => {
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
           <Typography>{params.row.meetingType}</Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'Created On', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Created On</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'dd-MM-yyyy', { locale: nb })}</Typography>
-          <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
-            <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
-          {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}
-        </Stack>
-      )
-    },
-    {
-      field: 'meeting-time', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Meeting time</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', }} justifyContent='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.meetingTime, 'dd-MM-yyyy')}</Typography>
-          <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
-            <AccessTime sx={{ fontSize: '14px' }} /> {formatedNorwayTime(params.row.meetingTime)}</Typography>
-          {/* <AccessTime sx={{ fontSize: '14px' }} /> {format(params.row.meetingTime, 'HH:mm')}</Typography> */}
         </Stack>
       )
     },

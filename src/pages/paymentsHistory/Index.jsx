@@ -91,7 +91,7 @@ const PaymentsHistory = () => {
       )
     },
     {
-      field: 'paymentType', headerName: 'Prce', width: 200,
+      field: 'paymentType', headerName: 'Prce', width: 150,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Payment Type</Typography>
       ),
@@ -104,14 +104,14 @@ const PaymentsHistory = () => {
       )
     },
     {
-      field: 'createdDate', width: 200,
+      field: 'createdDate', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Created On</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</Typography>
           </Stack>
         )
       }

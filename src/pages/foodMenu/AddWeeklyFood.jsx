@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Stack, Typography, IconButton, FormControl, InputLabel, Select, MenuItem, FormHelperText, TextField, Autocomplete, Checkbox, ListItemIcon, ListItemText } from '@mui/material'
 import { CheckBox, CheckBoxOutlineBlank, Close } from '@mui/icons-material'
 import CButton from '../../common/CButton/CButton'
@@ -6,6 +6,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { PRODUCTS, WEEKLY_VARIANTS } from './graphql/query'
 import { WEEKLY_VARIANT_PRODUCTS } from './graphql/mutation'
 import toast from 'react-hot-toast'
+import { useFetcher } from 'react-router-dom'
 
 const AddWeeklyFood = ({ fetchCategory, closeDialog }) => {
   const [errors, setErrors] = useState({})
@@ -22,16 +23,22 @@ const AddWeeklyFood = ({ fetchCategory, closeDialog }) => {
   });
 
 
-  useQuery(PRODUCTS, {
+  const { loading: productsLoading } = useQuery(PRODUCTS, {
     onCompleted: (res) => {
-      const data = res.products.edges.map(item => item.node)
+      const data = res.products?.edges?.map(item => ({
+        attachments: item.node.attachments,
+        category: item.node.category,
+        id: item.node.id,
+        name: item.node.name,
+        priceWithTax: item.node.priceWithTax,
+        weeklyVariants: item.node.weeklyVariants.edges
+      }))
       setProducts(data)
     },
   });
 
   const [weeklyVarianMutation, { loading: loadingMutation }] = useMutation(WEEKLY_VARIANT_PRODUCTS, {
     onCompleted: (res) => {
-      console.log(res)
       fetchCategory()
       closeDialog()
       toast.success(res.weeklyVariantProducts.message)
@@ -54,20 +61,33 @@ const AddWeeklyFood = ({ fetchCategory, closeDialog }) => {
       return
     }
 
-    if (selectedProducts.length === 0) {
-      setErrors({ ...errors, products: 'Please select products' })
-      toast.error('Please select products')
-      return
-    }
+    // if (selectedProducts.length === 0) {
+    //   setErrors({ ...errors, products: 'Please select products' })
+    //   toast.error('Please select products')
+    //   return
+    // }
 
-    const productsId = selectedProducts.map(item => item.id)
     weeklyVarianMutation({
       variables: {
         id: selectedWeeklyVariantId,
-        products: productsId
+        products: selectedProducts.map(item => item.id)
       }
     })
   }
+
+  useEffect(() => {
+    if (products.length > 0) {
+      setSelectedProducts(products.filter(item => item.weeklyVariants && item.weeklyVariants.length > 0).map(item => ({
+        attachments: item.attachments || [],
+        category: item.category,
+        id: item.id,
+        name: item.name,
+        priceWithTax: item.priceWithTax,
+        weeklyVariants: item.weeklyVariants.map(item => item.node)
+      })))
+    }
+  }, [products])
+
   return (
     <Box>
       <Stack direction='row' justifyContent='space-between' mb={4}>
@@ -86,7 +106,7 @@ const AddWeeklyFood = ({ fetchCategory, closeDialog }) => {
             onChange={(e) => setSelectedWeeklyVariantId(e.target.value)}
           >
             {allWeeklyVariants?.map(item => (
-              <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+              <MenuItem key={item?.id} value={item?.id}>{item?.name}</MenuItem>
             ))}
           </Select>
           {errors.weeklyVariants && <FormHelperText>{errors.weeklyVariants}</FormHelperText>}
@@ -96,15 +116,17 @@ const AddWeeklyFood = ({ fetchCategory, closeDialog }) => {
           options={products}
           disabled={!selectedWeeklyVariantId}
           value={selectedProducts}
+          loading={productsLoading}
           // error={Boolean(errors.products)}
           multiple
           disableCloseOnSelect
           onChange={(_, value) => setSelectedProducts(value)}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) => option?.name || ''}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           renderOption={(props, option, { selected }) => {
-            const { key, ...optionProps } = props;
+            if (!option) return null;
             return (
-              <li key={option.id} {...optionProps}>
+              <li {...props}>
                 <Checkbox
                   icon={<CheckBoxOutlineBlank fontSize="small" />}
                   checkedIcon={<CheckBox fontSize="small" />}
@@ -113,12 +135,20 @@ const AddWeeklyFood = ({ fetchCategory, closeDialog }) => {
                 />
                 <ListItemIcon>
                   <img
-                    src={option.attachments.edges[0] ?
-                      option.attachments.edges.find(item => item.node.isCover)?.node.fileUrl : ''}
-                    alt={option.name} style={{ width: 60, height: 60, objectFit: 'contain', marginRight: '10px' }} />
+                    src={option.attachments?.edges?.length > 0 ?
+                      option.attachments.edges.find(item => item.node.isCover)?.node.fileUrl || '/noImage.png' : '/noImage.png'}
+                    alt={option.name || ''}
+                    style={{ width: 60, height: 60, objectFit: 'contain', marginRight: '10px' }}
+                  />
                 </ListItemIcon>
-                <ListItemText primary={option.name} secondary={option.category.name} />
-                <ListItemText primary={'Price'} secondary={option.priceWithTax} />
+                {/* <ListItemText primary={option.name || ''} secondary={option.category?.name} /> */}
+                <ListItemText
+                  primary={option?.name || ''}
+                  secondary={option.weeklyVariants && option.weeklyVariants.length > 0
+                    ? option.weeklyVariants.map(item => item?.node.name || '').join(', ')
+                    : null}
+                />
+                <ListItemText sx={{ display: { xs: 'none', sm: 'flex' } }} primary={option.category?.name} secondary={option.priceWithTax + ' kr' || ''} />
               </li>
             )
           }}

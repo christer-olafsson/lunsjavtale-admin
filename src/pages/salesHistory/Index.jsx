@@ -265,6 +265,7 @@ const SalesHistory = () => {
               rows={salesHistories}
               checkboxSelection
               onRowSelectionModelChange={(newSelection) => setSelectedRowIds(newSelection)}
+              noRowsLabel='No sales history found'
             />
         }
       </Box>

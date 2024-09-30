@@ -426,6 +426,7 @@ const Meeting = () => {
               getRowHeight={() => 70}
               columns={columns}
               rows={meetings}
+              noRowsLabel='No meetings found'
             />
         }
       </Box>

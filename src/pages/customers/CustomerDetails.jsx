@@ -29,7 +29,6 @@ const CustomerDetails = () => {
       id
     },
     onCompleted: (res) => {
-      console.log(res)
       setCompany(res.company)
     },
   });
@@ -38,6 +37,7 @@ const CustomerDetails = () => {
     fetchCompany()
   }, [])
 
+  console.log(company)
 
   return (
     <Box maxWidth='xxl'>
@@ -59,6 +59,10 @@ const CustomerDetails = () => {
                   borderRadius: '4px',
                 }} src={company?.logoUrl ? company?.logoUrl : "/noImage.png"} alt="" />
                 <Box>
+                  {
+                    company?.createdOn &&
+                    <Typography>Joined On: <b>{format(company?.createdOn, 'dd-MM-yyyy')}</b> </Typography>
+                  }
                   <Typography sx={{ display: 'inline-flex', gap: 1 }}>Customer: <b>{company?.name}</b> <LockOutlined sx={{
                     display: company?.isBlocked ? 'block' : 'none',
                     color: 'red'

@@ -1,10 +1,9 @@
-import { Add, ArrowBack, ArrowDropDown, Download, KeyboardDoubleArrowRightOutlined } from '@mui/icons-material';
+import { Add, ArrowBack, ArrowDropDown, Download } from '@mui/icons-material';
 import { Avatar, Box, Button, Chip, Collapse, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ORDER, ORDERS } from './graphql/query';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import Loader from '../../common/loader/Index';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import SelectedStaffs from './SelectedStaffs';
 import { format } from 'date-fns';
@@ -12,7 +11,6 @@ import { ORDER_STATUS_UPDATE } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
-import SlideDrawer from '../../common/drawer/SlideDrawer';
 import InvoiceTemplate, { downloadPDF } from './InvoiceTemplate';
 import CDialog from '../../common/dialog/CDialog';
 import CreatePayment from './CreatePayment';
@@ -138,37 +136,9 @@ const OrderDetails = () => {
       <Box mt={2}>
         <Stack direction='row' justifyContent='space-between' mb={2}>
           <Box />
-          <Button sx={{ width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content', alignSelf: 'flex-end' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+          <Button sx={{ width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content', alignSelf: 'flex-end' }} startIcon={<Add />} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
         </Stack>
         <Stack direction='row' gap={2} alignItems='center' mb={2}>
-          {
-            order?.status &&
-            <Stack alignItems='center' sx={{
-              display: 'inline-flex',
-              padding: '5px 12px',
-              bgcolor: order.status === 'Cancelled'
-                ? 'red'
-                : order.status === 'Confirmed'
-                  ? 'lightgreen'
-                  : order.status === 'Delivered'
-                    ? 'green'
-                    : order.status === 'Payment-completed'
-                      ? 'blue'
-                      : order.status === 'Processing'
-                        ? '#8294C4'
-                        : order.status === 'Ready-to-deliver'
-                          ? '#01B8A9'
-                          : 'yellow',
-              color: order?.status === 'Placed'
-                ? 'dark' : order?.status === 'Payment-pending'
-                  ? 'dark' : order?.status === 'Confirmed' ? 'dark' :
-                    order.status === 'Updated' ? 'dark' : '#fff',
-              borderRadius: '50px',
-              minWidth: '200px',
-            }}>
-              <Typography sx={{ fontWeight: 600 }} variant='body2'>{order?.status}</Typography>
-            </Stack>
-          }
           {
             order?.status === 'Delivered' &&
             <Button
@@ -187,6 +157,29 @@ const OrderDetails = () => {
         </Stack>
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
           <Stack>
+            <Stack direction='row' alignItems='center'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Status:</b></Typography>
+              <Stack alignItems='center' sx={{
+                display: 'inline-flex',
+                padding: '0px 12px',
+                bgcolor:
+                  order?.status === 'Cancelled' ? 'red' :
+                    order?.status === 'Placed' ? '#6251DA' :
+                      order?.status === 'Updated' ? '#6251DA' :
+                        order?.status === 'Confirmed' ? '#433878' :
+                          order?.status === 'Delivered' ? 'green' :
+                            order?.status === 'Processing' ? '#B17457' :
+                              order?.status === 'Payment-completed' ? '#00695c' :
+                                order?.status === 'Ready-to-deliver' ? '#283593' :
+                                  order?.status === 'Payment-pending' ? '#c2185b' :
+                                    '#616161',
+                color: '#FFF',
+                borderRadius: '4px',
+                minWidth: '150px',
+              }}>
+                <Typography sx={{ fontWeight: 600, }} >{order?.status}</Typography>
+              </Stack>
+            </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Order ID:</b></Typography>
               <Typography>#{order?.id}</Typography>
@@ -445,7 +438,8 @@ const OrderDetails = () => {
                         {status.node.status}
                       </Typography>
                       <Typography variant='body2' color='text.secondary'>
-                        {format(new Date(status.node.createdOn), 'dd-MM-yyyy hh:mm a')}
+                        {format(status?.node.createdOn, 'dd-MM-yyyy')}
+                        <span style={{ fontSize: '12px', marginLeft: '5px', fontWeight: 600 }}>{format(status?.node.createdOn, 'hh:mm a')}</span>
                       </Typography>
                       {status.node.note && (
                         <Typography variant='body2' sx={{ mt: 1 }}>

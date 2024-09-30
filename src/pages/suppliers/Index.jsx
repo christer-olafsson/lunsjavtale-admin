@@ -134,9 +134,9 @@ const Suppliers = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>
-            <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
-            <Typography sx={{ fontSize: '14px',display:'inline-flex',alignItems:'center' }}> <PhoneOutlined fontSize='small'/> {params.row.contact}</Typography>
-          
+          <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
+          <Typography sx={{ fontSize: '14px', display: 'inline-flex', alignItems: 'center' }}> <PhoneOutlined fontSize='small' /> {params.row.contact}</Typography>
+
         </Stack>
       )
     },
@@ -253,6 +253,7 @@ const Suppliers = () => {
             <DataTable
               columns={columns}
               rows={vendors}
+              noRowsLabel='No suppliers found'
             />
         }
       </Box>

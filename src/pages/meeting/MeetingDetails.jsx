@@ -62,12 +62,12 @@ const MeetingDetails = ({ data, closeDialog }) => {
           <InfoItem
             icon={<AccessTime color="primary" />}
             label="Created On"
-            value={`${format(data?.createdOn, 'yyyy-MM-dd')} ${format(data?.createdOn, 'hh:mm a')}`}
+            value={`${format(data?.createdOn, 'dd-MM-yyyy')} ${format(data?.createdOn, 'hh:mm a')}`}
           />
           <InfoItem
             icon={<AccessTime color="primary" />}
             label="Meeting Time"
-            value={`${format(data?.meetingTime, 'yyyy-MM-dd')} ${format(data?.meetingTime, 'hh:mm a')}`}
+            value={`${format(data?.meetingTime, 'dd-MM-yyyy')} ${format(data?.meetingTime, 'hh:mm a')}`}
           />
         </Grid>
       </Grid>

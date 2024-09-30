@@ -368,6 +368,7 @@ const Customers = () => {
               rowHeight={70}
               columns={columns}
               rows={rows}
+              noRowsLabel='No customers found'
             />
         }
       </Box>

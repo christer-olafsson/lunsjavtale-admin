@@ -23,13 +23,13 @@ const Instagram = () => {
   const [deleteId, setDeleteId] = useState('')
   const [links, setLinks] = useState([])
 
-  const [fetchLink, { loading, error}] = useLazyQuery(FOLLOW_US_LIST, {
+  const [fetchLink, { loading, error }] = useLazyQuery(FOLLOW_US_LIST, {
     fetchPolicy: "network-only",
     onCompleted: (res) => {
       setLinks(res.followUsList.edges.map(item => item.node))
     }
   });
- 
+
   const [deleteLink, { loading: deleteLoading }] = useMutation(FOLLOW_US_DELETE, {
     onCompleted: (res) => {
       toast.success(res.followUsDelete.message)
@@ -72,29 +72,30 @@ const Instagram = () => {
       </Stack>
       <Stack direction='row' gap={2} alignItems='center' flexWrap='wrap' mt={{ xs: 10, md: 4 }}>
         {
-          loading ? <Loader/> : error ? <ErrorMsg/> :
-          links.map((item, id) => (
-            <Box sx={{
-              borderBottom: '.5px solid lightgray'
-            }} key={id}>
-              <Button onClick={() => deleteDialog(item)}>Delete</Button>
-              <InstagramEmbed url={item.link} width={350} />
-              {
-                deleteId === item.id &&
-                <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
-                  <Box>
-                    <img src="/Featured icon.png" alt="" />
-                    <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Confim Delete?</Typography>
-                    <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this post? This action cannot be undone.</Typography>
-                    <Stack direction='row' gap={2} mt={3}>
-                      <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-                      <CButton isLoading={deleteLoading} onClick={handleDeleteBrand} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
-                    </Stack>
-                  </Box>
-                </CDialog>
-              }
-            </Box>
-          ))
+          loading ? <Loader /> : error ? <ErrorMsg /> :
+            links.length === 0 ? <Typography>No post found</Typography> :
+              links.map((item, id) => (
+                <Box sx={{
+                  borderBottom: '.5px solid lightgray'
+                }} key={id}>
+                  <Button onClick={() => deleteDialog(item)}>Delete</Button>
+                  <InstagramEmbed url={item.link} width={350} />
+                  {
+                    deleteId === item.id &&
+                    <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
+                      <Box>
+                        <img src="/Featured icon.png" alt="" />
+                        <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Confim Delete?</Typography>
+                        <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this post? This action cannot be undone.</Typography>
+                        <Stack direction='row' gap={2} mt={3}>
+                          <Button onClick={() => setDeleteDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
+                          <CButton isLoading={deleteLoading} onClick={handleDeleteBrand} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
+                        </Stack>
+                      </Box>
+                    </CDialog>
+                  }
+                </Box>
+              ))
         }
       </Stack >
     </Box >

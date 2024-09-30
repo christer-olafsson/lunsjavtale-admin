@@ -9,7 +9,6 @@ import { ME } from '../../../graphql/query';
 
 const Account = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [payloadEditOn, setPayloadEditOn] = useState(false);
   const [errors, setErrors] = useState([])
   const [passwordErr, setPasswordErr] = useState(null);
   const [forgotePassSecOpen, setForgotePassSecOpen] = useState(false);
@@ -29,8 +28,14 @@ const Account = () => {
     onCompleted: (res) => {
       const data = res.accountProfileUpdate
       toast.success(data.message);
-      setPayloadEditOn(false)
+      setEditOn(false)
       setErrors({})
+      setPayload({
+        username: '',
+        currentPass: '',
+        newPass: '',
+        repeatPass: ''
+      })
     },
     onError: (err) => {
       toast.error(err.message)

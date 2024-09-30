@@ -213,7 +213,7 @@ const Orders = () => {
     //   )
     // },
     {
-      field: 'status', headerName: 'Status', width: 220,
+      field: 'status', headerName: 'Status', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
@@ -226,26 +226,26 @@ const Orders = () => {
             <Box sx={{
               ml: 5,
               display: 'inline-flex',
-              padding: '5px 12px',
+              padding: '4px 12px',
               bgcolor:
-                row.status === 'Cancelled' ? 'red' :          // Deep Red for Cancelled
-                  row.status === 'Placed' ? '#6251DA' :            // Strong Blue for Placed
-                    row.status === 'Updated' ? '#828BFF' :            // Deep Orange for Updated
-                      row.status === 'Confirmed' ? '#1976d2' :          // Dark Green for Confirmed
-                        row.status === 'Delivered' ? 'green' :          // Strong Blue for Delivered
-                          row.status === 'Processing' ? '#6A9C89' :         // Deep Purple for Processing
-                            row.status === 'Payment-completed' ? '#00695c' :  // Dark Teal for Payment Completed
-                              row.status === 'Ready-to-deliver' ? '#283593' :   // Deep Indigo for Ready to Deliver
-                                row.status === 'Payment-pending' ? '#c2185b' :    // Deep Pink for Payment Pending
-                                  '#616161',                                         // Dark Grey for Default
-              color: '#FFFFFF', // White text
+                row.status === 'Cancelled' ? 'red' :
+                  row.status === 'Placed' ? '#6251DA' :
+                    row.status === 'Updated' ? '#6251DA' :
+                      row.status === 'Confirmed' ? '#433878' :
+                        row.status === 'Delivered' ? 'green' :
+                          row.status === 'Processing' ? '#B17457' :
+                            row.status === 'Payment-completed' ? '#00695c' :
+                              row.status === 'Ready-to-deliver' ? '#283593' :
+                                row.status === 'Payment-pending' ? '#c2185b' :
+                                  '#616161',
+              color: '#FFF',
               borderRadius: '4px',
             }}>
               <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>
                 {row.status}
               </Typography>
             </Box>
-            {row.status === 'Placed' &&
+            {isNew &&
               <Typography sx={{ color: 'green' }} variant='body2'>new</Typography>
             }
           </Stack>
@@ -422,6 +422,7 @@ const Orders = () => {
               rowHeight={80}
               columns={columns}
               rows={orders}
+              noRowsLabel='No orders found'
             />
         }
       </Box>

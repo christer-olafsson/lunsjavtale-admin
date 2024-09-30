@@ -254,6 +254,7 @@ const Coupons = () => {
               columns={columns}
               rows={coupons}
               columnVisibilityModel={columnVisibilityModel}
+              noRowsLabel='No coupons found'
             />
         }
       </Box>

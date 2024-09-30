@@ -74,7 +74,7 @@ const Faq = () => {
       </CDialog>
       <Stack mt={3} gap={3}>
         {
-          loading ? <LoadingBar /> : error ? <ErrorMsg /> :
+          loading ? <LoadingBar /> : error ? <ErrorMsg /> : FAQList.length === 0 ? <Typography>No FAQ found</Typography> :
             FAQList.map(item => (
               <Paper key={item.id} elevation={3} sx={{ p: 2 }}>
                 <Stack direction='row' alignItems='center' justifyContent='space-between'>

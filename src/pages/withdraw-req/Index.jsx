@@ -274,6 +274,7 @@ const WithdrawReq = () => {
             <DataTable
               columns={columns}
               rows={withdrawReq}
+              noRowsLabel='No withdraw request found'
             />
         }
       </Box>

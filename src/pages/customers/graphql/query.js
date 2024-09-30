@@ -5,6 +5,7 @@ export const COMPANY = gql`
   company(id:$id){
     id
     name
+    createdOn
     description
     email
     contact

@@ -56,7 +56,13 @@ const PaymentDetails = () => {
                 <Typography sx={{ whiteSpace: 'nowrap' }}>Note: </Typography>
               </Stack>
               <Stack gap={1}>
-                <Typography sx={{ whiteSpace: 'nowrap' }}>{payment?.createdOn && <b>{format(payment?.createdOn, 'dd-MM-yyyy hh:mm a')}</b>}</Typography>
+                {
+                  payment?.createdOn &&
+                  <Typography sx={{ whiteSpace: 'nowrap' }}>
+                    <b>{format(payment?.createdOn, 'dd-MM-yyyy')}</b>
+                    <span style={{ fontSize: '12px', paddingLeft: '5px' }}>{format(payment?.createdOn, 'hh:mm a')}</span>
+                  </Typography>
+                }
                 <Typography sx={{ whiteSpace: 'nowrap' }}><b>{payment?.paymentType === 'online' ? 'Vipps' : payment?.paymentType}</b></Typography>
                 <Typography sx={{ whiteSpace: 'nowrap' }}> <b>{payment?.paidAmount}</b> kr</Typography>
                 <Typography sx={{ whiteSpace: 'nowrap' }}> {payment?.note}</Typography>

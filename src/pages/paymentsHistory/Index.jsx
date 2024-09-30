@@ -1,4 +1,4 @@
-import { Search, StoreOutlined } from '@mui/icons-material'
+import { AccessTime, Search, StoreOutlined } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -104,14 +104,16 @@ const PaymentsHistory = () => {
       )
     },
     {
-      field: 'createdDate', width: 250,
+      field: 'createdDate', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Created On</Typography>
       ),
       renderCell: (params) => {
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</Typography>
+          <Stack sx={{ height: '100%', }} justifyContent='center'>
+            <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
+            <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
+              <AccessTime sx={{ fontSize: '14px', mr: .5 }} /> {format(params.row.createdOn, 'hh:mm a')}</Typography>
           </Stack>
         )
       }
@@ -223,7 +225,8 @@ const PaymentsHistory = () => {
               checkboxSelection
               onRowSelectionModelChange={(newSelection) => setSelectedRowIds(newSelection)}
               columns={columns}
-              rows={orderPayments}
+              rows={orderPayments.length > 0 ? orderPayments : []}
+              noRowsLabel='No payment history found'
             />
         }
       </Box>

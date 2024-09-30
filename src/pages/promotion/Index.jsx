@@ -51,7 +51,7 @@ const Promotion = () => {
     setDeletePromotionDialogOpen(true)
   }
 
-  const handleDelete = async () => { 
+  const handleDelete = async () => {
     setFileDeleteLoading(true)
     await deleteFile(deletePromotionData.fileId)
     setFileDeleteLoading(false)
@@ -78,7 +78,7 @@ const Promotion = () => {
       </CDialog>
       <Stack gap={3} mt={3}>
         {
-          promotionLoading ? <LoadingBar /> : promotionErr ? <ErrorMsg /> :
+          promotionLoading ? <LoadingBar /> : promotionErr ? <ErrorMsg /> : promotions.length === 0 ? <Typography>No promotion found</Typography> :
             promotions.map(item => (
               <Paper elevation={3} sx={{ p: 2, maxWidth: '992px', position: 'relative' }} key={item.node.id}>
                 <Stack direction={{ xs: 'column', md: 'row' }} gap={2} alignItems='center'>
@@ -147,7 +147,7 @@ const Promotion = () => {
                         <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this promotion? This action cannot be undone.</Typography>
                         <Stack direction='row' gap={2} mt={3}>
                           <Button onClick={() => setDeletePromotionDialogOpen(false)} fullWidth variant='outlined'>Cancel</Button>
-                          <CButton onClick={handleDelete} isLoading={deleteLoading || fileDeleteLoading} style={{width:'100%'}} variant='contained' color='error'>Delete</CButton>
+                          <CButton onClick={handleDelete} isLoading={deleteLoading || fileDeleteLoading} style={{ width: '100%' }} variant='contained' color='error'>Delete</CButton>
                         </Stack>
                       </Box>
                     </CDialog>

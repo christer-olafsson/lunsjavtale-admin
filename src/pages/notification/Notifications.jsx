@@ -97,7 +97,7 @@ const Notifications = () => {
         return (
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Link
-            style={{color: row.isSeen ? 'gray' : 'inherit'}}
+              style={{ color: row.isSeen ? 'gray' : 'inherit' }}
               to={row.notificationType === 'order-placed' ? '/dashboard/orders' :
                 row.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
                   row.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${row.objectId}` : ''
@@ -139,6 +139,7 @@ const Notifications = () => {
               rows={notifications ?? []}
               checkboxSelection
               onRowSelectionModelChange={(newSelection) => setSelectedRowIds(newSelection)}
+              noRowsLabel='No notifications found'
             />
         }
       </Box>

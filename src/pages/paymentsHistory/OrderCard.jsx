@@ -13,7 +13,7 @@ const OrderCard = ({ item }) => {
       border: '1px solid lightgray',
       p: 2, borderRadius: '8px'
     }}>
-      <Stack sx={{ width: '100%' }} direction='row' gap={2} justifyContent='space-between' >
+      <Stack sx={{ width: '100%' }} direction={{ xs: 'column', md: 'row' }} gap={2} justifyContent='space-between' >
         <Box>
           <Typography sx={{ whiteSpace: 'nowrap' }}>Order ID: #<b>{data.id}</b></Typography>
           <Typography sx={{ whiteSpace: 'nowrap' }}>Delivery:<b>{data.deliveryDate}</b></Typography>

@@ -89,7 +89,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
                   key={id}
                   sx={{
                     fontSize: '12px',
-                    bgcolor: 'Highlight',
+                    bgcolor: 'blue',
                     color: '#fff',
                     px: 1, borderRadius: '4px',
                   }}>

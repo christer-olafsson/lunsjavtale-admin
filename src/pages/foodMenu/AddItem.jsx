@@ -391,7 +391,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
                 onChange={e => setPayload({ ...payload, isFeatured: e.target.checked })} />}
               label="Featured" />
           </Stack>
-          <Button onClick={() => setAllergiesSecOpen(!allergiesSecOpen)} endIcon={<ArrowDownward />}>Allergies</Button>
+          <Button size='small' onClick={() => setAllergiesSecOpen(!allergiesSecOpen)} endIcon={<ArrowDownward />}>Allergies</Button>
         </Stack>
 
         <Collapse in={allergiesSecOpen}>

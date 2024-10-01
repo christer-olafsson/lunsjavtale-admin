@@ -324,7 +324,7 @@ const Customers = () => {
             <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
             <IconButton><Search /></IconButton>
           </Box>
-          <Box sx={{ minWidth: 200 }}>
+          <Box sx={{ minWidth: 150 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select

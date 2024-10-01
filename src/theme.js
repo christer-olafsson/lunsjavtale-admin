@@ -3,10 +3,7 @@ import { createTheme } from "@mui/material";
 export const theme = createTheme({
   palette: {
     primary: {
-      // main: '#1E293B'
       main: '#63883B'
-      // main: '#0288d1'
-      // main: '#5A66F1'
     },
     secondary: {
       main: '#121212',
@@ -23,38 +20,22 @@ export const theme = createTheme({
     text: {
       primary: '#52525B'
     },
-    // lightGray: '#F5F5F5',
-    // common: {
-    //   black: '#121212',
-    //   white: '#efefef',
-    // }
   },
-  //  mixins: {
-  //   MuiDataGrid: {
-  //     containerBackground: '#fbf8ff',
-  //   },
-  // },
+ mixins: {
+    MuiDataGrid: {
+      containerBackground: '#fbf8ff',
+    },
+  },
   components: {
     // MuiDataGrid: {
     //   styleOverrides: {
-    //     columnHeaders: {
-    //       backgroundColor: 'red', // Header background color
-    //       // color: 'white', // Header text color
+    //     root: {
+    //       backgroundColor: '#fbf8ff',
     //     },
-    //     columnHeader: {
-    //       '& .MuiDataGrid-columnHeaderTitle': {
-    //         color: 'red', // Header text color
-    //       },
+    //     columnHeaders: {
+    //       backgroundColor: '#E0E0E0', // Change this color to your desired header background color
     //     },
     //   },
-    // },
-    // MuiContainer: {
-    //  styleOverrides:{
-    //   // disableGutters:true
-    //   root:{
-    //     marginTop: '50px'
-    //   }
-    //  }
     // },
     MuiButton: {
       styleOverrides: {

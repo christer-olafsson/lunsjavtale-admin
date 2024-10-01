@@ -198,7 +198,10 @@ const OrderDetails = () => {
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Delivery Date:</b></Typography>
-              <Typography sx={{ fontWeight: 600 }}>{order?.deliveryDate}</Typography>
+              {
+                order?.deliveryDate &&
+                <Typography sx={{ fontWeight: 600 }}>{format(order?.deliveryDate, 'dd-MM-yyyy')}</Typography>
+              }
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
@@ -224,7 +227,7 @@ const OrderDetails = () => {
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Final Price:</b></Typography>
-              <Typography sx={{ color: 'Highlight', fontWeight: 600 }}>{order?.finalPrice ?? '0'} kr</Typography>
+              <Typography sx={{ color: 'blue', fontWeight: 600 }}>{order?.finalPrice ?? '0'} kr</Typography>
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Due Amount:</b></Typography>

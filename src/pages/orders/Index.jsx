@@ -167,7 +167,7 @@ const Orders = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: 'Highlight', fontWeight: 600 }}>
+          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: 'blue', fontWeight: 600 }}>
             {params.row.finalPrice}
             <span style={{ fontWeight: 400 }}> kr</span>
           </Typography>
@@ -344,7 +344,7 @@ const Orders = () => {
 
 
   return (
-    <Box maxWidth='1600px'>
+    <Box maxWidth='1800px'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
         <Typography sx={{

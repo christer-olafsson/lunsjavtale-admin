@@ -372,7 +372,7 @@ const Meeting = () => {
             <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
             <IconButton><Search /></IconButton>
           </Box>
-          <Box sx={{ minWidth: 200 }}>
+          <Box sx={{ minWidth: 150 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -418,7 +418,7 @@ const Meeting = () => {
           </Stack>
         </Box>
       </CDialog>
-      <Box mt={{ xs: 10, md: 3 }}>
+      <Box mt={3}>
         {
           meetingsLoading ? <Loader /> : meetingsErr ? <ErrorMsg /> :
             <DataTable

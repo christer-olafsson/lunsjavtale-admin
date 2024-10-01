@@ -113,17 +113,17 @@ const Areas = () => {
         </Stack>
       )
     },
-    {
-      field: 'updatedOn', headerName: '', width: 200,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Updated On</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.updatedOn, 'dd-MM-yyyy')}</Typography>
-        </Stack>
-      )
-    },
+    // {
+    //   field: 'updatedOn', headerName: '', width: 200,
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Updated On</Typography>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+    //       <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.updatedOn, 'dd-MM-yyyy')}</Typography>
+    //     </Stack>
+    //   )
+    // },
     {
       field: 'status', width: 150,
       renderHeader: (params) => (

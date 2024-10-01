@@ -13,14 +13,14 @@ import { Toaster } from 'react-hot-toast'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
         <BrowserRouter>
           <CssBaseline />
           <Toaster position="bottom-center" />
           <App />
         </BrowserRouter>
-      </ThemeProvider>
-    </ApolloProvider>
+      </ApolloProvider>
+    </ThemeProvider>
   </React.StrictMode>,
 )

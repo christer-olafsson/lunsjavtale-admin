@@ -66,7 +66,7 @@ const WithdrawReq = () => {
     setWithdrawReqDialogOpen(true)
     setWithdrawReqData(row)
   }
-  console.log(withdrawReq)
+
 
   const columns = [
     {
@@ -235,7 +235,7 @@ const WithdrawReq = () => {
             <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search.. ' />
             <IconButton><Search /></IconButton>
           </Box>
-          <Box sx={{ minWidth: 200 }}>
+          <Box sx={{ minWidth: 150 }}>
             <FormControl size='small' fullWidth>
               <InputLabel>Status</InputLabel>
               <Select

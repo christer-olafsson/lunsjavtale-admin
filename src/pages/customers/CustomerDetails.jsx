@@ -37,7 +37,6 @@ const CustomerDetails = () => {
     fetchCompany()
   }, [])
 
-  console.log(company)
 
   return (
     <Box maxWidth='xxl'>
@@ -50,7 +49,7 @@ const CustomerDetails = () => {
       {
         loadingCompany ? <Loader /> : companyErr ? <ErrorMsg /> :
           <Box>
-            <Stack direction={{ xs: 'column', lg: 'row' }} alignItems='center' justifyContent='space-between'>
+            <Stack direction={{ xs: 'column', md: 'row' }} gap={2} alignItems='center' justifyContent='space-between'>
               <Stack direction='row' gap={2} mb={5} alignItems='center'>
                 <img style={{
                   width: '100px',
@@ -116,7 +115,7 @@ const CustomerDetails = () => {
                 width: { xs: '100%', md: '30%' },
                 px: { xs: 0, md: 3 }
               }}>
-                <Typography sx={{ fontSize: '18px', fontWeight: 700, mb: 2 }}>Owner Information</Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: 700, }}>Owner Information</Typography>
                 <Typography>Name: <b>{company?.owner?.firstName}</b> </Typography>
                 {company?.owner?.username &&
                   <Typography>User Name: <b>@{company?.owner?.username}</b> </Typography>

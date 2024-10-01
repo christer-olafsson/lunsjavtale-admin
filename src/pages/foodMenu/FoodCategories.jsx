@@ -39,7 +39,7 @@ const FoodCategories = () => {
       fetchProducts()
     },
   });
-  console.log(allCategorys)
+
   useQuery(PRODUCTS, {
     variables: {
       isVendorProduct: vendorProductShow ? vendorProductShow : null
@@ -108,7 +108,7 @@ const FoodCategories = () => {
           <Input onChange={e => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Search' />
           <IconButton><Search /></IconButton>
         </Box>
-        <Box sx={{ minWidth: 200 }}>
+        <Box sx={{ minWidth: 150 }}>
           <FormControl size='small' fullWidth>
             <InputLabel>Status</InputLabel>
             <Select

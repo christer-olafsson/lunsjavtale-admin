@@ -16,10 +16,10 @@ const DataTable = ({ noRowsLabel = 'Empty', rowHeight = 52, loading, rows, getRo
         sx={{
           boxShadow: 2,
           // minHeight: '650px',
-          // '& .MuiDataGrid-columnHeader': {
-          //   backgroundColor: '#1E293B',
-          //   color: '#fff'
-          // },
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: '#1E293B',
+            color: '#fff'
+          },
         }}
         localeText={{
           noRowsLabel,

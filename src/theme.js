@@ -29,18 +29,9 @@ export const theme = createTheme({
     //   white: '#efefef',
     // }
   },
-   mixins: {
-    MuiDataGrid: {
-      
-      containerBackground: '#fbf8ff',
-    },
-  },
-  // mixins: {
+  //  mixins: {
   //   MuiDataGrid: {
-  //     // Pinned columns sections
-  //     pinnedBackground: '#340606',
-  //     // Headers, and top & bottom fixed rows
-  //     containerBackground: '#343434',
+  //     containerBackground: '#fbf8ff',
   //   },
   // },
   components: {

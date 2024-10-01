@@ -109,7 +109,7 @@ const Areas = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.createdOn, 'dd MMMM yyyy')}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
         </Stack>
       )
     },
@@ -120,7 +120,7 @@ const Areas = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.updatedOn, 'dd MMMM yyyy')}</Typography>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.updatedOn, 'dd-MM-yyyy')}</Typography>
         </Stack>
       )
     },
@@ -154,7 +154,7 @@ const Areas = () => {
       },
     },
     {
-      field: 'delete', headerName: '', 
+      field: 'delete', headerName: '',
       width: isMobile ? 60 : undefined,
       flex: isMobile ? undefined : 1,
       renderCell: (params) => {
@@ -221,10 +221,10 @@ const Areas = () => {
       <Box mt={3}>
         {
           loading ? <LoadingBar /> : error ? <ErrorMsg /> :
-        <DataTable
-          columns={columns}
-          rows={rows}
-        />
+            <DataTable
+              columns={columns}
+              rows={rows}
+            />
         }
       </Box>
     </Box>

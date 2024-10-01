@@ -37,7 +37,7 @@ const Suppliers = () => {
       setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => item.node))
     }
   })
-  console.log(vendors)
+
   const [vendorDelete, { loading: deleteLoading }] = useMutation(VENDOR_DELETE, {
     onCompleted: (res) => {
       fetchVendors()

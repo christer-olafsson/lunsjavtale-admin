@@ -50,7 +50,6 @@ const OrderDetails = () => {
     },
   });
 
-  console.log(order)
 
   const [orderStatusUpdate, { loading: statusLoading }] = useMutation(ORDER_STATUS_UPDATE, {
     refetchQueries: [ORDERS],
@@ -100,7 +99,6 @@ const OrderDetails = () => {
     setNote(order?.note ?? '')
   }, [order])
 
-  console.log(order)
 
   useEffect(() => {
     fetchOrder()
@@ -112,7 +110,6 @@ const OrderDetails = () => {
   if (orderErr) {
     return <ErrorMsg />
   }
-  console.log(order)
 
   return (
     <Box maxWidth='xl'>

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { ArrowRightAlt, Bookmark, ErrorOutline } from '@mui/icons-material'
+import { ArrowRightAlt, Bookmark, Error, ErrorOutline } from '@mui/icons-material'
 import { Box, Button, Stack, Tooltip, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -29,7 +29,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
       // bgcolor: data.node.availability ? 'light.main' : '#fff',
       p: { xs: 1, lg: 2.5 },
       borderRadius: '8px',
-      border: data.node.vendor ? '1px solid coral' : '1px solid lightgray',
+      border: data.node.vendor ? '1px solid #433878' : '1px solid lightgray',
       boxShadow: data.node.availability ? 2 : 0,
       position: 'relative'
     }}>
@@ -44,9 +44,11 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
       }
       {
         !data.node.availability &&
-        <ErrorOutline sx={{
+        <Error sx={{
           position: 'absolute',
-          color: 'coral',
+          top: 20,
+          right: 20,
+          color: 'lightgray',
           fontSize: '3rem',
           zIndex: 2,
         }} />
@@ -55,7 +57,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
         <Stack gap={.5}>
           <Box sx={{
             width: '100%',
-            height: '138px',
+            height: '160px',
             boxShadow: 3
           }}>
             <img style={{
@@ -97,7 +99,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
                 </Typography>
               ))
             }
-            {
+            {/* {
               data?.node?.vendor !== null &&
               <Typography
                 sx={{
@@ -108,13 +110,23 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
                 }}>
                 Supplier
               </Typography>
-            }
+            } */}
           </Stack>
           {
             data.node?.vendor &&
-            <Stack direction='row' gap={.5}>
+            <Stack sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              color: '#fff',
+              bgcolor: '#433878',
+              p: .5,
+              borderRadius: '4px',
+              zIndex: 2,
+            }} direction='row' gap={.5}>
+              <Typography sx={{ fontSize: '14px' }}>Supplier: </Typography>
               <Link
-                style={{ fontSize: '14px', textDecoration: 'none' }}
+                style={{ fontSize: '14px', color: '#fff' }}
                 to={`/dashboard/suppliers/details/${data.node?.vendor.id}`}>
                 {data.node?.vendor?.name}
               </Link>
@@ -127,7 +139,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
                 {data.node.id}
               </Link>
             </Typography>
-            <Typography sx={{ fontSize: '13px', fontWeight: 500 }}>Category: <i>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</i> </Typography>
+            <Typography sx={{ fontSize: '13px', fontWeight: 500, border: '1px solid lightgray', borderRadius: '4px', px: 1 }}><i>{data.node.category?.name ? data.node.category?.name : 'Uncategorised'}</i> </Typography>
           </Stack>
 
           <Stack direction='row' alignItems='center' justifyContent='space-between' gap={1}>
@@ -137,7 +149,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
           </Stack>
         </Stack>
         <Stack direction='row' alignItems='center' justifyContent='space-between' mt={1}>
-          <Button variant='outlined' onClick={() => setEditDialogOpen(true)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Edit Now</Button>
+          <Button variant='outlined' onClick={() => setEditDialogOpen(true)} sx={{ bgcolor: '#fff', whiteSpace: 'nowrap' }}>Update</Button>
           <Button onClick={toggleDrawer} endIcon={<ArrowRightAlt />}>Details</Button>
         </Stack>
       </Stack>

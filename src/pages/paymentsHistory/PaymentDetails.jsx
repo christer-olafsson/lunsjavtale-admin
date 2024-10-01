@@ -23,7 +23,6 @@ const PaymentDetails = () => {
       setPayment(res.orderPayment)
     }
   });
-  console.log(payment)
   return (
     <Box maxWidth='xl'>
 

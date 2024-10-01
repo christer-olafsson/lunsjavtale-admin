@@ -22,7 +22,7 @@ const CouponDetails = () => {
       setCoupon(res.coupon)
     }
   });
-  console.log(coupon)
+
   return (
     <Box maxWidth='xl'>
       <Stack direction='row' gap={2}>

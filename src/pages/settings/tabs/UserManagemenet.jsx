@@ -25,7 +25,6 @@ const UserManagemenet = () => {
       setSystemUsers(res.systemUsers.edges.map(item => item.node).filter(user => !user.isDeleted));
     }
   });
-  // console.log(systemUsers)
 
   function handleEditUser(id) {
     setSelectedUserId(id)

@@ -1,15 +1,13 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { Add, ArrowRightAlt, Edit, Error, Search } from '@mui/icons-material'
-import { Box, Button, Divider, FormControl, FormControlLabel, FormGroup, IconButton, Input, InputLabel, MenuItem, Pagination, Rating, Select, Stack, Switch, Typography, useTheme } from '@mui/material'
+import { Add, Edit, Search } from '@mui/icons-material'
+import { Box, Button, Divider, FormControl, FormControlLabel, FormGroup, IconButton, Input, InputLabel, MenuItem, Pagination, Select, Stack, Switch, Typography, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { GET_ALL_CATEGORY, GET_SINGLE_CATEGORY, PRODUCTS } from './graphql/query'
+import { GET_ALL_CATEGORY, PRODUCTS } from './graphql/query'
 import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import CDialog from '../../common/dialog/CDialog'
 import AddCategory from './AddCategory'
 import EditCategory from './EditCategory'
-import { Link } from 'react-router-dom'
-import EditItem from './EditItem'
 import FoodCard from './FoodCard'
 
 
@@ -18,13 +16,18 @@ const FoodCategories = () => {
   const [editCategoryOpen, setEditCategoryOpen] = useState(false)
   const [categoryId, setCategoryId] = useState(null);
   const [allCategorys, setAllCategorys] = useState([]);
-  const [products, setProducts] = useState([]);
   const [editCategoryData, setEditCategoryData] = useState({})
   const [searchText, setSearchText] = useState('')
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const [productsLength, setProductsLength] = useState([])
   const [vendorProductShow, setVendorProductShow] = useState(false)
+  const [productState, setProductState] = useState({
+    isLoading: true,
+    error: null,
+    products: [],
+  });
+
 
   const theme = useTheme();
 
@@ -62,7 +65,18 @@ const FoodCategories = () => {
     },
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item)
-      setProducts(data)
+      setProductState({
+        isLoading: false,
+        error: null,
+        products: data,
+      });
+    },
+    onError: (error) => {
+      setProductState({
+        isLoading: false,
+        error: error,
+        products: [],
+      });
     },
   });
 
@@ -72,13 +86,9 @@ const FoodCategories = () => {
     setEditCategoryOpen(true)
   };
 
-  const handleProductEditDialogOpen = (id) => {
-    setSelectedProductId(id)
-    setProductEditDialogOpen(true);
-  };
-
   useEffect(() => {
     fetchCategory()
+    setProductState(prev => ({ ...prev, isLoading: true }));
     // fetchProducts()
   }, [])
 
@@ -224,7 +234,7 @@ const FoodCategories = () => {
             <Typography sx={{ fontSize: '16px', fontWeight: 700 }}>Uncategorised</Typography>
             {
               categoryId === '0' &&
-              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{products.length} Available products</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>{productState.products.length} Available products</Typography>
             }
           </Box>
         </Stack>
@@ -232,20 +242,23 @@ const FoodCategories = () => {
 
       <Stack direction={{ xs: 'column', md: 'row' }} flexWrap='wrap' gap={2} mt={3}>
         {
-          loadinProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
-            products.length === 0 ?
-              <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
-              products.map((data, id) => (
-                <FoodCard
-                  key={id}
-                  fetchCategory={fetchCategory}
-                  fetchProducts={fetchProducts}
-                  data={data}
-                />
-              ))
+          productState.isLoading ? <Loader /> :
+            productState.error ? <ErrorMsg /> :
+              productState.products.length > 0 ? (
+                productState.products.map((data, id) => (
+                  <FoodCard
+                    key={id}
+                    fetchCategory={fetchCategory}
+                    fetchProducts={fetchProducts}
+                    data={data}
+                  />
+                ))
+              ) : (
+                <Typography sx={{ p: 5 }}>No Product Found!</Typography>
+              )
         }
         <Stack width='100%' direction='row' justifyContent='end' my={2}>
-          <Pagination count={Math.ceil(categoryId !== null ? products.length / 12 : productsLength / 12)} page={page} onChange={(e, value) => setPage(value)} />
+          <Pagination count={Math.ceil(categoryId !== null ? productState.products.length / 12 : productsLength / 12)} page={page} onChange={(e, value) => setPage(value)} />
         </Stack>
       </Stack>
 

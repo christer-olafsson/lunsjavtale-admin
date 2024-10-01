@@ -20,7 +20,7 @@ const EditUser = ({ fetchSystemUsers, data, closeDialog }) => {
     role: '',
     superUser: false,
   })
-console.log(data)
+
   const [newAdministrator, { loading }] = useMutation(ADD_NEW_ADMINISTRATOR, {
     onCompleted: (res) => {
       fetchSystemUsers()
@@ -155,9 +155,9 @@ console.log(data)
             <ErrorOutline fontSize='large' sx={{ color: 'red' }} />
             <Typography sx={{ fontSize: { xs: '18px', lg: '22px' }, fontWeight: 600 }}>Delete this User?</Typography>
             <Typography sx={{ fontSize: '14px', mt: 1 }}>Are you sure you want to delete this user? This action cannot be undone.</Typography>
-            <DialogActions sx={{mt:2}}>
+            <DialogActions sx={{ mt: 2 }}>
               <CButton onClick={() => setDeleteUserDialogOpen(false)} variant='outlined'>Cancel</CButton>
-              <CButton onClick={handleUserDelete} isLoading={deleteLoading}  variant='contained' color='error'>Delete</CButton>
+              <CButton onClick={handleUserDelete} isLoading={deleteLoading} variant='contained' color='error'>Delete</CButton>
             </DialogActions>
           </Box>
         </CDialog>

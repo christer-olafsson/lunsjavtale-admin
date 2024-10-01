@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useMutation, useQuery } from '@apollo/client';
 import { Add, ArrowDropDown, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, ListItemText, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Autocomplete, Avatar, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, ListItemText, MenuItem, Paper, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import { GET_ALL_CATEGORY, WEEKLY_VARIANTS } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
@@ -19,7 +19,6 @@ const checkedIcon = <CheckBox fontSize="small" />;
 const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   const [categoryId, setCategoryId] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [errors, setErrors] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [allAllergies, setAllAllergies] = useState([]);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
@@ -35,7 +34,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   const [selectedVendor, setSelectedVendor] = useState('')
   const [allWeeklyVariants, setAllWeeklyVariants] = useState([])
   const [selectedWeeklyVariant, setSelectedWeeklyVariant] = useState([])
-  const [inputerr, setInputerr] = useState({
+  const [errors, setErrors] = useState({
     name: '',
     category: '',
     price: '',
@@ -123,8 +122,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
         const graphqlError = err.graphQLErrors[0];
         const { extensions } = graphqlError;
         if (extensions && extensions.errors) {
-          // setErrors(extensions.errors)
-          setErrors(Object.values(extensions.errors));
+          setErrors(extensions.errors)
         }
       }
     }
@@ -153,7 +151,8 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
       setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => ({
         id: item.node.id,
         name: item.node.name,
-        email: item.node.email
+        email: item.node.email,
+        logoUrl: item.node.logoUrl
       })))
     }
   })
@@ -180,19 +179,19 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
 
   const handleProductUpdate = async () => {
     if (!payload.name) {
-      setInputerr({ name: "Product name required!" });
+      setErrors({ name: "Product name required!" });
       return;
     }
     if (!categoryId) {
-      setInputerr({ category: "Category required!" });
+      setErrors({ category: "Category required!" });
       return;
     }
     if (!priceWithTax) {
-      setInputerr({ price: "Product Price required!" });
+      setErrors({ price: "Product Price required!" });
       return;
     }
     if (!payload.description) {
-      setInputerr({ description: "Product description required!" });
+      setErrors({ description: "Product description required!" });
       return;
     }
     if (deletedImgId) {
@@ -272,7 +271,6 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
     setSelectedWeeklyVariant(data.weeklyVariants.edges.map(item => item.node) ?? [])
   }, [])
 
-
   return (
     <Box>
       <Stack direction='row' justifyContent='space-between' mb={4}>
@@ -285,8 +283,8 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
       <Stack>
         <TextField
           size='small'
-          error={Boolean(inputerr.name)}
-          helperText={inputerr.name}
+          error={Boolean(errors.name)}
+          helperText={errors.name}
           name='name'
           value={payload.name}
           onChange={handleInputChange}
@@ -294,7 +292,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
         />
         <Stack direction='row' gap={2} mb={2} mt={2}>
           <Stack flex={1} gap={2}>
-            <FormControl size='small' error={Boolean(inputerr.category)} >
+            <FormControl size='small' error={Boolean(errors.category)} >
               <InputLabel>Category</InputLabel>
               <Select
                 value={categoryId}
@@ -305,7 +303,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
                   <MenuItem key={item.node.id} value={item.node.id}>{item.node.name}</MenuItem>
                 ))}
               </Select>
-              {inputerr.category && <FormHelperText>{inputerr.category}</FormHelperText>}
+              {errors.category && <FormHelperText>{errors.category}</FormHelperText>}
             </FormControl>
             <TextField
               size='small'
@@ -326,7 +324,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
             />
             <TextField
               size='small'
-              error={Boolean(inputerr.price)}
+              error={Boolean(errors.price)}
               type="number"
               value={priceWithTax}
               onChange={handlePriceWithTaxChange}
@@ -368,22 +366,18 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
           size='small'
           value={selectedVendor ? selectedVendor : null}
           options={vendors}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           onChange={(_, value) => setSelectedVendor(value)}
           getOptionLabel={(option) => option.name}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              {/* <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-              /> */}
-              <Stack>
-                <Typography>{option.name}</Typography>
-                <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+              <Stack direction='row' gap={1}>
+                <Avatar src={option.logoUrl ?? ''} />
+                <Box>
+                  <Typography>{option.name}</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+                </Box>
               </Stack>
-
-
             </li>
           )}
           renderInput={(params) => (
@@ -428,8 +422,8 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
         />
         <TextField
           size='small'
-          error={Boolean(inputerr.description)}
-          helperText={inputerr.description}
+          error={Boolean(errors.description)}
+          helperText={errors.description}
           name='description'
           value={payload.description}
           onChange={handleInputChange}
@@ -516,13 +510,6 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
         </Stack>
       </Stack>
 
-      {errors.length > 0 && (
-        <ul style={{ color: 'red', fontSize: '13px', padding: '10px' }}>
-          {errors.map((err, id) => (
-            <li key={id}>{err}</li>
-          ))}
-        </ul>
-      )}
       <CButton isLoading={productMutationLoading || imgUploadLoading} onClick={handleProductUpdate} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update</CButton>
       <Button onClick={() => setProductDeleteSecOpen(true)} sx={{ mt: 3 }} color='warning'>Delete this product</Button>
       <Collapse in={productDeleteSecOpen}>

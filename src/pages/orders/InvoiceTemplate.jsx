@@ -41,7 +41,6 @@ export const downloadPDF = () => {
 const InvoiceTemplate = ({ data, toggleDrawer }) => {
   const [clientDetails, setClientDetails] = useState({})
 
-  // console.log('invoice', data)
 
   useQuery(CLIENT_DETAILS, {
     onCompleted: (res) => {

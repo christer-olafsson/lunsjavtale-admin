@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Add, ArrowRightAlt, Bookmark, BookmarkBorder, ChevronRight, Error, ErrorOutline, Search } from '@mui/icons-material';
 import { Autocomplete, Avatar, Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, Input, InputLabel, MenuItem, Pagination, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -50,7 +51,6 @@ const FoodItem = () => {
   const [weeklyFoodAddDialogOpen, setWeeklyFoodAddDialogOpen] = useState(false)
   const [allCategorys, setAllCategorys] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-  const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState('')
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
@@ -60,6 +60,11 @@ const FoodItem = () => {
   const [selectedVendor, setSelectedVendor] = useState([])
   const [allWeeklyVariants, setAllWeeklyVariants] = useState([])
   const [selectedWeeklyVariantId, setSelectedWeeklyVariantId] = useState(null)
+  const [productState, setProductState] = useState({
+    isLoading: true,
+    error: null,
+    products: [],
+  });
 
 
   const { loading: vendorLoading } = useQuery(VENDORS, {
@@ -108,7 +113,7 @@ const FoodItem = () => {
   });
 
 
-  const [fetchProducts, { loading: loadingProducts, error: errProducts }] = useLazyQuery(PRODUCTS, {
+  const [fetchProducts, { loading: loadingProducts, error: errProducts, called }] = useLazyQuery(PRODUCTS, {
     fetchPolicy: "network-only",
     variables: {
       offset: (page - 1) * 12,
@@ -123,18 +128,33 @@ const FoodItem = () => {
     },
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item)
-      setProducts(data)
+      setProductState({
+        isLoading: false,
+        error: null,
+        products: data,
+      });
+    },
+    onError: (error) => {
+      setProductState({
+        isLoading: false,
+        error: error,
+        products: [],
+      });
     },
   });
-  // console.log(products)
+
   useEffect(() => {
     fetchCategory()
-    // fetchProducts()
   }, [])
 
   useEffect(() => {
     setPage(1)
   }, [categoryId, status, selectedVendor, vendorProductShow])
+
+  useEffect(() => {
+    setProductState(prev => ({ ...prev, isLoading: true }));
+    fetchProducts();
+  }, [page, categoryId, searchText, status, vendorProductShow, selectedVendor, selectedWeeklyVariantId]);
 
   return (
     <Box maxWidth='xl'>
@@ -200,19 +220,14 @@ const FoodItem = () => {
           getOptionLabel={(option) => option.name}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Stack direction='row' alignItems='center'>
-                <IconButton>
+              <Stack direction='row' alignItems='center' gap={1}>
+                <Avatar src={option.logoUrl ?? ''} />
+                <Box>
+                  <Typography>{option.name}</Typography>
                   <Link to={`/dashboard/suppliers/details/${option.id}`}>
-                    <ChevronRight fontSize='small' />
-                  </Link>
-                </IconButton>
-                <Stack direction='row' alignItems='center' gap={1}>
-                  <Avatar src={option.logoUrl ?? ''} />
-                  <Box>
-                    <Typography>{option.name}</Typography>
                     <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
-                  </Box>
-                </Stack>
+                  </Link>
+                </Box>
               </Stack>
             </li>
           )}
@@ -287,20 +302,23 @@ const FoodItem = () => {
       {/* food card */}
       <Stack direction='row' flexWrap='wrap' gap={2} mt={2}>
         {
-          loadingProducts ? <Loader /> : errProducts ? <ErrorMsg /> :
-            products.length === 0 ?
-              <Typography sx={{ p: 5 }}>No Product Found!</Typography> :
-              products.map((data, id) => (
-                <FoodCard
-                  key={id}
-                  fetchCategory={fetchCategory}
-                  fetchProducts={fetchProducts}
-                  data={data}
-                />
-              ))
+          productState.isLoading ? <Loader /> :
+            productState.error ? <ErrorMsg /> :
+              productState.products.length > 0 ? (
+                productState.products.map((data, id) => (
+                  <FoodCard
+                    key={id}
+                    fetchCategory={fetchCategory}
+                    fetchProducts={fetchProducts}
+                    data={data}
+                  />
+                ))
+              ) : (
+                <Typography sx={{ p: 5 }}>No Product Found!</Typography>
+              )
         }
         <Stack width='100%' direction='row' justifyContent='end' my={2}>
-          <Pagination count={Math.ceil(categoryId !== null ? products.length / 12 : productsLength / 12)} page={page} onChange={(e, value) => setPage(value)} />
+          <Pagination count={Math.ceil(categoryId !== null ? productState.products.length / 12 : productsLength / 12)} page={page} onChange={(e, value) => setPage(value)} />
         </Stack>
       </Stack>
     </Box>

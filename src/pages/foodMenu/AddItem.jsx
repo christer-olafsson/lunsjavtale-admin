@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ArrowDownward, CheckBox, CheckBoxOutlineBlank, Close, CloudUpload } from '@mui/icons-material'
-import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Autocomplete, Avatar, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormHelperText, IconButton, InputLabel, ListItemText, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import { GET_ALL_CATEGORY, WEEKLY_VARIANTS } from './graphql/query';
 import CButton from '../../common/CButton/CButton';
@@ -18,7 +18,6 @@ const checkedIcon = <CheckBox fontSize="small" />;
 const AddItem = ({ fetchCategory, closeDialog }) => {
   const [categoryId, setCategoryId] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [errors, setErrors] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [allAllergies, setAllAllergies] = useState([]);
   const [priceWithTax, setPriceWithTax] = useState("");
@@ -31,7 +30,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
   const [allergiesSecOpen, setAllergiesSecOpen] = useState(false)
   const [allWeeklyVariants, setAllWeeklyVariants] = useState([])
   const [selectedWeeklyVariant, setSelectedWeeklyVariant] = useState([])
-  const [inputerr, setInputerr] = useState({
+  const [errors, setErrors] = useState({
     name: '',
     category: '',
     price: '',
@@ -88,7 +87,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
       setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => ({
         id: item.node.id,
         name: item.node.name,
-        email: item.node.email
+        email: item.node.email,
+        logoUrl: item.node.logoUrl
       })))
     }
   })
@@ -118,43 +118,6 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
     setPriceWithTax(inputPriceWithTax);
   };
 
-
-  // const handlePriceWithTaxChange = (event) => {
-  //   const inputValue = event.target.value;
-
-  //   // Only parse and calculate if the value is a valid float
-  //   const inputPriceWithTax = parseFloat(inputValue);
-  //   if (!isNaN(inputPriceWithTax)) {
-  //     const taxRate = 0.15; // 15% tax rate
-  //     const priceWithoutTax = inputPriceWithTax / (1 + taxRate);
-
-  //     setPriceWithoutTax(Math.round(priceWithoutTax * 100) / 100);
-  //   }
-  //   setPriceWithTax(inputValue);
-  // };
-  // const handlePriceWithTaxChange = (event) => {
-  //   const inputValue = event.target.value;
-
-  //   // Check if the input value is a valid number
-  //   if (!isNaN(inputValue) && inputValue !== '') {
-  //     const inputPriceWithTax = parseFloat(inputValue);
-  //     const taxRate = 0.15; // 15% tax rate
-  //     const priceWithoutTax = inputPriceWithTax / (1 + taxRate);
-
-  //     // Update the state with rounded values
-  //     setPriceWithoutTax(Math.round(priceWithoutTax * 100) / 100);
-  //     setPriceWithTax(inputPriceWithTax);
-  //   } else {
-  //     // Handle the case where input is not a valid number (e.g., during typing)
-  //     setPriceWithTax(inputValue);
-  //   }
-  // };
-
-
-  // const handleTaxRateChange = (event) => {
-  //   const newTaxRate = parseFloat(event.target.value);
-  //   setTaxRate(newTaxRate);
-  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -191,19 +154,19 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
 
   const handleProductSave = async () => {
     if (!payload.name) {
-      setInputerr({ name: "Product name required!" });
+      setErrors({ name: "Product name required!" });
       return;
     }
     if (!categoryId) {
-      setInputerr({ category: "Category required!" });
+      setErrors({ category: "Category required!" });
       return;
     }
     if (!priceWithTax) {
-      setInputerr({ price: "Product Price required!" });
+      setErrors({ price: "Product Price required!" });
       return;
     }
     if (!payload.description) {
-      setInputerr({ description: "Product description required!" });
+      setErrors({ description: "Product description required!" });
       return;
     }
     // if (selectedFiles.length === 0) {
@@ -256,8 +219,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
       <Stack>
         <TextField
           size='small'
-          error={Boolean(inputerr.name || errors.name)}
-          helperText={inputerr.name || errors.name}
+          error={Boolean(errors.name)}
+          helperText={errors.name}
           name='name'
           value={payload.name}
           onChange={handleInputChange}
@@ -265,7 +228,7 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         />
         <Stack direction='row' gap={2} mb={2} mt={2}>
           <Stack flex={1} gap={2}>
-            <FormControl size='small' error={Boolean(inputerr.category)} >
+            <FormControl size='small' error={Boolean(errors.category)} >
               <InputLabel>Category</InputLabel>
               <Select
                 value={categoryId}
@@ -276,14 +239,14 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
                   <MenuItem key={item.node.id} value={item.node.id}>{item.node.name}</MenuItem>
                 ))}
               </Select>
-              {inputerr.category && <FormHelperText>{inputerr.category}</FormHelperText>}
+              {errors.category && <FormHelperText>{errors.category}</FormHelperText>}
             </FormControl>
             <TextField
               size='small'
               type="number"
               value={priceWithoutTax}
               onChange={handlePriceWithoutTaxChange}
-              error={Boolean(inputerr.price)}
+              error={Boolean(errors.price)}
               label='Price'
             />
           </Stack>
@@ -299,12 +262,12 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
             <TextField
               type='number'
               size='small'
-              error={Boolean(inputerr.price || errors.priceWithTax)}
+              error={Boolean(errors.price)}
               value={priceWithTax ? priceWithTax : ''}
               // InputProps={{ readOnly: true }}
               label='Price (incl. Tax 15%)'
               onChange={handlePriceWithTaxChange}
-              helperText={errors.priceWithTax}
+              helperText={errors.price}
             />
           </Stack>
 
@@ -344,12 +307,13 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
           getOptionLabel={(option) => option.name}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Stack>
-                <Typography>{option.name}</Typography>
-                <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+              <Stack direction='row' gap={1}>
+                <Avatar src={option.logoUrl ?? ''} />
+                <Box>
+                  <Typography>{option.name}</Typography>
+                  <Typography sx={{ fontSize: '12px' }}>{option.email}</Typography>
+                </Box>
               </Stack>
-
-
             </li>
           )}
           renderInput={(params) => (
@@ -369,8 +333,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
         />
         <TextField
           size='small'
-          error={Boolean(inputerr.description)}
-          helperText={inputerr.description}
+          error={Boolean(errors.description)}
+          helperText={errors.description}
           name='description'
           value={payload.description}
           onChange={handleInputChange}
@@ -469,8 +433,8 @@ const AddItem = ({ fetchCategory, closeDialog }) => {
               </Button>
             </Stack>
             {
-              inputerr.selectedFile &&
-              <Typography sx={{ fontSize: '14px', color: 'red' }}>{inputerr.selectedFile}</Typography>
+              errors.selectedFile &&
+              <Typography sx={{ fontSize: '14px', color: 'red' }}>{errors.selectedFile}</Typography>
             }
           </Box>
         </Stack>

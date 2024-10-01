@@ -17,7 +17,6 @@ const FoodDetails = () => {
   const [selectedImg, setSelectedImg] = useState(0)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
 
-  console.log(editDialogOpen)
   const { id } = useParams();
   const theme = useTheme()
 

@@ -22,7 +22,6 @@ const SmallNotification = ({ onClose }) => {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-  console.log(notifications)
   return (
     <Stack className='custom-scrollbar' justifyContent={notifications?.length === 0 ? 'center' : 'none'} sx={{
       width: { xs: '300px', sm: '300px', md: '350px' },

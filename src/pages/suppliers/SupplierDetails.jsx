@@ -20,7 +20,6 @@ const SupplierDetails = () => {
       id
     },
     onCompleted: (res) => {
-      console.log(res)
       setVendor(res.vendor)
     },
   });
@@ -120,9 +119,10 @@ const SupplierDetails = () => {
               <Stack direction='row' flexWrap='wrap' gap={2} mt={3}>
                 {
                   vendorLoading ? <Loader /> : vendorErr ? <ErrorMsg /> :
-                    vendor?.products?.edges.filter(item => !item.node.isDeleted).map(item => (
-                      <SupplierProductCard key={item.node.id} data={item.node} />
-                    ))
+                    vendor?.products?.edges.filter(item => !item.node.isDeleted).length === 0 ? <Typography>No products found</Typography> :
+                      vendor?.products?.edges.filter(item => !item.node.isDeleted).map(item => (
+                        <SupplierProductCard key={item.node.id} data={item.node} />
+                      ))
                 }
               </Stack>
               <Box>

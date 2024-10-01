@@ -69,6 +69,13 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   }
 
+  const handleDateTimeChange = (e) => {
+    const selectedDate = new Date(e.target.value);
+    // Format the date as 'YYYY-MM-DDTHH:mm:ssXXX' (ISO 8601 format)
+    const formattedDate = format(selectedDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
+    setPayload({ ...payload, meetingTime: formattedDate });
+  };
+
   const handleCreate = () => {
     if (!payload.title) {
       setErrors({ title: 'Meeting Title Required!' })
@@ -183,9 +190,9 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
         </FormControl>
         <Box mb={2}>
           <Typography value={payload.meetingTime} variant='body2'>Meeting Time
-            <i> ({format(data.meetingTime, 'dd-MM-yyyy HH:mm')})</i>
+            <i> ({format(data.meetingTime, 'dd-MM-yyyy hh:mm a')})</i>
           </Typography>
-          <TextField onChange={(e) => setPayload({ ...payload, meetingTime: e.target.value })} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
+          <TextField onChange={handleDateTimeChange} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
         </Box>
         <Stack gap={2}>
           <Autocomplete

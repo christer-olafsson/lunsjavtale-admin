@@ -80,7 +80,6 @@ const Meeting = () => {
     setStatusFilter(event.target.value);
   };
 
-
   function handleDeleteDialog(row) {
     setDeleteMeetingDialogOpen(true)
     setFoodMeetingDeleteId(row.id)
@@ -227,7 +226,7 @@ const Meeting = () => {
         <Stack sx={{ height: '100%', }} justifyContent='center'>
           <Typography sx={{ fontSize: '14px', fontWeight: 500 }}>{format(params.row.meetingTime, 'dd-MM-yyyy')}</Typography>
           <Typography sx={{ fontSize: '12px', fontWeight: 500, display: 'inline-flex', alignItems: 'center' }}>
-            <AccessTime sx={{ fontSize: '14px', mr: .5 }} /> {format(params.row.meetingTime, 'hh:mm a')}
+            <AccessTime sx={{ fontSize: '14px', mr: .5 }} /> {format(new Date(params.row.meetingTime), 'hh:mm a')}
           </Typography>
         </Stack>
       )
@@ -253,7 +252,7 @@ const Meeting = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography>{params.row.meetingType}</Typography>
+          <Typography sx={{ border: '1px solid lightgray', fontWeight: 600, borderRadius: '4px', px: 1 }}>{params.row.meetingType}</Typography>
         </Stack>
       )
     },
@@ -281,7 +280,7 @@ const Meeting = () => {
               fontSize: { xs: '12px', md: '16px' },
               color: row.status === 'attended' ? '#fff' : row.status === 'postponed' ? '#fff' : 'black',
               bgcolor: row.status === 'attended' ? 'primary.main' : row.status === 'postponed' ? 'red' : 'yellow',
-              px: 1, borderRadius: '8px',
+              px: 1, borderRadius: '4px',
             }}>&#x2022; {row.status}</Typography>
           </Stack>
         )

@@ -9,6 +9,7 @@ import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { Link } from 'react-router-dom';
 import { FOOD_MEETINGS } from './graphql/query';
+import { format } from 'date-fns';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -23,7 +24,11 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
     topics: [],
     meetingType: '',
     description: '',
-    company: ''
+    company: {
+      id: '',
+      name: '',
+      email: ''
+    }
   })
 
   useQuery(GET_ALL_CATEGORY, {
@@ -42,7 +47,7 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
       })))
     },
   });
-  
+
   const [meetingMutation, { loading: meetingLoading }] = useMutation(MEETING_MUTATION, {
     refetchQueries: [FOOD_MEETINGS],
     onCompleted: (res) => {
@@ -64,6 +69,13 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
   const handleInputChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   }
+
+  const handleDateTimeChange = (e) => {
+    const selectedDate = new Date(e.target.value);
+    // Format the date as 'YYYY-MM-DDTHH:mm:ssXXX' (ISO 8601 format)
+    const formattedDate = format(selectedDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
+    setPayload({ ...payload, meetingTime: formattedDate });
+  };
 
   const handleCreate = () => {
     if (!payload.title) {
@@ -90,6 +102,7 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
       variables: {
         input: {
           ...payload,
+          company: payload.company.id
         }
       }
     })
@@ -104,19 +117,13 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
         <TextField sx={{ mb: 2 }} error={Boolean(errors.title)} helperText={errors.title} onChange={handleInputChange} name='title' label='Title' />
         <Autocomplete
           options={companies ?? []}
-          disableCloseOnSelect
+          value={payload.company}
           getOptionLabel={(option) => option.name}
-          onChange={(_, value) => setPayload({...payload, company: value.id})}
+          onChange={(_, value) => setPayload({ ...payload, company: value })}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-              />
               <Box>
-                <Link style={{width:'fit-content'}} to={`/dashboard/customers/details/${option.id}`} target='_blank'>
+                <Link style={{ width: 'fit-content' }} to={`/dashboard/customers/details/${option.id}`} target='_blank'>
                   <Typography>{option.name}</Typography>
                 </Link>
                 <Typography sx={{ fontSize: '13px' }}>{option.email}</Typography>
@@ -145,7 +152,7 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
         </Stack>
         <Box mb={2}>
           <Typography value={payload.meetingTime} variant='body2'>Meeting Time</Typography>
-          <TextField onChange={(e) => setPayload({ ...payload, meetingTime: e.target.value })} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
+          <TextField onChange={handleDateTimeChange} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
         </Box>
         <Stack gap={2}>
           <Autocomplete

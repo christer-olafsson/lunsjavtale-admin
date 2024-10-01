@@ -83,11 +83,6 @@ const MeetingDetails = ({ data, closeDialog }) => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <InfoItem icon={<Person color="primary" />} label="Customer Name" value={data?.companyName} />
-          <InfoItem icon={<Email color="primary" />} label="Email" value={data?.email} />
-          <InfoItem icon={<Phone color="primary" />} label="Phone" value={data?.phone} />
-          <InfoItem icon={<Person color="primary" />} label="First Name" value={data?.firstName} />
-          <InfoItem icon={<Person color="primary" />} label="Last Name" value={data?.lastName} />
           <InfoItem icon={<Title color="primary" />} label="Meeting Title" value={data?.title} />
           <InfoItem icon={<Description color="primary" />} label="Meeting Type" value={data?.meetingType} />
           <InfoItem icon={<Description color="primary" />} label="Description" value={data?.description} />

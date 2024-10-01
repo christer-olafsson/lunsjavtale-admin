@@ -13,17 +13,13 @@ const DataTable = ({ noRowsLabel = 'Empty', rowHeight = 52, loading, rows, getRo
       }}
     >
       <DataGrid
-        // sx={{
-        //   boxShadow: 2,
-        //   minHeight: '650px',
-        // }}
         sx={{
           boxShadow: 2,
-          minHeight: '650px',
-          '& .MuiDataGrid-columnHeader': {
-            backgroundColor: '#1E293B',
-            color: '#fff'
-          },
+          // minHeight: '650px',
+          // '& .MuiDataGrid-columnHeader': {
+          //   backgroundColor: '#1E293B',
+          //   color: '#fff'
+          // },
         }}
         localeText={{
           noRowsLabel,

@@ -19,7 +19,8 @@ const Info = () => {
   const [socialPayload, setSocialPayload] = useState({
     facebook: '',
     instagram: '',
-    linkedIn: ''
+    linkedIn: '',
+    youtube: ''
   })
   const [payload, setPayload] = useState({
     address: '',
@@ -29,6 +30,7 @@ const Info = () => {
     logoUrl: '',
     name: '',
     slogan: '',
+    coverVideoUrl: ''
   })
 
   const [fetchClientDetails] = useLazyQuery(CLIENT_DETAILS, {
@@ -89,7 +91,8 @@ const Info = () => {
         socialMediaLinks: JSON.stringify({
           facebook: socialPayload.facebook,
           instagram: socialPayload.instagram,
-          linkedIn: socialPayload.linkedIn
+          linkedIn: socialPayload.linkedIn,
+          youtube: socialPayload.youtube
         }),
         ...logoAttachment,
         ...coverAttachment
@@ -118,6 +121,7 @@ const Info = () => {
         logoUrl: clientDetails?.logoUrl ?? null,
         name: clientDetails?.name ?? null,
         slogan: clientDetails?.slogan ?? null,
+        coverVideoUrl: clientDetails?.coverVideoUrl ?? null,
       });
       setSocialLinkJson(JSON.parse(clientDetails.socialMediaLinks ?? '{}'))
     }
@@ -127,7 +131,8 @@ const Info = () => {
     setSocialPayload({
       facebook: socialLinkJson?.facebook ?? '',
       instagram: socialLinkJson?.instagram ?? '',
-      linkedIn: socialLinkJson?.linkedIn ?? ''
+      linkedIn: socialLinkJson?.linkedIn ?? '',
+      youtube: socialLinkJson?.youtube ?? ''
     })
   }, [socialLinkJson])
 
@@ -150,14 +155,16 @@ const Info = () => {
           <TextField disabled={!editOn} value={payload.name} onChange={handleInputChange} name='name' size='small' fullWidth label='Name' />
           <TextField disabled={!editOn} value={payload.email} onChange={handleInputChange} name='email' size='small' fullWidth label='Email' />
           <TextField disabled={!editOn} value={payload.contact} onChange={handleInputChange} name='contact' size='small' fullWidth label='Contact' />
-          <TextField disabled={!editOn} value={payload.formationDate} onChange={handleInputChange} name='formationDate' size='small' type='date' helperText='Formation Date' fullWidth label='' />
+          {/* <TextField disabled={!editOn} value={payload.formationDate} onChange={handleInputChange} name='formationDate' size='small' type='date' helperText='Formation Date' fullWidth label='' /> */}
           <TextField disabled={!editOn} value={payload.address} onChange={handleInputChange} name='address' size='small' fullWidth label='Address' />
           <TextField disabled={!editOn} value={payload.slogan} onChange={handleInputChange} name='slogan' size='small' fullWidth label='Slogan' />
+          <TextField disabled={!editOn} value={payload.coverVideoUrl} onChange={handleInputChange} name='coverVideoUrl' size='small' fullWidth label='Video Url' placeholder='Ex: https://www.youtube.com/watch?v=M93NSz5bcIk' />
         </Stack>
         <Stack sx={{ flex: 1 }} gap={2}>
           <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.facebook} onChange={handleSicialInputChange} name='facebook' size='small' fullWidth label='Facebook' />
           <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.instagram} onChange={handleSicialInputChange} name='instagram' size='small' fullWidth label='Instagram' />
           <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.linkedIn} onChange={handleSicialInputChange} name='linkedIn' size='small' fullWidth label='LinkedIn' />
+          <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.youtube} onChange={handleSicialInputChange} name='youtube' size='small' fullWidth label='Youtube' />
           <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
             {
               (logo || clientDetails?.logoUrl) && <Box sx={{

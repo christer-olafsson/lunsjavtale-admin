@@ -165,7 +165,7 @@ const Info = () => {
           <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.instagram} onChange={handleSicialInputChange} name='instagram' size='small' fullWidth label='Instagram' />
           <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.linkedIn} onChange={handleSicialInputChange} name='linkedIn' size='small' fullWidth label='LinkedIn' />
           <TextField disabled={!editOn} placeholder='https://example.com' value={socialPayload.youtube} onChange={handleSicialInputChange} name='youtube' size='small' fullWidth label='Youtube' />
-          <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
+          {/* <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
             {
               (logo || clientDetails?.logoUrl) && <Box sx={{
                 flex: 1
@@ -196,18 +196,17 @@ const Info = () => {
                   <input onChange={(e) => {
                     const file = e.target.files[0];
                     const maxFileSize = 500 * 1024; // 500KB in bytes
-                    // if (file.size > maxFileSize) {
-                    //   alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
-                    //   return
-                    // }
+                    if (file.size > maxFileSize) {
+                      alert(`File ${file.name} is too large. Please select a file smaller than 500KB.`);
+                      return
+                    }
                     setLogo(e.target.files[0])
                   }} type="file" hidden />
-                  {/* <VisuallyHiddenInput type="file" /> */}
                 </Button>
               </Stack>
             </Box>
-          </Stack>
-          <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
+          </Stack> */}
+          {/* <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
             {
               (cover || clientDetails?.coverPhotoUrl) && <Box sx={{
                 flex: 1
@@ -243,11 +242,10 @@ const Info = () => {
                     }
                     setCover(e.target.files[0])
                   }} type="file" hidden />
-                  {/* <VisuallyHiddenInput type="file" /> */}
                 </Button>
               </Stack>
             </Box>
-          </Stack>
+          </Stack> */}
         </Stack>
       </Stack>
     </Box>

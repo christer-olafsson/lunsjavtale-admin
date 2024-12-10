@@ -88,6 +88,7 @@ const Info = () => {
         name: payload.name,
         email: payload.email,
         slogan: payload.slogan,
+        coverVideoUrl: payload.coverVideoUrl,
         socialMediaLinks: JSON.stringify({
           facebook: socialPayload.facebook,
           instagram: socialPayload.instagram,

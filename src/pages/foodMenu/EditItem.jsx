@@ -334,7 +334,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
           </Stack>
         </Stack>
         {/* weekly variants */}
-        <Autocomplete
+        {/* <Autocomplete
           sx={{ mb: 2 }}
           size='small'
           loading={weeklyVariantsLoading}
@@ -359,7 +359,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
           renderInput={(params) => (
             <TextField {...params} label="Weekly Variants" />
           )}
-        />
+        /> */}
         {/* all vendors */}
         <Autocomplete
           sx={{ mb: 2 }}
@@ -437,11 +437,11 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
             control={<Switch size='small' checked={payload.availability}
               onChange={e => setPayload({ ...payload, availability: e.target.checked })} />}
             label="Available" />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Switch size='small' color="warning"
               checked={payload.isFeatured}
               onChange={e => setPayload({ ...payload, isFeatured: e.target.checked })} />}
-            label="Featured" />
+            label="Featured" /> */}
         </Stack>
 
         {/* Product image from api */}

@@ -29,11 +29,11 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
       // bgcolor: data.node.availability ? 'light.main' : '#fff',
       p: { xs: 1, lg: 2.5 },
       borderRadius: '8px',
-      border: data.node.vendor ? '1px solid #433878' : '1px solid lightgray',
+      border: data.node.vendor ? '1px solid orange' : '1px solid lightgray',
       boxShadow: data.node.availability ? 2 : 0,
       position: 'relative'
     }}>
-      {
+      {/* {
         data.node.isFeatured &&
         <Tooltip title='Featured Product'>
           <Bookmark color='primary' sx={{
@@ -41,7 +41,7 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
             top: 5, right: 5
           }} />
         </Tooltip>
-      }
+      } */}
       {
         !data.node.availability &&
         <Error sx={{
@@ -119,14 +119,15 @@ const FoodCard = ({ data, fetchCategory, fetchProducts }) => {
               top: 0,
               left: 0,
               color: '#fff',
-              bgcolor: '#433878',
+              bgcolor: 'orange',
               p: .5,
               borderRadius: '4px',
               zIndex: 2,
             }} direction='row' gap={.5}>
-              <Typography sx={{ fontSize: '14px' }}>Supplier: </Typography>
+              {/* <Typography sx={{ fontSize: '14px' }}>Supplier: </Typography> */}
               <Link
-                style={{ fontSize: '14px', color: '#fff' }}
+                className='link'
+                style={{ fontSize: '14px', color: '#fff', marginRight: '10px', marginLeft: '10px' }}
                 to={`/dashboard/suppliers/details/${data.node?.vendor.id}`}>
                 {data.node?.vendor?.name}
               </Link>

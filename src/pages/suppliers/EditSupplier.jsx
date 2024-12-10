@@ -20,7 +20,8 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
     email: '',
     contact: '',
     postCode: '',
-    isBlocked: false
+    isBlocked: false,
+    commission: null
   })
 
   const [vendorUpdate, { loading }] = useMutation(VENDOR_UPDATE, {
@@ -61,6 +62,14 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       setErrors({ contact: 'Contact Number Required!' })
       return
     }
+    if (!payload.postCode) {
+      setErrors({ postCode: 'Post code Required!' })
+      return
+    }
+    if (!payload.commission) {
+      setErrors({ commission: 'Commission Required!' })
+      return
+    }
     // if (!payload.password) {
     //   setErrors({ password: 'Password Required!' })
     //   return
@@ -85,12 +94,13 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
           id: data.id,
           ...payload,
           postCode: parseInt(payload.postCode),
+          commission: parseInt(payload.commission),
           ...attachments
         }
       }
     })
   }
-
+  console.log(data)
   useEffect(() => {
     setPayload({
       name: data.name,
@@ -98,7 +108,8 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
       email: data.email,
       contact: data.contact,
       isBlocked: data.isBlocked,
-      postCode: data.postCode ? data.postCode : '',
+      postCode: data.postCode ?? '',
+      commission: data.commission ?? null
       // firstName: data.users.edges.find(item => item.node.role === 'vendor')?.node.firstName,
     })
   }, [data])
@@ -122,7 +133,23 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
             {/* <TextField error={Boolean(errors.password)} helperText={errors.password} onChange={handleInputChange} name='password' label='Password' /> */}
           </Stack>
           <Stack flex={1} gap={2}>
-            <TextField value={payload.postCode} onChange={handleInputChange} name='postCode' label='Post Code' />
+            <TextField onChange={handleInputChange} value={payload.postCode} error={Boolean(errors.postCode)} helperText={errors.postCode} name='postCode' label='Post Code' />
+            <TextField
+              value={payload.commission}
+              error={Boolean(errors.commission)}
+              helperText={errors.commission}
+              type="number"
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10);
+                if (value < 0) value = 0;
+                if (value > 100) value = 100;
+                e.target.value = value;
+                handleInputChange(e);
+              }}
+              inputProps={{ min: 0, max: 100, step: 1 }}
+              name="commission"
+              label="Commission (%)"
+            />
           </Stack>
         </Stack>
         <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })} checked={payload.isBlocked} />} label="Status Lock" />

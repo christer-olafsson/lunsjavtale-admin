@@ -91,11 +91,60 @@ const Suppliers = () => {
             <Avatar src={row.logoUrl} />
             <Box>
               <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{row.name}</Typography>
+
               {/* <Typography sx={{ fontSize: '13px', }}>{params.row.firstName}</Typography> */}
             </Box>
           </Stack>
         )
       }
+    },
+    {
+      field: 'info', headerName: '', width: 300,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Info</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>
+          <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
+          <Typography sx={{ fontSize: '14px', display: 'inline-flex', alignItems: 'center' }}> <PhoneOutlined fontSize='small' /> {params.row.contact}</Typography>
+
+        </Stack>
+      )
+    },
+
+    {
+      field: 'postcode', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Post Code</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: '14px' }}>{params.row.postCode}</Typography>
+        </Stack>
+      )
+    },
+
+    {
+      field: 'commission', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Commission</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: '14px' }}>{params.row.commission ?? 0}%</Typography>
+        </Stack>
+      )
+    },
+    {
+      field: 'soldamount', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Sold Amount</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}> {params.row.soldAmount ?? '00'} <i>kr</i></Typography>
+        </Stack>
+      )
     },
     {
       field: 'status', width: 150,
@@ -115,52 +164,6 @@ const Suppliers = () => {
           </Stack>
         )
       }
-    },
-    {
-      field: 'postcode', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Post Code</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.postCode}</Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'email', headerName: '', width: 300,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Email</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.email}</Typography>
-          <Typography sx={{ fontSize: '14px', display: 'inline-flex', alignItems: 'center' }}> <PhoneOutlined fontSize='small' /> {params.row.contact}</Typography>
-
-        </Stack>
-      )
-    },
-    {
-      field: 'joiningDate', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Joining Date</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{format(params.row.createdOn, 'dd MMMM yyyy')}</Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'soldamount', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Sold Amount</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}> {params.row.soldAmount ?? '00'} <i>kr</i></Typography>
-        </Stack>
-      )
     },
     {
       field: 'delete', headerName: '', width: 50,

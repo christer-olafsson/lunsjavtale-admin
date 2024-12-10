@@ -10,6 +10,7 @@ export const CLIENT_DETAILS = gql`
     socialMediaLinks
     logoUrl
     coverPhotoUrl
+    coverVideoUrl
     logoFileId
     coverPhotoFileId
     address

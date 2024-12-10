@@ -120,7 +120,7 @@ const FoodItem = () => {
       first: 12,
       category: categoryId,
       title: searchText,
-      isFeatured: status === 'featured' ? true : null,
+      // isFeatured: status === 'featured' ? true : null,
       availability: status === 'available' ? true : status === 'not-available' ? false : null,
       isVendorProduct: vendorProductShow ? vendorProductShow : null,
       vendor: selectedVendor ? selectedVendor.id : null,
@@ -176,7 +176,7 @@ const FoodItem = () => {
           </Box>
         </Stack>
         <Stack direction='row' gap={2}>
-          <Button onClick={() => setWeeklyFoodAddDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }} variant='outlined' startIcon={<Add />}>Weekly Food</Button>
+          {/* <Button onClick={() => setWeeklyFoodAddDialogOpen(true)} sx={{ whiteSpace: 'nowrap' }} variant='outlined' startIcon={<Add />}>Weekly Food</Button> */}
           <Button onClick={() => setAddItemDialogOpen(true)} sx={{ whiteSpace: 'nowrap', width: '150px' }} variant='contained' startIcon={<Add />}>Add Item</Button>
         </Stack>
       </Stack>
@@ -191,13 +191,14 @@ const FoodItem = () => {
               onChange={e => setStatus(e.target.value)}
             >
               <MenuItem value={'all'}>All </MenuItem>
-              <MenuItem value={'featured'}>Featured</MenuItem>
+              {/* <MenuItem value={'featured'}>Featured</MenuItem> */}
               <MenuItem value={'available'}>Available</MenuItem>
               <MenuItem value={'not-available'}>Not Available</MenuItem>
             </Select>
           </FormControl>
         </Box>
-        <FormControl size='small' sx={{ minWidth: 170 }}>
+        {/* weekly food filter */}
+        {/* <FormControl size='small' sx={{ minWidth: 170 }}>
           <InputLabel>Weekly Foods</InputLabel>
           <Select
             value={selectedWeeklyVariantId || ''}
@@ -209,7 +210,7 @@ const FoodItem = () => {
               <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </FormControl> */}
         {/* all vendors */}
         <Autocomplete
           sx={{ minWidth: '200px' }}

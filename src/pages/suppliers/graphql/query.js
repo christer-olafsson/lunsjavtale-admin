@@ -12,6 +12,7 @@ export const VENDORS = gql`
           contact
           postCode
           soldAmount
+          commission
           isBlocked
           logoUrl
           fileId

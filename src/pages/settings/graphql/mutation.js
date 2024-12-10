@@ -5,6 +5,7 @@ export const DEFAULT_MUTATION = gql`
     $address: String
     $contact: String
     $coverPhotoUrl: String
+    $coverVideoUrl: String
     $formationDate: Date
     $logoUrl: String
     $name: String!
@@ -16,6 +17,7 @@ export const DEFAULT_MUTATION = gql`
       address: $address
       contact: $contact
       coverPhotoUrl: $coverPhotoUrl
+      coverVideoUrl: $coverVideoUrl
       formationDate: $formationDate
       logoUrl: $logoUrl
       name: $name

@@ -53,7 +53,6 @@ const Login = () => {
       setPayloadError({ ...payloadError, password: 'Please enter password!' })
       return;
     }
-    if (loginErr) toast.error('SomeThing went wrong!')
     loginUser({ variables: payload })
   }
 

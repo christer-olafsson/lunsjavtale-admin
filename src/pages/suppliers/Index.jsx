@@ -99,7 +99,7 @@ const Suppliers = () => {
       }
     },
     {
-      field: 'info', headerName: '', width: 300,
+      field: 'info', headerName: '', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Info</Typography>
       ),
@@ -123,18 +123,6 @@ const Suppliers = () => {
         </Stack>
       )
     },
-
-    {
-      field: 'commission', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Commission</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.commission ?? 0}%</Typography>
-        </Stack>
-      )
-    },
     {
       field: 'soldamount', headerName: '', width: 150,
       renderHeader: () => (
@@ -143,6 +131,29 @@ const Suppliers = () => {
       renderCell: (params) => (
         <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
           <Typography sx={{ fontSize: '14px', fontWeight: 600 }}> {params.row.soldAmount ?? '00'} <i>kr</i></Typography>
+        </Stack>
+      )
+    },
+    {
+      field: 'commission', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Commission</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} justifyContent='center'>
+          <Typography sx={{ fontSize: '14px' }}>{params.row.commission}%</Typography>
+          <Typography sx={{ fontSize: '14px', color: 'green' }}>{params.row.ownerCommission} kr</Typography>
+        </Stack>
+      )
+    },
+    {
+      field: 'balance', headerName: '', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Balance</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}> {params.row.balance} kr</Typography>
         </Stack>
       )
     },

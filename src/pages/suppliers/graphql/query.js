@@ -13,6 +13,8 @@ export const VENDORS = gql`
           postCode
           soldAmount
           commission
+          ownerCommission
+          balance
           isBlocked
           logoUrl
           fileId

@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { uploadMultiFile } from '../../utils/uploadFile';
 import { PRODUCT_DELETE, PRODUCT_MUTATION } from './graphql/mutation';
 import { deleteMultiFile } from '../../utils/deleteFile';
-import { VENDORS } from '../suppliers/graphql/query';
+import { VENDOR, VENDORS } from '../suppliers/graphql/query';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -111,6 +111,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
 
   // product create update
   const [productMutation, { loading: productMutationLoading }] = useMutation(PRODUCT_MUTATION, {
+    refetchQueries: [VENDOR],
     onCompleted: (res) => {
       closeDialog()
       fetchCategory()
@@ -140,7 +141,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   //get all allergies
   useQuery(GET_INGREDIENTS, {
     onCompleted: (res) => {
-      const allergiesName = res.ingredients.edges.map(item => item.node.name)
+      const allergiesName = res.ingredients?.edges?.map(item => item.node.name)
       setAllAllergies(allergiesName)
     }
   });
@@ -148,7 +149,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   // vendors
   useQuery(VENDORS, {
     onCompleted: (res) => {
-      setVendors(res.vendors.edges.filter(item => !item.node.isDeleted).map(item => ({
+      setVendors(res.vendors?.edges?.filter(item => !item.node.isDeleted).map(item => ({
         id: item.node.id,
         name: item.node.name,
         email: item.node.email,
@@ -160,7 +161,7 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
   // weekly variants
   const { loading: weeklyVariantsLoading } = useQuery(WEEKLY_VARIANTS, {
     onCompleted: (res) => {
-      const data = res.weeklyVariants.edges.map(item => item.node)
+      const data = res.weeklyVariants?.edges?.map(item => item.node)
       setAllWeeklyVariants(data)
     },
   });
@@ -261,14 +262,14 @@ const EditItem = ({ data, fetchCategory, fetchProducts, closeDialog }) => {
     setPriceWithTax(data.priceWithTax);
     setPriceWithoutTax(data.actualPrice);
     setCategoryId(data?.category?.id);
-    setSelectedAllergies(data?.ingredients.edges.map(item => item.node.name));
-    setProductImgFromData(data.attachments.edges.map(item => ({
+    setSelectedAllergies(data?.ingredients?.edges.map(item => item.node.name));
+    setProductImgFromData(data.attachments?.edges.map(item => ({
       fileUrl: item.node.fileUrl,
       fileId: item.node.fileId,
       isCover: item.node.isCover,
     })));
     setSelectedVendor(data.vendor ? data.vendor : '')
-    setSelectedWeeklyVariant(data.weeklyVariants.edges.map(item => item.node) ?? [])
+    setSelectedWeeklyVariant(data.weeklyVariants?.edges.map(item => item.node) ?? [])
   }, [])
 
   return (

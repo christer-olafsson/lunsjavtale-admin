@@ -13,7 +13,7 @@ import { Close, FmdGoodOutlined, StoreOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const PostCodeDetails = ({ data, closeDialog }) => {
-  const { id, postCode, isActive, vendorSet } = data || {};
+  const { postCode, vendorSet } = data || {};
 
   return (
     <Stack>
@@ -42,7 +42,7 @@ const PostCodeDetails = ({ data, closeDialog }) => {
       {vendorSet?.edges.length > 0 ? (
         vendorSet?.edges?.map(d => (
           <Box key={d?.node?.id}>
-            <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+            <Stack direction="row" gap={2} alignItems="center" mb={3}>
               <Avatar
                 src={d?.node?.logoUrl || '/noImage.png'}
                 alt="Vendor Logo"
@@ -55,9 +55,24 @@ const PostCodeDetails = ({ data, closeDialog }) => {
                     {d?.node?.name}
                   </Link>
                 </ListItem>
-                <Typography>
+                <Typography mb={1}>
                   <b>Email:</b> {d?.node?.email}
                 </Typography>
+                <Stack direction="row" gap={1} flexWrap="wrap">
+                  {d?.node?.postCode?.map((p) => (
+                    <Typography
+                      key={p}
+                      sx={{
+                        border: '1px solid lightgray',
+                        borderRadius: '4px',
+                        bgcolor: postCode === p ? 'lightgray' : '#fff',
+                        px: 1.5,
+                      }}
+                    >
+                      {p}
+                    </Typography>
+                  ))}
+                </Stack>
               </Box>
             </Stack>
           </Box>
@@ -65,7 +80,7 @@ const PostCodeDetails = ({ data, closeDialog }) => {
         ))
       ) : (
         <Typography color="text.secondary">
-          No vendor associated with this post code.
+          No supplier associated with this post code.
         </Typography>
       )}
     </Stack>

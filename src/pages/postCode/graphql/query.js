@@ -18,7 +18,7 @@ export const VALID_AREAS = gql`
               name
               email
               logoUrl
-              
+              postCode
             }
           }
         }

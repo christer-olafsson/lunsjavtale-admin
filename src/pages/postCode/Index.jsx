@@ -122,17 +122,7 @@ const Areas = () => {
         </Stack>
       )
     },
-    {
-      field: 'CreatedOn', headerName: '', width: 250,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Created On</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
-        </Stack>
-      )
-    },
+
     {
       field: 'supplierName', width: 200,
       renderHeader: () => (
@@ -146,6 +136,17 @@ const Areas = () => {
           </Stack>
         )
       }
+    },
+    {
+      field: 'CreatedOn', headerName: '', width: 250,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Created On</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.createdOn, 'dd-MM-yyyy')}</Typography>
+        </Stack>
+      )
     },
     {
       field: 'delete', headerName: '',

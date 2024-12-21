@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { LockOutlined, West } from '@mui/icons-material';
 import {
   Avatar,
@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { VENDOR } from './graphql/query';
@@ -23,6 +23,8 @@ const SupplierDetails = () => {
   const navigate = useNavigate();
 
   const { loading: vendorLoading, error: vendorErr } = useQuery(VENDOR, {
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
     variables: { id },
     onCompleted: (res) => setVendor(res.vendor),
   });
@@ -41,9 +43,10 @@ const SupplierDetails = () => {
         <Stack direction={{ xs: 'column', lg: 'row' }} gap={6}>
           {/* Vendor Details Section */}
           <Box flex={2}>
-            <Stack spacing={3}>
+            <Stack gap={3}>
               <Box>
                 <Stack
+                  gap={2}
                   direction={{ xs: 'column', md: 'row' }}
                   justifyContent="space-between"
                 >
@@ -117,6 +120,7 @@ const SupplierDetails = () => {
                           textAlign: 'center',
                           px: 2,
                           py: 1,
+                          whiteSpace: 'nowrap'
                         }}
                       >
                         <i>{item.label}: </i> <b>{item.value}</b>

@@ -94,7 +94,12 @@ export const VENDOR = gql`
           isDeleted
           availability
           discountAvailability
-          # productRatings
+           vendor{
+            id
+            name
+            email
+            logoUrl
+          }
           attachments{
             edges{
               node{

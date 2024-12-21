@@ -82,7 +82,7 @@ const NewBrand = ({ fetchBrands, closeDialog }) => {
 
       <Stack flex={1} gap={2}>
         <TextField onChange={handleInputChange} error={Boolean(errors.name)} helperText={errors.name} value={payload.name} name='name' label='Brand Name' />
-        <TextField onChange={handleInputChange} value={payload.siteUrl} name='siteUrl' label='Website URL' />
+        <TextField onChange={handleInputChange} value={payload.siteUrl} name='siteUrl' label='Website URL' placeholder='https://example.com' />
         {/* <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Status Active " /> */}
       </Stack>
 

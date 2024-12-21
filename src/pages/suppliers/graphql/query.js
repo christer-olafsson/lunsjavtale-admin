@@ -57,6 +57,9 @@ export const VENDOR = gql`
     formationDate
     socialMediaLinks
     soldAmount
+    commission
+    ownerCommission
+    balance
     withdrawnAmount
     balance
     isDeleted

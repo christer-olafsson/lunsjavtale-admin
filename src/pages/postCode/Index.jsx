@@ -1,4 +1,4 @@
-import { Add, BorderColor, Delete, DeleteForeverOutlined, DeleteOutline, EditOutlined, LockOpenOutlined, LockOutlined, MapOutlined, ModeEditOutlineOutlined, MoreHoriz, MoreVert, Place, PlaceOutlined, Remove, RoomOutlined, Search } from '@mui/icons-material'
+import { Add, ArrowRight, BorderColor, Delete, DeleteForeverOutlined, DeleteOutline, EditOutlined, LockOpenOutlined, LockOutlined, MapOutlined, ModeEditOutlineOutlined, MoreHoriz, MoreVert, Place, PlaceOutlined, Remove, RoomOutlined, Search } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import AddArea from './AddArea';
@@ -15,6 +15,7 @@ import CButton from '../../common/CButton/CButton';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import useIsMobile from '../../hook/useIsMobile';
+import PostCodeDetails from './PostCodeDetails';
 
 
 const Areas = () => {
@@ -24,6 +25,8 @@ const Areas = () => {
   const [validAreas, setValidAreas] = useState([]);
   const [editAreaData, setEditAreaData] = useState({})
   const [deleteAreaId, setDeleteAreaId] = useState('')
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false)
+  const [detailsData, setDetailsData] = useState({})
 
   const isMobile = useIsMobile()
 
@@ -31,7 +34,7 @@ const Areas = () => {
   const [fetchValidAreas, { loading, error }] = useLazyQuery(VALID_AREAS, {
     fetchPolicy: "network-only",
     onCompleted: (res) => {
-      setValidAreas(res.validAreas.edges)
+      setValidAreas(res.validAreas.edges.map(data => data.node))
     }
   })
 
@@ -56,6 +59,11 @@ const Areas = () => {
     setDeleteAreaId(row.id)
   }
 
+  const handleDetailsDialog = (row) => {
+    setDetailsDialogOpen(true)
+    setDetailsData(row)
+  }
+
   function handleAreaDelete() {
     validAreaDelete({
       variables: {
@@ -65,27 +73,39 @@ const Areas = () => {
   }
 
   const columns = [
+    // {
+    //   field: 'areaName', width: 200,
+    //   renderHeader: (params) => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Area Name</Typography>
+    //   ),
+    //   renderCell: (params) => {
+    //     const { row } = params
+    //     return (
+    //       <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
+    //         <MapOutlined fontSize='small' sx={{ color: row.isActive ? 'inherit' : 'darkgray' }} />
+    //         {
+    //           row.name ?
+    //             <Typography sx={{ fontSize: '14px', color: row.isActive ? 'inherit' : 'darkgray' }}>{row.name}</Typography> :
+    //             <Typography sx={{ fontSize: '12px', color: row.isActive ? 'inherit' : 'darkgray' }}>Empty</Typography>
+    //         }
+    //       </Stack>
+    //     )
+    //   }
+    // },
     {
-      field: 'areaName', width: 200,
-      renderHeader: (params) => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Area Name</Typography>
-      ),
+      field: 'details', width: 80, headerName: '',
       renderCell: (params) => {
-        const { row } = params
         return (
-          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
-            <MapOutlined fontSize='small' sx={{ color: row.isActive ? 'inherit' : 'darkgray' }} />
-            {
-              row.name ?
-                <Typography sx={{ fontSize: '14px', color: row.isActive ? 'inherit' : 'darkgray' }}>{row.name}</Typography> :
-                <Typography sx={{ fontSize: '12px', color: row.isActive ? 'inherit' : 'darkgray' }}>Empty</Typography>
-            }
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+            <IconButton onClick={() => handleDetailsDialog(params.row)}>
+              <ArrowRight />
+            </IconButton>
           </Stack>
         )
       }
     },
     {
-      field: 'postCode', headerName: '', width: 120,
+      field: 'postCode', headerName: '', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Post Code</Typography>
       ),
@@ -103,7 +123,7 @@ const Areas = () => {
       )
     },
     {
-      field: 'CreatedOn', headerName: '', width: 150,
+      field: 'CreatedOn', headerName: '', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Created On</Typography>
       ),
@@ -113,45 +133,19 @@ const Areas = () => {
         </Stack>
       )
     },
-    // {
-    //   field: 'updatedOn', headerName: '', width: 200,
-    //   renderHeader: () => (
-    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Updated On</Typography>
-    //   ),
-    //   renderCell: (params) => (
-    //     <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-    //       <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.updatedOn, 'dd-MM-yyyy')}</Typography>
-    //     </Stack>
-    //   )
-    // },
     {
-      field: 'status', width: 150,
-      renderHeader: (params) => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
+      field: 'supplierName', width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Suppliers</Typography>
       ),
       renderCell: (params) => {
-        const { row } = params
+        const { row } = params;
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{
-              fontSize: { xs: '12px', md: '14px' },
-              color: params.row.isActive ? '#fff' : '#fff',
-              bgcolor: params.row.isActive ? 'primary.main' : 'darkgray',
-              px: 1, borderRadius: '4px',
-            }}>{row.isActive ? 'Active' : 'Not Active'}</Typography>
+          <Stack sx={{ height: '100%' }} direction='row' gap={1} alignItems='center'>
+            <Typography>{row?.vendorSet?.edges.length}</Typography>
           </Stack>
         )
       }
-    },
-    {
-      field: 'edit', headerName: '', width: 60,
-      renderCell: (params) => {
-        return (
-          <IconButton onClick={() => handleEditDialog(params.row)}>
-            <EditOutlined fontSize='small' sx={{ color: params.row.isActive ? 'inherit' : 'darkgray' }} />
-          </IconButton>
-        )
-      },
     },
     {
       field: 'delete', headerName: '',
@@ -165,16 +159,48 @@ const Areas = () => {
         )
       },
     },
-  ];
+    // {
+    //   field: 'updatedOn', headerName: '', width: 200,
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Updated On</Typography>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
+    //       <Typography sx={{ fontSize: '14px', color: params.row.isActive ? 'inherit' : 'darkgray' }}>{format(params.row.updatedOn, 'dd-MM-yyyy')}</Typography>
+    //     </Stack>
+    //   )
+    // },
+    // {
+    //   field: 'status', width: 150,
+    //   renderHeader: (params) => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Status </Typography>
+    //   ),
+    //   renderCell: (params) => {
+    //     const { row } = params
+    //     return (
+    //       <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+    //         <Typography sx={{
+    //           fontSize: { xs: '12px', md: '14px' },
+    //           color: params.row.isActive ? '#fff' : '#fff',
+    //           bgcolor: params.row.isActive ? 'primary.main' : 'darkgray',
+    //           px: 1, borderRadius: '4px',
+    //         }}>{row.isActive ? 'Active' : 'Not Active'}</Typography>
+    //       </Stack>
+    //     )
+    //   }
+    // },
+    // {
+    //   field: 'edit', headerName: '', width: 60,
+    //   renderCell: (params) => {
+    //     return (
+    //       <IconButton onClick={() => handleEditDialog(params.row)}>
+    //         <EditOutlined fontSize='small' sx={{ color: params.row.isActive ? 'inherit' : 'darkgray' }} />
+    //       </IconButton>
+    //     )
+    //   },
+    // },
 
-  const rows = validAreas.map(data => ({
-    id: data.node.id,
-    name: data.node.name,
-    postCode: data.node.postCode,
-    createdOn: data.node.createdOn,
-    updatedOn: data.node.updatedOn,
-    isActive: data.node.isActive
-  }))
+  ];
 
   useEffect(() => {
     fetchValidAreas()
@@ -194,10 +220,14 @@ const Areas = () => {
           px: 1
         }}>{validAreas?.length} Available Areas</Typography>
       </Stack>
-      <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
+      {/* details meeting */}
+      <CDialog maxWidth='md' openDialog={detailsDialogOpen}>
+        <PostCodeDetails data={detailsData} closeDialog={() => setDetailsDialogOpen(false)} />
+      </CDialog>
+      {/* <Stack direction='row' justifyContent='space-between' mt={3} sx={{ height: '40px' }}>
         <Box />
         <Button onClick={() => setAddAreaDialogOpen(true)} variant='contained' startIcon={<Add />}>Add Area</Button>
-      </Stack>
+      </Stack> */}
       {/* edit area */}
       <CDialog openDialog={editAreaDialogOpen}>
         <EditArea data={editAreaData} fetchValidAreas={fetchValidAreas} closeDialog={() => setEditAreaDialogOpen(false)} />
@@ -223,7 +253,7 @@ const Areas = () => {
           loading ? <LoadingBar /> : error ? <ErrorMsg /> :
             <DataTable
               columns={columns}
-              rows={rows}
+              rows={validAreas ?? []}
             />
         }
       </Box>

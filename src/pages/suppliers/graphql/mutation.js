@@ -1,15 +1,15 @@
 import { gql } from "@apollo/client";
 
 export const VENDOR_CREATION = gql`
-  mutation VendorCreation ($input: VendorMutationInput!){
-    vendorCreation(input:$input){
+  mutation VendorCreation ($input: VendorCreateFormInput, $postCode: [Int]){
+    vendorCreation(input:$input,postCode:$postCode){
       message
     }
   }
 `
 export const VENDOR_UPDATE = gql`
-  mutation VendorUpdate ($input: VendorUpdateMutationInput!){
-    vendorUpdate(input:$input){
+  mutation VendorUpdate ($input: VendorUpdateFormInput,$postCode: [Int]){
+    vendorUpdate(input:$input,postCode:$postCode){
       message
     }
   }

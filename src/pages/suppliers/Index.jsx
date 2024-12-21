@@ -113,13 +113,20 @@ const Suppliers = () => {
     },
 
     {
-      field: 'postcode', headerName: '', width: 150,
+      field: 'postcode', headerName: '', width: 170,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: '20px' }}>Post Code</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Post Code</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%', ml: '20px' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: '14px' }}>{params.row.postCode}</Typography>
+        <Stack sx={{ height: '100%' }} gap={1} direction='row' alignItems='center'>
+          {
+            params.row.postCode.slice(0, 2).map(p => (
+              <Typography key={p} sx={{ fontSize: '14px' }}>{p},</Typography>
+            ))
+          }
+          {
+            params.row.postCode.length > 2 && <Typography fontWeight='bold'>(+{params.row.postCode.length - 2})</Typography>
+          }
         </Stack>
       )
     },
@@ -168,10 +175,10 @@ const Suppliers = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
             <Typography sx={{
               fontSize: { xs: '12px', md: '14px' },
-              bgcolor: row.isBlocked ? 'lightgray' : 'primary.main',
-              color: row.isBlocked ? 'red' : '#fff',
+              bgcolor: row.isBlocked ? 'red' : 'primary.main',
+              color: '#fff',
               px: 1, borderRadius: '4px',
-            }}>&#x2022; {row.isBlocked ? 'Blocked' : 'Active'}</Typography>
+            }}>&#x2022; {row.isBlocked ? 'Locked' : 'Active'}</Typography>
           </Stack>
         )
       }

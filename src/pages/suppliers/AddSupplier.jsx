@@ -1,21 +1,20 @@
 /* eslint-disable react/prop-types */
-import { Close, CloudUpload } from '@mui/icons-material'
-import { Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Close } from '@mui/icons-material'
+import { Autocomplete, Box, IconButton, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react';
 import { VENDOR_CREATION } from './graphql/mutation';
 import { useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
 
-
 const AddSupplier = ({ fetchVendors, closeDialog }) => {
   const [errors, setErrors] = useState({})
+  const [postCodes, setPostCodes] = useState([])
   const [payload, setPayload] = useState({
     name: '',
     email: '',
     contact: '',
-    postCode: '',
-    firstName: '',
+    firstName: '', //supplier owner name
     password: '',
     commission: null
   })
@@ -42,6 +41,10 @@ const AddSupplier = ({ fetchVendors, closeDialog }) => {
   }
 
   const handleSave = () => {
+    if (postCodes.length === 0) {
+      setErrors({ postCode: 'Post code Required!' })
+      return
+    }
     if (!payload.name) {
       setErrors({ name: 'Supplier Name Required!' })
       return
@@ -58,10 +61,7 @@ const AddSupplier = ({ fetchVendors, closeDialog }) => {
       setErrors({ contact: 'Contact Number Required!' })
       return
     }
-    if (!payload.postCode) {
-      setErrors({ postCode: 'Post code Required!' })
-      return
-    }
+
     if (!payload.password) {
       setErrors({ password: 'Password Required!' })
       return
@@ -74,9 +74,9 @@ const AddSupplier = ({ fetchVendors, closeDialog }) => {
       variables: {
         input: {
           ...payload,
-          postCode: parseInt(payload.postCode),
           commission: parseInt(payload.commission)
-        }
+        },
+        postCode: postCodes.map(code => parseInt(code))
       }
     })
   }
@@ -91,39 +91,47 @@ const AddSupplier = ({ fetchVendors, closeDialog }) => {
         </IconButton>
       </Stack>
 
-      <FormGroup>
+      <Stack gap={2}>
+        <Autocomplete
+          freeSolo
+          multiple
+          options={postCodes}
+          disableCloseOnSelect
+          onChange={(event, value) => setPostCodes(value)}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              {option}
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField helperText={errors.postCode} error={Boolean(errors.postCode)} {...params} type='number' label="Post Codes" placeholder="Type and press Enter" />
+          )}
+        />
         <TextField error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} name='name' label='Supplier name' />
-        <Stack direction='row' gap={2} mb={2} mt={2}>
-          <Stack flex={1} gap={2}>
-            <TextField error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' />
-            <TextField error={Boolean(errors.contact)} helperText={errors.contact} type='number' onChange={handleInputChange} name='contact' label='Phone Number' />
-            <TextField error={Boolean(errors.password)} helperText={errors.password} onChange={handleInputChange} name='password' label='Password' />
-          </Stack>
-          <Stack flex={1} gap={2}>
-            <TextField error={Boolean(errors.email)} helperText={errors.email} onChange={handleInputChange} name='email' label='Email' />
-            <TextField onChange={handleInputChange} error={Boolean(errors.postCode)} helperText={errors.postCode} name='postCode' label='Post Code' />
-            <TextField
-              error={Boolean(errors.commission)}
-              helperText={errors.commission}
-              type="number"
-              onChange={(e) => {
-                let value = parseInt(e.target.value, 10);
-                if (value < 0) value = 0;
-                if (value > 100) value = 100;
-                e.target.value = value;
-                handleInputChange(e);
-              }}
-              inputProps={{ min: 0, max: 100, step: 1 }}
-              name="commission"
-              label="Commission (%)"
-            />
+        <TextField error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' />
+        <TextField error={Boolean(errors.email)} helperText={errors.email} onChange={handleInputChange} name='email' label='Email' />
+        <TextField error={Boolean(errors.contact)} helperText={errors.contact} type='number' onChange={handleInputChange} name='contact' label='Phone Number' />
+        <TextField error={Boolean(errors.password)} helperText={errors.password} onChange={handleInputChange} name='password' label='Password' />
+        <TextField
+          error={Boolean(errors.commission)}
+          helperText={errors.commission}
+          type="number"
+          onChange={(e) => {
+            let value = parseInt(e.target.value, 10);
+            if (value < 0) value = 0;
+            if (value > 100) value = 100;
+            e.target.value = value;
+            handleInputChange(e);
+          }}
+          inputProps={{ min: 0, max: 100, step: 1 }}
+          name="commission"
+          label="Commission (%)"
+        />
 
 
-            {/* <FormControlLabel control={<Switch />} label="Status Lock" /> */}
-          </Stack>
-        </Stack>
-
-      </FormGroup>
+        {/* <FormControlLabel control={<Switch />} label="Status Lock" /> */}
+      </Stack>
 
       <CButton onClick={handleSave} isLoading={loading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Add</CButton>
 

@@ -11,6 +11,17 @@ export const VALID_AREAS = gql`
           name
           postCode
           isActive
+          vendorSet{
+          edges{
+            node{
+              id
+              name
+              email
+              logoUrl
+              
+            }
+          }
+        }
         }
       }
     }

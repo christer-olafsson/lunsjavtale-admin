@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Close, CloudUpload } from '@mui/icons-material'
-import { Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Autocomplete, Box, Button, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react';
 import { VENDOR_CREATION, VENDOR_UPDATE } from './graphql/mutation';
 import { useMutation } from '@apollo/client';
@@ -14,12 +14,12 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
   const [errors, setErrors] = useState({})
   const [file, setFile] = useState(null)
   const [fileUploadLoading, setFileUploadLoading] = useState(false)
+  const [postCodes, setPostCodes] = useState([])
   const [payload, setPayload] = useState({
     name: '',
     // firstName: '',
     email: '',
     contact: '',
-    postCode: '',
     isBlocked: false,
     commission: null
   })
@@ -46,6 +46,10 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
   }
 
   const handleSave = async () => {
+    if (postCodes.length === 0) {
+      setErrors({ postCode: 'Post code Required!' })
+      return
+    }
     if (!payload.name) {
       setErrors({ name: 'Supplier Name Required!' })
       return
@@ -60,10 +64,6 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
     }
     if (!payload.contact) {
       setErrors({ contact: 'Contact Number Required!' })
-      return
-    }
-    if (!payload.postCode) {
-      setErrors({ postCode: 'Post code Required!' })
       return
     }
     if (!payload.commission) {
@@ -93,25 +93,24 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
         input: {
           id: data.id,
           ...payload,
-          postCode: parseInt(payload.postCode),
           commission: parseInt(payload.commission),
           ...attachments
-        }
+        },
+        postCode: postCodes.map(code => parseInt(code))
       }
     })
   }
-  console.log(data)
+
   useEffect(() => {
     setPayload({
-      name: data.name,
-      // firstName: data.firstName,
-      email: data.email,
-      contact: data.contact,
-      isBlocked: data.isBlocked,
-      postCode: data.postCode ?? '',
+      name: data.name ?? '',
+      email: data.email ?? '',
+      contact: data.contact ?? '',
+      isBlocked: data.isBlocked ?? false,
       commission: data.commission ?? null
       // firstName: data.users.edges.find(item => item.node.role === 'vendor')?.node.firstName,
     })
+    setPostCodes(data.postCode ?? [])
   }, [data])
 
   return (
@@ -124,39 +123,49 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
         </IconButton>
       </Stack>
 
-      <FormGroup>
-        <TextField sx={{ mb: 2 }} value={payload.name} error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} name='name' label='Supplier name' />
+      <Stack gap={2}>
         {/* <TextField value={payload.firstName} error={Boolean(errors.firstName)} helperText={errors.firstName} onChange={handleInputChange} name='firstName' label='Owner Name' /> */}
-        <Stack direction='row' gap={2} mb={2} mt={2}>
-          <Stack flex={1} gap={2}>
-            <TextField value={payload.contact} error={Boolean(errors.contact)} helperText={errors.contact} onChange={handleInputChange} name='contact' label='Phone Number' />
-            {/* <TextField error={Boolean(errors.password)} helperText={errors.password} onChange={handleInputChange} name='password' label='Password' /> */}
-          </Stack>
-          <Stack flex={1} gap={2}>
-            <TextField onChange={handleInputChange} value={payload.postCode} error={Boolean(errors.postCode)} helperText={errors.postCode} name='postCode' label='Post Code' />
-            <TextField
-              value={payload.commission}
-              error={Boolean(errors.commission)}
-              helperText={errors.commission}
-              type="number"
-              onChange={(e) => {
-                let value = parseInt(e.target.value, 10);
-                if (value < 0) value = 0;
-                if (value > 100) value = 100;
-                e.target.value = value;
-                handleInputChange(e);
-              }}
-              inputProps={{ min: 0, max: 100, step: 1 }}
-              name="commission"
-              label="Commission (%)"
-            />
-          </Stack>
-        </Stack>
+        <Autocomplete
+          freeSolo
+          multiple
+          value={postCodes}
+          options={postCodes}
+          disableCloseOnSelect
+          onChange={(event, value) => setPostCodes(value)}
+          getOptionLabel={(option) => option}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              {option}
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField helperText={errors.postCode} error={Boolean(errors.postCode)} {...params} type='number' label="Post Codes" placeholder="Type and press Enter" />
+          )}
+        />
+        <TextField value={payload.name} error={Boolean(errors.name)} helperText={errors.name} onChange={handleInputChange} name='name' label='Supplier name' />
+        <TextField value={payload.contact} error={Boolean(errors.contact)} helperText={errors.contact} onChange={handleInputChange} name='contact' label='Phone Number' />
+        {/* <TextField error={Boolean(errors.password)} helperText={errors.password} onChange={handleInputChange} name='password' label='Password' /> */}
+        <TextField
+          value={payload.commission}
+          error={Boolean(errors.commission)}
+          helperText={errors.commission}
+          type="number"
+          onChange={(e) => {
+            let value = parseInt(e.target.value, 10);
+            if (value < 0) value = 0;
+            if (value > 100) value = 100;
+            e.target.value = value;
+            handleInputChange(e);
+          }}
+          inputProps={{ min: 0, max: 100, step: 1 }}
+          name="commission"
+          label="Commission (%)"
+        />
         <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isBlocked: e.target.checked })} checked={payload.isBlocked} />} label="Status Lock" />
 
-      </FormGroup>
+      </Stack>
 
-      <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
+      {/* <Stack direction={{ xs: 'column', md: 'row' }} gap={2} mt={2}>
         {
           <Box sx={{
             flex: 1,
@@ -169,12 +178,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
               <img style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                 src={file !== null ? URL.createObjectURL(file) : data.logoUrl ?? ''} alt="No Image"
               />
-              {/* <IconButton onClick={() => setFile('')} sx={{
-                position: 'absolute',
-                top: -30, left: -20
-              }}>
-                <Close />
-              </IconButton> */}
+              
             </Box>
           </Box>
         }
@@ -193,7 +197,7 @@ const EditSupplier = ({ data, fetchVendors, closeDialog }) => {
             </Button>
           </Stack>
         </Box>
-      </Stack>
+      </Stack> */}
 
       <CButton onClick={handleSave} isLoading={loading || fileUploadLoading} variant='contained' style={{ width: '100%', mt: 2 }}>Save and Update</CButton>
 

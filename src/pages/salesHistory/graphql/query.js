@@ -14,6 +14,7 @@ export const SALES_HISTORIES = gql`
         orderedQuantity
         dueAmount
         ownerCommission
+        vendorCommission
         vendor{
           id
           name

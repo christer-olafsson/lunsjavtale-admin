@@ -9,7 +9,7 @@ import CButton from '../../common/CButton/CButton';
 import { WITHDRAW_REQ } from './graphql/query';
 
 
-const EditWithdrawReq = ({ data, fetchWithdrawReq, closeDialog }) => {
+const EditWithdrawReq = ({ data, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [payload, setPayload] = useState({
     note: '',
@@ -20,9 +20,6 @@ const EditWithdrawReq = ({ data, fetchWithdrawReq, closeDialog }) => {
   const [withdrawReqMutation, { loading }] = useMutation(WITHDRAW_REQ_MUTATION, {
     refetchQueries: [WITHDRAW_REQ],
     onCompleted: (res) => {
-      if (fetchWithdrawReq) {
-        fetchWithdrawReq()
-      }
       toast.success(res.withdrawRequestMutation.message)
       closeDialog()
     },

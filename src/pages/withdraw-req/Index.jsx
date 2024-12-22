@@ -171,7 +171,7 @@ const WithdrawReq = () => {
       field: 'edit', headerName: '', width: 60,
       renderCell: (params) => {
         return (
-          <IconButton onClick={() => handleWithdrawReqDialog(params.row)} sx={{
+          <IconButton disabled={params.row.status === 'completed'} onClick={() => handleWithdrawReqDialog(params.row)} sx={{
             borderRadius: '5px',
             width: { xs: '30px', md: '40px' },
             height: { xs: '30px', md: '40px' },

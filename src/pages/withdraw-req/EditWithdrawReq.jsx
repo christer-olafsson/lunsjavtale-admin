@@ -20,7 +20,9 @@ const EditWithdrawReq = ({ data, fetchWithdrawReq, closeDialog }) => {
   const [withdrawReqMutation, { loading }] = useMutation(WITHDRAW_REQ_MUTATION, {
     refetchQueries: [WITHDRAW_REQ],
     onCompleted: (res) => {
-      fetchWithdrawReq()
+      if (fetchWithdrawReq) {
+        fetchWithdrawReq()
+      }
       toast.success(res.withdrawRequestMutation.message)
       closeDialog()
     },

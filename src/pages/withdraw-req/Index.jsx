@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react'
 import { WITHDRAW_REQ } from './graphql/query';
 import { Avatar, Box, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
@@ -26,12 +26,12 @@ const WithdrawReq = () => {
 
   const isMobile = useIsMobile()
 
-  const [fetchWithdrawReq, { loading: WithdrawReqLoading, error: WithdrawReqErr }] = useLazyQuery(WITHDRAW_REQ, {
+  const { loading: WithdrawReqLoading, error: WithdrawReqErr } = useQuery(WITHDRAW_REQ, {
     variables: {
       vendorTitle: searchText,
       status: status === 'all' ? '' : status
     },
-    fetchPolicy: "network-only",
+    notifyOnNetworkStatusChange: true,
     onCompleted: (res) => {
       setWithdrawReq(res.withdrawRequests.edges.map(item => item.node))
     },
@@ -40,7 +40,6 @@ const WithdrawReq = () => {
   const [withdrawReqDelete, { loading: deleteLoading }] = useMutation(WITHDRAW_REQ_DELETE, {
     refetchQueries: [WITHDRAW_REQ],
     onCompleted: (res) => {
-      fetchWithdrawReq()
       toast.success(res.withdrawRequestDelete.message)
       setDeleteDialogOpen(false)
     },
@@ -209,9 +208,6 @@ const WithdrawReq = () => {
   ];
 
 
-  useEffect(() => {
-    fetchWithdrawReq()
-  }, [])
 
 
   return (
@@ -254,7 +250,7 @@ const WithdrawReq = () => {
       </Stack>
       {/* edit  */}
       <CDialog openDialog={withdrawReqDialogOpen}>
-        <EditWithdrawReq data={withdrawReqData} fetchWithdrawReq={fetchWithdrawReq} closeDialog={() => setWithdrawReqDialogOpen(false)} />
+        <EditWithdrawReq data={withdrawReqData} closeDialog={() => setWithdrawReqDialogOpen(false)} />
       </CDialog>
       {/* delete */}
       <CDialog closeDialog={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>

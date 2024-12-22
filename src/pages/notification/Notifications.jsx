@@ -99,8 +99,10 @@ const Notifications = () => {
             <Link
               style={{ color: row.isSeen ? 'gray' : 'inherit' }}
               to={row.notificationType === 'order-placed' ? '/dashboard/orders' :
-                row.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
-                  row.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${row.objectId}` : ''
+                row.notificationType === 'vendor-product-added' ?
+                  `/dashboard/food-item/details/${row.objectId}` :
+                  row.notificationType === 'vendor-product-ordered' ? '/dashboard/sales-history' :
+                    row.notificationType === 'order-status-changed' ? `/dashboard/orders/details/${row.objectId}` : ''
               }
             >
               <Typography sx={{ fontSize: '14px' }}>{row.message}</Typography>

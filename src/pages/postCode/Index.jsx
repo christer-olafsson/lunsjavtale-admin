@@ -1,11 +1,11 @@
 import { Add, ArrowRight, BorderColor, Delete, DeleteForeverOutlined, DeleteOutline, EditOutlined, LockOpenOutlined, LockOutlined, MapOutlined, ModeEditOutlineOutlined, MoreHoriz, MoreVert, Place, PlaceOutlined, Remove, RoomOutlined, Search } from '@mui/icons-material'
-import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import { Avatar, Box, Button, FormControl, IconButton, Input, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import DataTable from '../../common/datatable/DataTable';
 import AddArea from './AddArea';
 import CDialog from '../../common/dialog/CDialog';
 import EditMeeting from './EditMeeting';
 import { useEffect, useState } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { VALID_AREAS } from './graphql/query';
 import { format } from 'date-fns';
 import EditArea from './EditArea';
@@ -27,20 +27,22 @@ const Areas = () => {
   const [deleteAreaId, setDeleteAreaId] = useState('')
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false)
   const [detailsData, setDetailsData] = useState({})
+  const [search, setSearch] = useState('')
 
   const isMobile = useIsMobile()
 
 
-  const [fetchValidAreas, { loading, error }] = useLazyQuery(VALID_AREAS, {
-    fetchPolicy: "network-only",
+  const { loading, error } = useQuery(VALID_AREAS, {
+    variables: { postCode: parseInt(search) },
+    notifyOnNetworkStatusChange: true,
     onCompleted: (res) => {
       setValidAreas(res.validAreas.edges.map(data => data.node))
     }
   })
 
   const [validAreaDelete, { loading: deleteLoading }] = useMutation(VALID_AREA_DELETE, {
+    refetchQueries: [VALID_AREAS],
     onCompleted: (res) => {
-      fetchValidAreas()
       toast.success(res.validAreaDelete.message)
       setDeleteAreaDialogOpen(false)
     },
@@ -203,9 +205,6 @@ const Areas = () => {
 
   ];
 
-  useEffect(() => {
-    fetchValidAreas()
-  }, [])
 
 
   return (
@@ -231,11 +230,11 @@ const Areas = () => {
       </Stack> */}
       {/* edit area */}
       <CDialog openDialog={editAreaDialogOpen}>
-        <EditArea data={editAreaData} fetchValidAreas={fetchValidAreas} closeDialog={() => setEditAreaDialogOpen(false)} />
+        <EditArea data={editAreaData} closeDialog={() => setEditAreaDialogOpen(false)} />
       </CDialog>
       {/* new area */}
       <CDialog openDialog={addAreaDialogOpen}>
-        <AddArea fetchValidAreas={fetchValidAreas} closeDialog={() => setAddAreaDialogOpen(false)} />
+        <AddArea closeDialog={() => setAddAreaDialogOpen(false)} />
       </CDialog>
       {/* delete area */}
       <CDialog closeDialog={() => setDeleteAreaDialogOpen(false)} maxWidth='sm' openDialog={deleteAreaDialogOpen}>
@@ -249,6 +248,20 @@ const Areas = () => {
           </Stack>
         </Box>
       </CDialog>
+      <TextField
+        onChange={e => setSearch(e.target.value)}
+        variant="outlined"
+        size='small'
+        type='number'
+        sx={{ mt: 2 }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search />
+            </InputAdornment>
+          ),
+        }}
+      />
       <Box mt={3}>
         {
           loading ? <LoadingBar /> : error ? <ErrorMsg /> :

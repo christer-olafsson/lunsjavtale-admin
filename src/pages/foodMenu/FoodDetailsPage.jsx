@@ -10,6 +10,7 @@ import Loader from '../../common/loader/Index'
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import CDialog from '../../common/dialog/CDialog'
 import EditItem from './EditItem'
+import FoodApprove from './FoodApprove'
 
 const FoodDetails = () => {
   const [tabValue, setTabValue] = useState('1');
@@ -26,6 +27,7 @@ const FoodDetails = () => {
     variables: {
       id: id
     },
+    notifyOnNetworkStatusChange: true,
     fetchPolicy: 'network-only',
     onCompleted: (res) => {
       setProduct(res.products.edges[0].node)
@@ -54,7 +56,11 @@ const FoodDetails = () => {
                 </IconButton>
                 <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
               </Stack>
-              <Button variant='contained' onClick={() => setEditDialogOpen(true)}>Edit</Button>
+              <Stack direction='row' gap={2}>
+                {/* food approve or reject page */}
+                <FoodApprove data={product} />
+                <Button variant='contained' onClick={() => setEditDialogOpen(true)}>Edit</Button>
+              </Stack>
             </Stack>
             {/* product edit dialog */}
             <CDialog openDialog={editDialogOpen}>

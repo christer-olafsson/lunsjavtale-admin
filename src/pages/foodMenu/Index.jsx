@@ -126,6 +126,7 @@ const FoodItem = () => {
       vendor: selectedVendor ? selectedVendor.id : null,
       weeklyVariants: selectedWeeklyVariantId ?? null
     },
+    notifyOnNetworkStatusChange: true,
     onCompleted: (res) => {
       const data = res.products.edges.map(item => item)
       setProductState({

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const VALID_AREAS = gql`
-  query{
-    validAreas{
+  query($postCode: Int){
+    validAreas(postCode:$postCode){
       edges{
         node{
           id

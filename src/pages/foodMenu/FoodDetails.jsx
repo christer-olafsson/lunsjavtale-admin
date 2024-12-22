@@ -11,8 +11,9 @@ import ErrorMsg from '../../common/ErrorMsg/ErrorMsg'
 import { useTheme } from '@emotion/react'
 import CDialog from '../../common/dialog/CDialog'
 import EditItem from './EditItem'
+import FoodApprove from './FoodApprove'
 
-const FoodDetails = ({fetchCategory, data, toggleDrawer }) => {
+const FoodDetails = ({ fetchCategory, data, toggleDrawer }) => {
   const [tabValue, setTabValue] = useState('1');
   const [product, setProduct] = useState({});
   const [selectedImg, setSelectedImg] = useState(0)
@@ -48,7 +49,11 @@ const FoodDetails = ({fetchCategory, data, toggleDrawer }) => {
           </IconButton>
           <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Food Details</Typography>
         </Stack>
-        <Button variant='contained' onClick={()=> setEditDialogOpen(true)}>Edit</Button>
+        <Stack direction='row' gap={2}>
+          {/* food approve or reject page */}
+          <FoodApprove closeDialog={handleClose} data={product} />
+          <Button variant='contained' onClick={() => setEditDialogOpen(true)}>Edit</Button>
+        </Stack>
       </Stack>
       <Stack direction={{ xs: 'column', lg: 'row' }} gap={3}>
         <Stack direction={{ xs: 'column-reverse', md: 'row' }} gap={2}>

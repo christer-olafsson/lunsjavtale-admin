@@ -1,5 +1,5 @@
 import { useLazyQuery, useQuery } from '@apollo/client';
-import { LockOutlined, West } from '@mui/icons-material';
+import { FmdGoodOutlined, LockOutlined, West } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -63,27 +63,27 @@ const SupplierDetails = () => {
                       }}
                     />
                     <Box>
-                      <Typography variant='h5' fontWeight='bold' mb={2}>
-                        <span style={{ fontWeight: 300 }}>
+                      <Typography variant='h5' mb={2}>
+                        <span style={{ fontWeight: 600 }}>
                           Supplier:{' '}
                         </span>
-                        <b>
-                          {vendor?.name}{' '}
-                          {vendor.isBlocked && (
-                            <LockOutlined sx={{ color: 'red', ml: 1 }} />
-                          )}
-                        </b>
+
+                        {vendor?.name}{' '}
+                        {vendor.isBlocked && (
+                          <LockOutlined sx={{ color: 'red', ml: 1 }} />
+                        )}
+
                       </Typography>
-                      <Typography>Email: <b>{vendor?.email}</b></Typography>
+                      <Typography><b>Email: </b>{vendor?.email}</Typography>
                       {vendor?.isDeleted && <Chip label="Deleted" color="warning" />}
 
                       {vendor.createdOn && (
                         <Typography>
-                          Joined: <b>{format(vendor?.createdOn, 'dd-MM-yyyy')}</b>
+                          <b>Joined:</b> {format(vendor?.createdOn, 'dd-MM-yyyy')}
                         </Typography>
                       )}
-                      <Typography>Contact: <b>{vendor?.contact}</b></Typography>
-                      <Typography mt={2}>Post Codes:</Typography>
+                      <Typography><b>Contact: </b>{vendor?.contact}</Typography>
+                      <Typography mt={2} mb={1}><b>Post Codes:</b></Typography>
                       <Stack direction="row" gap={1.5} flexWrap="wrap">
                         {vendor?.postCode?.map((p) => (
                           <Typography
@@ -92,8 +92,13 @@ const SupplierDetails = () => {
                               border: '1px solid lightgray',
                               borderRadius: '4px',
                               px: 1.5,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: .5,
+                              py: .5
                             }}
                           >
+                            <FmdGoodOutlined fontSize='small' />
                             {p}
                           </Typography>
                         ))}
@@ -104,11 +109,11 @@ const SupplierDetails = () => {
                   {/* Financial Info */}
                   <Stack gap={2} mt={{ xs: 3, md: 0 }}>
                     {[
-                      { label: 'Balance', value: `${vendor?.balance ?? '00'} kr`, bgColor: 'green' },
+                      { label: 'Sold Amount', value: `${vendor?.soldAmount ?? '00'} kr`, bgColor: 'RebeccaPurple' },
                       { label: 'Commission', value: `${vendor?.commission ?? '0'} %`, bgColor: 'blue' },
-                      { label: 'Owner Commission', value: `${vendor?.ownerCommission ?? '0'} kr`, bgColor: 'purple' },
-                      { label: 'Sold Amount', value: `${vendor?.soldAmount ?? '00'} kr`, bgColor: 'orange' },
-                      { label: 'Withdrawn Amount', value: `${vendor?.withdrawnAmount ?? '00'} kr`, bgColor: 'red' },
+                      { label: 'Lunsjavtale Commission', value: `${vendor?.ownerCommission ?? '0'} kr`, bgColor: 'blue' },
+                      { label: 'Withdrawn Amount', value: `${vendor?.withdrawnAmount ?? '00'} kr`, bgColor: 'purple' },
+                      { label: 'Balance', value: `${vendor?.balance ?? '00'} kr`, bgColor: 'green' },
                     ].map((item, index) => (
                       <Typography
                         key={index}
@@ -153,7 +158,7 @@ const SupplierDetails = () => {
 
           {/* Owner Info Section */}
           <Box flex={1}>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
+            <Typography variant="h5" sx={{ mb: 2, }}>
               Owner Information
             </Typography>
             <Avatar

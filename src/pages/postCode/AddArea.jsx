@@ -9,20 +9,21 @@ import { useMutation, useQuery } from '@apollo/client';
 import { VALID_AREA_MUTATION } from './graphql/mutation';
 import toast from 'react-hot-toast';
 import CButton from '../../common/CButton/CButton';
+import { VALID_AREAS } from './graphql/query';
 
 
 
-const AddArea = ({fetchValidAreas, closeDialog }) => {
+const AddArea = ({ closeDialog }) => {
   const [errors, setErrors] = useState({})
   const [payload, setPayload] = useState({
-    name:'',
-    postCode:'',
+    name: '',
+    postCode: '',
     isActive: true
   })
 
   const [validAreaMutation, { loading }] = useMutation(VALID_AREA_MUTATION, {
+    refetchQueries: [VALID_AREAS],
     onCompleted: (res) => {
-      fetchValidAreas()
       toast.success(res.validAreaMutation.message)
       closeDialog()
     },
@@ -38,12 +39,12 @@ const AddArea = ({fetchValidAreas, closeDialog }) => {
   });
 
   const handleInputChange = (e) => {
-    setPayload({...payload, [e.target.name]: e.target.value})
+    setPayload({ ...payload, [e.target.name]: e.target.value })
   }
 
   const handleSave = () => {
-    if(!payload.postCode){
-      setErrors({postCode: 'PostCode empty!'})
+    if (!payload.postCode) {
+      setErrors({ postCode: 'PostCode empty!' })
       return
     }
     validAreaMutation({
@@ -67,10 +68,10 @@ const AddArea = ({fetchValidAreas, closeDialog }) => {
           <Close />
         </IconButton>
       </Stack>
-      <TextField  value={payload.name} name='name' onChange={handleInputChange} fullWidth label='Area Name' />
+      <TextField value={payload.name} name='name' onChange={handleInputChange} fullWidth label='Area Name' />
       <Stack direction='row' gap={2} mb={2} mt={2}>
-        <TextField helperText={errors.postCode} error={Boolean(errors.postCode)} value={payload.postCode}  name='postCode' onChange={handleInputChange} fullWidth type='number' label='Post Code' />
-        <FormControlLabel control={<Switch onChange={e=> setPayload({...payload, isActive: e.target.checked})} checked={payload.isActive} />} label="Active" />
+        <TextField helperText={errors.postCode} error={Boolean(errors.postCode)} value={payload.postCode} name='postCode' onChange={handleInputChange} fullWidth type='number' label='Post Code' />
+        <FormControlLabel control={<Switch onChange={e => setPayload({ ...payload, isActive: e.target.checked })} checked={payload.isActive} />} label="Active" />
       </Stack>
 
       <CButton isLoading={loading} onClick={handleSave} variant='contained' style={{ width: '100%', mt: 2 }}>

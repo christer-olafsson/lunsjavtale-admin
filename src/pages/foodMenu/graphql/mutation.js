@@ -60,3 +60,11 @@ export const WEEKLY_VARIANT_PRODUCTS = gql`
   }
   }
 `
+
+export const VERIFY_VENDOR_PRODUCT = gql`
+  mutation VerifyVendorProduct($id:ID!,$status: String!){
+     verifyVendorProduct(id:$id,status:$status){
+      message
+  }
+  }
+`

@@ -9,7 +9,7 @@ import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { Link } from 'react-router-dom';
 import { FOOD_MEETINGS } from './graphql/query';
-import { format } from 'date-fns';
+import { addDays, format, startOfDay } from 'date-fns';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
 const checkedIcon = <CheckBox fontSize="small" />;
@@ -70,9 +70,11 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   }
 
+  const tomorrow = format(addDays(startOfDay(new Date()), 1), "yyyy-MM-dd'T'HH:mm");
+
   const handleDateTimeChange = (e) => {
     const selectedDate = new Date(e.target.value);
-    // Format the date as 'YYYY-MM-DDTHH:mm:ssXXX' (ISO 8601 format)
+    // Format the date as 'YYYY-MM-DDTHH:mm:ssXXX' (ISO 8601 format) for match database time
     const formattedDate = format(selectedDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
     setPayload({ ...payload, meetingTime: formattedDate });
   };
@@ -145,6 +147,7 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
                 <MenuItem value={'remote'}>Remote</MenuItem>
                 <MenuItem value={'interview'}>Interview</MenuItem>
                 <MenuItem value={'in-person'}>In Person</MenuItem>
+                <MenuItem value={'others'}>Andre</MenuItem>
               </Select>
               {errors.meetingType && <FormHelperText>{errors.meetingType}</FormHelperText>}
             </FormControl>
@@ -152,7 +155,16 @@ const NewMeeting = ({ fetchMeeting, closeDialog }) => {
         </Stack>
         <Box mb={2}>
           <Typography value={payload.meetingTime} variant='body2'>Meeting Time</Typography>
-          <TextField onChange={handleDateTimeChange} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
+          <TextField
+            onChange={handleDateTimeChange}
+            error={Boolean(errors.meetingTime)}
+            helperText={errors.meetingTime}
+            fullWidth
+            type="datetime-local"
+            inputProps={{
+              min: tomorrow // Prevents selecting a previous date
+            }}
+          />
         </Box>
         <Stack gap={2}>
           <Autocomplete

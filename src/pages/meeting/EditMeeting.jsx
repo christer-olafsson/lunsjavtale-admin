@@ -9,7 +9,7 @@ import { MEETING_MUTATION } from './graphql/mutation';
 import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { addDays, format, startOfDay } from 'date-fns';
 import { FOOD_MEETINGS } from './graphql/query';
 
 const icon = <CheckBoxOutlineBlank fontSize="small" />;
@@ -68,6 +68,9 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
   const handleInputChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value })
   }
+
+  const tomorrow = format(addDays(startOfDay(new Date()), 1), "yyyy-MM-dd'T'HH:mm");
+
 
   const handleDateTimeChange = (e) => {
     const selectedDate = new Date(e.target.value);
@@ -147,17 +150,12 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
           sx={{ mb: 2 }}
           value={payload.company ?? {}}
           options={companies ?? []}
-          disableCloseOnSelect
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           getOptionLabel={(option) => option.name || ''}
           onChange={(_, value) => setPayload({ ...payload, company: value })}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={payload.company ? payload.company?.id === option?.id : false}
-              />
+
               <Box>
                 <Link style={{ width: 'fit-content' }} to={`/dashboard/customers/details/${option.id}`} target='_blank'>
                   <Typography>{option?.name}</Typography>
@@ -185,6 +183,7 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
             <MenuItem value={'remote'}>Remote</MenuItem>
             <MenuItem value={'interview'}>Interview</MenuItem>
             <MenuItem value={'in-person'}>In Person</MenuItem>
+            <MenuItem value={'others'}>Andre</MenuItem>
           </Select>
           {errors.meetingType && <FormHelperText>{errors.meetingType}</FormHelperText>}
         </FormControl>
@@ -192,11 +191,14 @@ const EditMeeting = ({ data, fetchMeeting, closeDialog }) => {
           <Typography value={payload.meetingTime} variant='body2'>Meeting Time
             <i> ({format(data.meetingTime, 'dd-MM-yyyy hh:mm a')})</i>
           </Typography>
-          <TextField onChange={handleDateTimeChange} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} fullWidth type='datetime-local' />
+          <TextField onChange={handleDateTimeChange} error={Boolean(errors.meetingTime)} helperText={errors.meetingTime} inputProps={{
+            min: tomorrow // Prevents selecting a previous date
+          }} fullWidth type='datetime-local' />
         </Box>
         <Stack gap={2}>
           <Autocomplete
             multiple
+            isOptionEqualToValue={(option, value) => option.id === value.id}
             value={payload?.topics}
             options={allCategories}
             disableCloseOnSelect

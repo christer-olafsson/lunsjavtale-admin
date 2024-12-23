@@ -30,7 +30,7 @@ const MeetingAction = ({ data, fetchMeeting, closeDialog }) => {
   });
 
   const handleSave = () => {
-    if (!payload.status) {
+    if (payload.status === 'pending') {
       setErrors({ status: 'Status Empty!' })
       toast.error('Meeting Status Required!')
       return
@@ -55,9 +55,7 @@ const MeetingAction = ({ data, fetchMeeting, closeDialog }) => {
 
 
   return (
-    <Box sx={{
-      p: { xs: 0, md: 2 }
-    }}>
+    <Box>
 
       <Stack direction='row' justifyContent='space-between' mb={4}>
         <Typography variant='h5'>Update Meeting</Typography>
@@ -66,11 +64,11 @@ const MeetingAction = ({ data, fetchMeeting, closeDialog }) => {
         </IconButton>
       </Stack>
       <Stack direction='row' gap={2}>
-        <FormControl fullWidth>
+        <FormControl error={Boolean(errors.status)} fullWidth>
           <InputLabel>Meeting Status</InputLabel>
           <Select
             label="Meeting Type"
-            error={Boolean(errors.status)}
+
             value={payload.status}
             onChange={e => setPayload({ ...payload, status: e.target.value })}
           >

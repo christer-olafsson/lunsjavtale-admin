@@ -299,19 +299,19 @@ const Meeting = () => {
         )
       },
     },
-    {
-      field: 'edit', headerName: '', width: 50,
-      renderCell: (params) => {
-        return (
-          <IconButton
-            disabled={params.row.status !== 'pending' || params.row.company === null}
-            onClick={() => handleEdit(params.row)}
-          >
-            <EditOutlined sx={{ color: params.row.status === 'pending' ? 'coral' : 'gray' }} />
-          </IconButton>
-        )
-      },
-    },
+    // {
+    //   field: 'edit', headerName: '', width: 50,
+    //   renderCell: (params) => {
+    //     return (
+    //       <IconButton
+    //         disabled={params.row.status !== 'pending' || params.row.company === null}
+    //         onClick={() => handleEdit(params.row)}
+    //       >
+    //         <EditOutlined sx={{ color: params.row.status === 'pending' ? 'coral' : 'gray' }} />
+    //       </IconButton>
+    //     )
+    //   },
+    // },
     {
       field: 'delete', headerName: '',
       width: isMobile ? 80 : undefined,

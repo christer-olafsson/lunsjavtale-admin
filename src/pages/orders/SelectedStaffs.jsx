@@ -2,12 +2,13 @@
 import { Add, Close, MailOutline, ModeEdit, PhoneOutlined } from '@mui/icons-material'
 import { Avatar, Box, Button, IconButton, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { format } from 'date-fns';
-import { useQuery } from '@apollo/client';
 import DataTable from '../../common/datatable/DataTable';
+import useIsMobile from '../../hook/useIsMobile';
 
 const SelectedStaffs = ({ data, closeDialog }) => {
   // const [rows, setRows] = useState([])
+
+  const isMobile = useIsMobile()
 
   const columns = [
     {
@@ -54,7 +55,8 @@ const SelectedStaffs = ({ data, closeDialog }) => {
       }
     },
     {
-      field: 'dueAmount', width: 150,
+      field: 'dueAmount', width: isMobile ? 400 : undefined,
+      flex: isMobile ? undefined : 1,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
       ),

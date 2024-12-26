@@ -371,18 +371,16 @@ const OrderDetails = () => {
                               <Typography sx={{ fontSize: { xs: '14', md: '18px' }, fontWeight: 600 }}>{data?.node.item.name}</Typography>
                               <Typography variant='body2'>Category: <b>{data?.node.item.category.name}</b></Typography>
                               <Typography>Price: <b>{data?.node.item.priceWithTax}</b> kr</Typography>
+                              <Typography sx={{ fontWeight: 600 }}>Ingredients: </Typography>
                               {
                                 data?.node.ingredients?.edges &&
-                                <Box>
-                                  <Typography sx={{ fontWeight: 600 }}>Ingredients: </Typography>
+                                <ul>
                                   {
                                     data?.node.ingredients?.edges.map(item => (
-                                      <ul key={item.node.id}>
-                                        <li>{item.node.name}</li>
-                                      </ul>
+                                      <li key={item.node.id}>{item.node.name}</li>
                                     ))
                                   }
-                                </Box>
+                                </ul>
                               }
                               {
                                 data?.node.item.vendor &&

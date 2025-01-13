@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { ArrowForwardIos, KeyboardArrowRight } from '@mui/icons-material'
+import { AccessTime, ArrowForwardIos, CalendarMonthOutlined, KeyboardArrowRight } from '@mui/icons-material'
 import { Box, Button, IconButton, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import DataTable from '../../common/datatable/DataTable';
@@ -18,8 +18,12 @@ const RecentOrders = ({ data }) => {
       ),
       renderCell: (params) => {
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</Typography>
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{format(params.row.createdOn, 'dd-MMM-yy')}</Typography>
+            <Typography sx={{ fontSize: { xs: '12px', md: '14px' }, fontWeight: 500, display: 'inline-flex' }}>
+              <AccessTime sx={{ mr: .5 }} fontSize='small' />
+              {format(params.row.createdOn, 'hh:mm a')}
+            </Typography>
           </Stack>
         )
       }
@@ -31,9 +35,14 @@ const RecentOrders = ({ data }) => {
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Delivery Date</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            {params.row.deliveryDate}
+        <Stack sx={{ height: '100%' }} justifyContent='center' >
+          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600, display: 'inline-flex', gap: '5px' }}>
+            <CalendarMonthOutlined fontSize='small' />
+            {format(params.row.deliveryDate, 'dd-MMM-yy')}
+          </Typography>
+          <Typography sx={{ fontSize: { xs: '12px', md: '14px', fontWeight: 600 }, color: 'green', display: 'inline-flex' }}>
+            <AccessTime sx={{ mr: .5 }} fontSize='small' />
+            {format(params.row.deliveryDate, 'hh:mm a')}
           </Typography>
         </Stack>
       )

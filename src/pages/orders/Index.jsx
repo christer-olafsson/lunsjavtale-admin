@@ -1,4 +1,4 @@
-import { AccessTimeOutlined, ArrowRight, BorderColor, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
+import { AccessTime, AccessTimeOutlined, ArrowRight, BorderColor, CalendarMonthOutlined, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -81,6 +81,7 @@ const Orders = () => {
   }
 
   function timeUntilNorway(futureDate, mode = "") {
+
     if (mode === "Delivered") {
       return "Delivered";
     }
@@ -88,22 +89,56 @@ const Orders = () => {
       return "Cancelled";
     }
 
-    const now = moment().tz("Europe/Oslo").startOf('day');
-    const future = moment.tz(futureDate, "UTC").tz("Europe/Oslo").startOf('day');
+    const now = moment().tz("Europe/Oslo");
+    const future = moment.tz(futureDate, "UTC").tz("Europe/Oslo");
 
     const diffInMilliseconds = future.diff(now);
+
     if (diffInMilliseconds < 0) {
-      return 'Date passed!';
+      return "Date has passed";
     }
 
     const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+    const remainingMilliseconds = diffInMilliseconds % (1000 * 60 * 60 * 24);
+    const diffInHours = Math.floor(remainingMilliseconds / (1000 * 60 * 60));
 
-    if (diffInDays === 0) {
-      return 'Delivery Today';
+    if (diffInDays === 0 && diffInHours === 0) {
+      return "Delivery today";
+    } else if (diffInDays === 0) {
+      return `Delivery in ${diffInHours}h`;
     } else {
-      return `Delivery in ${diffInDays} days`;
+      return `Delivery in ${diffInDays}Days ${diffInHours}h`;
     }
   }
+
+
+
+
+
+  // function timeUntilNorway(futureDate, mode = "") {
+  //   if (mode === "Delivered") {
+  //     return "Delivered";
+  //   }
+  //   if (mode === "Cancelled") {
+  //     return "Cancelled";
+  //   }
+
+  //   const now = moment().tz("Europe/Oslo").startOf('day');
+  //   const future = moment.tz(futureDate, "UTC").tz("Europe/Oslo").startOf('day');
+
+  //   const diffInMilliseconds = future.diff(now);
+  //   if (diffInMilliseconds < 0) {
+  //     return 'Date passed!';
+  //   }
+
+  //   const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+  //   if (diffInDays === 0) {
+  //     return 'Delivery Today';
+  //   } else {
+  //     return `Delivery in ${diffInDays} days`;
+  //   }
+  // }
 
   const columns = [
     {
@@ -120,14 +155,14 @@ const Orders = () => {
       ),
     },
     {
-      field: 'company', width: 300,
+      field: 'company', width: 250,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Company</Typography>
       ),
       renderCell: (params) => {
         const { row } = params;
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={1}>
             <Avatar src={row.company.logoUrl ?? ''} />
             <Box>
               <Link to={params.row.company.isDeleted ? '' : `/dashboard/customers/details/${row.company.id}`}>
@@ -145,23 +180,45 @@ const Orders = () => {
       }
     },
     {
-      field: 'Date', width: 280,
+      field: 'Order Date', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Date</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Date</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Ordered: <b>{format(params.row.createdOn, 'dd-MM-yyyy')}</b>
-              <span style={{ fontSize: '13px', marginLeft: '5px' }}>{format(params.row?.createdOn, 'hh:mm a')}</span>
+            <Typography sx={{ display: 'inline-flex', }}>
+              {format(params.row.createdOn, 'dd-MM-yyyy')}
             </Typography>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate, 'dd-MM-yyyy')}</b> </Typography>
+            <Typography sx={{ fontSize: '14px', display: 'inline-flex' }}>
+              {format(params.row?.createdOn, 'hh:mm a')}
+            </Typography>
           </Stack>
         )
       }
     },
     {
-      field: 'totalPrice', headerName: '', width: 150,
+      field: 'Delivery Date', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Delivery Date</Typography>
+      ),
+      renderCell: (params) => {
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Typography sx={{ fontWeight: 600, display: 'inline-flex', }}>
+              {/* <CalendarMonthOutlined fontSize='small' /> */}
+              {format(params.row.deliveryDate, 'dd-MM-yyyy')}
+            </Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 600, color: 'green', display: 'inline-flex' }}>
+              {/* <AccessTime sx={{ mr: .5 }} fontSize='small' /> */}
+              {format(params.row?.deliveryDate, 'hh:mm a')}
+            </Typography>
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'totalPrice', headerName: '', width: 120,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Total Price</Typography>
       ),
@@ -213,41 +270,45 @@ const Orders = () => {
     //   )
     // },
     {
-      field: 'status', headerName: 'Status', width: 250,
+      field: 'status', headerName: 'Status', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
       renderCell: (params) => {
         const { row } = params
-        const relevantStatuses = ['Placed', 'Updated', 'Payment-pending', 'Payment-completed']
-        const isNew = relevantStatuses.includes(row.status)
+        const isNew = ['Placed', 'Updated', 'Payment-pending', 'Payment-completed'].includes(row.status);
         return (
-          <Stack sx={{ height: '100%' }} alignItems='center' direction='row' gap={.5}>
-            <Box sx={{
-              ml: 5,
-              display: 'inline-flex',
-              padding: '4px 12px',
-              bgcolor:
-                row.status === 'Cancelled' ? 'red' :
-                  row.status === 'Placed' ? '#6251DA' :
-                    row.status === 'Updated' ? '#6251DA' :
-                      row.status === 'Confirmed' ? '#433878' :
-                        row.status === 'Delivered' ? 'green' :
-                          row.status === 'Processing' ? '#B17457' :
-                            row.status === 'Payment-completed' ? '#00695c' :
-                              row.status === 'Ready-to-deliver' ? '#283593' :
-                                row.status === 'Payment-pending' ? '#c2185b' :
-                                  '#616161',
-              color: '#FFF',
-              borderRadius: '4px',
-            }}>
-              <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>
-                {row.status}
-              </Typography>
-            </Box>
-            {isNew &&
-              <Typography sx={{ color: 'green' }} variant='body2'>new</Typography>
-            }
+          <Stack sx={{ height: '100%' }} justifyContent='center' gap={.5}>
+            <Stack alignItems='center' direction='row' gap={.5}>
+              <Box sx={{
+                display: 'inline-flex',
+                padding: '2px 12px',
+                bgcolor:
+                  row.status === 'Cancelled' ? 'red' :
+                    row.status === 'Placed' ? '#6251DA' :
+                      row.status === 'Updated' ? '#6251DA' :
+                        row.status === 'Confirmed' ? '#433878' :
+                          row.status === 'Delivered' ? 'green' :
+                            row.status === 'Processing' ? '#B17457' :
+                              row.status === 'Payment-completed' ? '#00695c' :
+                                row.status === 'Ready-to-deliver' ? '#283593' :
+                                  row.status === 'Payment-pending' ? '#c2185b' :
+                                    '#616161',
+                color: '#FFF',
+                borderRadius: '4px',
+              }}>
+                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '14px' }} variant='body2'>
+                  {row.status}
+                </Typography>
+              </Box>
+              {isNew &&
+                <Typography sx={{ color: 'purple', fontSize: '14px', fontWeight: 600 }} variant='body2'>new</Typography>
+              }
+            </Stack>
+            <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>
+              <AccessTimeOutlined sx={{ mr: .5 }} fontSize='small' />
+              {timeUntilNorway(params.row.deliveryDate, params.row.status)}
+            </Typography>
           </Stack>
         )
       }
@@ -278,16 +339,7 @@ const Orders = () => {
         )
       },
     },
-    {
-      field: 'delete', headerName: '', width: 60,
-      renderCell: (params) => {
-        return (
-          <IconButton onClick={() => handleDeleteDialog(params.row)}>
-            <DeleteOutline fontSize='small' />
-          </IconButton>
-        )
-      },
-    },
+
     {
       field: 'Coupon', headerName: 'Action', width: 100,
       renderHeader: () => (
@@ -324,18 +376,29 @@ const Orders = () => {
       },
     },
     {
-      field: 'timeUntil', headerName: '',
-      width: isMobile ? 200 : undefined,
+      field: 'delete', headerName: '', width: isMobile ? 200 : undefined,
       flex: isMobile ? undefined : 1,
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>
-            <AccessTimeOutlined sx={{ mr: .5 }} fontSize='small' />
-            {timeUntilNorway(params.row.deliveryDate, params.row.status)}
-          </Typography>
-        </Stack>
-      )
+      renderCell: (params) => {
+        return (
+          <IconButton onClick={() => handleDeleteDialog(params.row)}>
+            <DeleteOutline fontSize='small' />
+          </IconButton>
+        )
+      },
     },
+    // {
+    //   field: 'timeUntil', headerName: '',
+    //   width: isMobile ? 400 : undefined,
+    //   flex: isMobile ? undefined : 1,
+    //   renderCell: (params) => (
+    //     <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+    //       <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>
+    //         <AccessTimeOutlined sx={{ mr: .5 }} fontSize='small' />
+    //         {timeUntilNorway(params.row.deliveryDate, params.row.status)}
+    //       </Typography>
+    //     </Stack>
+    //   )
+    // },
   ];
 
   useEffect(() => {
@@ -344,7 +407,7 @@ const Orders = () => {
 
 
   return (
-    <Box maxWidth='1800px'>
+    <Box maxWidth='xl'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
         <Typography sx={{
@@ -368,7 +431,9 @@ const Orders = () => {
               >
                 <MenuItem value={'all'}>All </MenuItem>
                 <MenuItem value={'Placed'}>Placed</MenuItem>
+                <MenuItem value={'Updated'}>Updated</MenuItem>
                 <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
+                <MenuItem value={'Processing'}>Processing</MenuItem>
                 <MenuItem value={'Delivered'}>Delivered</MenuItem>
                 <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
                 <MenuItem value={'Payment-pending'}>Payment-Pending</MenuItem>

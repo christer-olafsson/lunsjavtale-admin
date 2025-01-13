@@ -70,7 +70,7 @@ const OrderDetails = () => {
   });
 
   const handleUpdate = () => {
-    if (orderStatus === 'Placed') {
+    if (orderStatus === 'Placed' || orderStatus === 'Updated') {
       setErrors({ status: 'Status required!' })
       toast.error('Order Status Required!')
       return
@@ -194,15 +194,13 @@ const OrderDetails = () => {
               </Box>
             </Stack>
             <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Delivery Date:</b></Typography>
-              {
-                order?.deliveryDate &&
-                <Typography sx={{ fontWeight: 600 }}>{format(order?.deliveryDate, 'dd-MM-yyyy')}</Typography>
-              }
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Leveringsdato:</b></Typography>
+              {order?.deliveryDate && <Typography><b>{format(order?.deliveryDate, 'dd-MM-yyyy')}</b><span style={{ fontSize: '13px', marginLeft: '5px', color: 'green', fontWeight: 'bold' }}>{format(order?.deliveryDate, 'hh:mm a')}</span></Typography>}
+
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
-              <Typography>{order?.paymentType === 'online' ? 'Vipps' : order?.paymentType}</Typography>
+              <Typography sx={{ border: '1px solid lightgray', px: 1, borderRadius: '5px' }}>{order?.paymentType === 'online' ? 'Vipps' : order?.paymentType}</Typography>
             </Stack>
             {
               order?.coupon &&

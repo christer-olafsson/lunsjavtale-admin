@@ -206,7 +206,7 @@ function Layout() {
             width: { xs: '150px', md: '180px' },
             mb: 5
           }}>
-            <img style={{ width: '100%' }} src="/Logo.svg" alt="" />
+            <img style={{ width: '100%' }} src="/logo.gif" alt="" />
           </Box>
         </Link>
       </Toolbar>

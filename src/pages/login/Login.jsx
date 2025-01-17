@@ -178,7 +178,7 @@ const Login = () => {
                   width: { xs: '70%', md: '200px' },
                   mb: 2
                 }}>
-                  <img width='100%' src="Logo.svg" alt="" />
+                  <img width='100%' src="/logo.gif" alt="" />
                 </Box>
               </Stack>
               <Typography sx={{ fontWeight: 600, fontSize: '25px', mb: 3 }}>Admin Login</Typography>

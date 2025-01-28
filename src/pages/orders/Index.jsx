@@ -1,6 +1,6 @@
 import { AccessTime, AccessTimeOutlined, ArrowRight, BorderColor, CalendarMonthOutlined, DeleteOutline, EditOutlined, Search, TrendingFlat } from '@mui/icons-material'
 import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ORDERS } from './graphql/query';
@@ -23,22 +23,27 @@ const Orders = () => {
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
   const [searchText, setSearchText] = useState('')
-  const [searchOrderId, setSearchOrderId] = useState('')
-  const [statusFilter, setStatusFilter] = useState('');
-  const [couponRowData, setCouponRowData] = useState({})
-  const [couponDialogOpen, setCouponDialogOpen] = useState(false)
+  const [statusFilter, setStatusFilter] = useState('all');
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const currentPage = Number(searchParams.get('page')) || 0
+
+  const handlePaginationChange = (newPage) => {
+    console.log(newPage)
+    setSearchParams({ page: newPage.page })
+  }
 
   const isMobile = useIsMobile()
 
 
-  const [fetchOrders, { loading, error: orderErr }] = useLazyQuery(ORDERS, {
+  const { loading, error: orderErr } = useQuery(ORDERS, {
     variables: {
       companyNameEmail: searchText,
       status: statusFilter === 'all' ? '' : statusFilter
     },
-    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
     onCompleted: (res) => {
       setOrders(res.orders.edges.map(item => item.node));
     }
@@ -47,7 +52,6 @@ const Orders = () => {
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
     refetchQueries: [ORDERS],
     onCompleted: (res) => {
-      fetchOrders()
       toast.success(res.orderHistoryDelete.message)
       setDeleteOrderDialogOpen(false)
     },
@@ -62,10 +66,6 @@ const Orders = () => {
     setOrderUpdateData(row)
   }
 
-  function handleCoupon(row) {
-    setCouponRowData(row)
-    setCouponDialogOpen(true)
-  }
 
   function handleDeleteDialog(row) {
     setDeleteOrderDialogOpen(true)
@@ -113,8 +113,6 @@ const Orders = () => {
 
 
 
-
-
   // function timeUntilNorway(futureDate, mode = "") {
   //   if (mode === "Delivered") {
   //     return "Delivered";
@@ -142,14 +140,14 @@ const Orders = () => {
 
   const columns = [
     {
-      field: 'id', headerName: '', width: 100,
+      field: 'id', headerName: '', width: 80,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Link to={`/dashboard/orders/details/${params.row.id}`}>
-            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>&#x2022; {params.row.id}</Typography>
+          <Link className='link' to={`/dashboard/orders/details/${params.row.id}`}>
+            <Typography sx={{ fontSize: { xs: '14px', md: '16px' }, color: 'blue' }}>&#x2022; {params.row.id}</Typography>
           </Link>
         </Stack>
       ),
@@ -223,11 +221,18 @@ const Orders = () => {
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Total Price</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: 'blue', fontWeight: 600 }}>
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          <Typography sx={{ color: 'blue', fontWeight: 600 }}>
             {params.row.finalPrice}
-            <span style={{ fontWeight: 400 }}> kr</span>
+            <span style={{ fontWeight: 300 }}> kr</span>
           </Typography>
+          {
+            params.row.discountAmount > 0 &&
+            <Typography sx={{ fontSize: '14px', color: 'red', fontWeight: 600 }}>
+              -{params.row.discountAmount}
+              <span style={{ fontWeight: 400 }}> kr</span>
+            </Typography>
+          }
         </Stack>
       )
     },
@@ -255,20 +260,7 @@ const Orders = () => {
         </Stack>
       )
     },
-    // {
-    //   field: 'dueAmount', headerName: '', width: 150,
-    //   renderHeader: () => (
-    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
-    //   ),
-    //   renderCell: (params) => (
-    //     <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-    //       <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-    //         <span style={{ fontWeight: 400 }}>kr </span>
-    //         {params.row.dueAmount}
-    //       </Typography>
-    //     </Stack>
-    //   )
-    // },
+
     {
       field: 'status', headerName: 'Status', width: 200,
       renderHeader: () => (
@@ -283,21 +275,21 @@ const Orders = () => {
               <Box sx={{
                 display: 'inline-flex',
                 padding: '2px 12px',
-                bgcolor:
-                  row.status === 'Cancelled' ? 'red' :
-                    row.status === 'Placed' ? '#6251DA' :
-                      row.status === 'Updated' ? '#6251DA' :
-                        row.status === 'Confirmed' ? '#433878' :
-                          row.status === 'Delivered' ? 'green' :
-                            row.status === 'Processing' ? '#B17457' :
-                              row.status === 'Payment-completed' ? '#00695c' :
-                                row.status === 'Ready-to-deliver' ? '#283593' :
-                                  row.status === 'Payment-pending' ? '#c2185b' :
-                                    '#616161',
+                bgcolor: {
+                  Placed: '#6251DA',
+                  Updated: '#6251DA',
+                  Confirmed: '#433878',
+                  Processing: '#B17457',
+                  Delivered: 'green',
+                  'Payment-completed': '#00695c',
+                  'Ready-to-deliver': '#283593',
+                  'Payment-pending': '#c2185b',
+                  Cancelled: 'red',
+                }[row.status],
                 color: '#FFF',
                 borderRadius: '4px',
               }}>
-                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '14px' }} variant='body2'>
+                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '14px' }} >
                   {row.status}
                 </Typography>
               </Box>
@@ -341,41 +333,6 @@ const Orders = () => {
     },
 
     {
-      field: 'Coupon', headerName: 'Action', width: 100,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Coupon</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} justifyContent='center'>
-            {
-              row.coupon ?
-                <Typography variant='body2' sx={{
-                  fontWeight: 600,
-                  bgcolor: 'coral',
-                  color: '#fff',
-                  borderRadius: '4px',
-                  px: 1,
-                  width: 'fit-content'
-                }}>{row.coupon.name}</Typography> :
-                <Button
-                  sx={{ width: 'fit-content' }}
-                  disabled={
-                    row.status === 'Cancelled'
-                    || row.status === 'Delivered'
-                    || row.coupon !== null
-                    || row.company.isDeleted
-                  }
-                  onClick={() => handleCoupon(params.row)}>
-                  Apply
-                </Button>
-            }
-          </Stack>
-        )
-      },
-    },
-    {
       field: 'delete', headerName: '', width: isMobile ? 200 : undefined,
       flex: isMobile ? undefined : 1,
       renderCell: (params) => {
@@ -401,10 +358,6 @@ const Orders = () => {
     // },
   ];
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
 
   return (
     <Box maxWidth='xl'>
@@ -421,25 +374,7 @@ const Orders = () => {
       </Stack>
       <Stack direction={{ xs: 'column-reverse', md: 'row' }} justifyContent='space-between'>
         <Stack direction='row' gap={2}>
-          <Box sx={{ minWidth: { xs: 150, md: 200 } }}>
-            <FormControl size='small' fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Status"
-                onChange={e => setStatusFilter(e.target.value)}
-              >
-                <MenuItem value={'all'}>All </MenuItem>
-                <MenuItem value={'Placed'}>Placed</MenuItem>
-                <MenuItem value={'Updated'}>Updated</MenuItem>
-                <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
-                <MenuItem value={'Processing'}>Processing</MenuItem>
-                <MenuItem value={'Delivered'}>Delivered</MenuItem>
-                <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-                <MenuItem value={'Payment-pending'}>Payment-Pending</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+
 
           <Box sx={{
             display: 'flex',
@@ -457,16 +392,35 @@ const Orders = () => {
             <IconButton><Search /></IconButton>
           </Box>
 
+          <Box sx={{ minWidth: { xs: 150, md: 200 } }}>
+            <FormControl size='small' fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value={'all'}>All </MenuItem>
+                <MenuItem value={'Placed'}>Placed</MenuItem>
+                <MenuItem value={'Updated'}>Updated</MenuItem>
+                <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
+                <MenuItem value={'Processing'}>Processing</MenuItem>
+                <MenuItem value={'Ready-to-deliver'}>Ready to Deliver</MenuItem>
+                <MenuItem value={'Delivered'}>Delivered</MenuItem>
+                <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+                <MenuItem value={'Payment-pending'}>Payment-Pending</MenuItem>
+                <MenuItem value={'Payment-completed'}>Payment-Completed</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
         </Stack>
 
       </Stack>
-      {/* apply coupon */}
-      <CDialog openDialog={couponDialogOpen}>
-        <ApplyCoupon fetchOrders={fetchOrders} data={couponRowData} closeDialog={() => setCouponDialogOpen(false)} />
-      </CDialog>
+
       {/* update order */}
       <CDialog openDialog={orderUpdateDialogOpen}>
-        <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
+        <UpdateOrder data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
       </CDialog>
       {/* delete Order */}
       <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>

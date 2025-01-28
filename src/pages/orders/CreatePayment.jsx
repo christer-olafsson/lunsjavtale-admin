@@ -7,9 +7,9 @@ import toast from 'react-hot-toast';
 import { CREATE_PAYMENT } from './graphql/mutation';
 import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
-import { USERS } from './graphql/query';
+import { ORDER, USERS } from './graphql/query';
 
-const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }) => {
+const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [companies, setCompanies] = useState([]);
   const [users, setUsers] = useState([])
@@ -61,11 +61,9 @@ const CreatePayment = ({ orderData, fetchOrder, fetchOrderPayment, closeDialog }
 
 
   const [createPayment, { loading }] = useMutation(CREATE_PAYMENT, {
+    refetchQueries: [ORDER],
     onCompleted: (res) => {
       toast.success(res.createPayment.message)
-      if (fetchOrder) {
-        fetchOrder()
-      }
       if (fetchOrderPayment) {
         fetchOrderPayment()
       }

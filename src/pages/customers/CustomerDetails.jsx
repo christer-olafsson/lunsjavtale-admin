@@ -10,6 +10,7 @@ import CustomersList from './CustomersList'
 import { format } from 'date-fns'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import CustomerOrders from './CustomerOrders'
+import LoadingBar from '../../common/loadingBar/LoadingBar'
 
 const CustomerDetails = () => {
   const [company, setCompany] = useState({})
@@ -25,6 +26,7 @@ const CustomerDetails = () => {
 
   const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANY, {
     fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
     variables: {
       id
     },
@@ -58,14 +60,14 @@ const CustomerDetails = () => {
                   borderRadius: '4px',
                 }} src={company?.logoUrl ? company?.logoUrl : "/noImage.png"} alt="" />
                 <Box>
+                  <Typography variant='h5' sx={{ display: 'inline-flex', gap: 1, mb: 1 }}>Customer: <b>{company?.name}</b> <LockOutlined sx={{
+                    display: company?.isBlocked ? 'block' : 'none',
+                    color: 'red'
+                  }} /> </Typography>
                   {
                     company?.createdOn &&
                     <Typography>Joined On: <b>{format(company?.createdOn, 'dd-MM-yyyy')}</b> </Typography>
                   }
-                  <Typography sx={{ display: 'inline-flex', gap: 1 }}>Customer: <b>{company?.name}</b> <LockOutlined sx={{
-                    display: company?.isBlocked ? 'block' : 'none',
-                    color: 'red'
-                  }} /> </Typography>
                   <Typography>Email: <b>{company?.email}</b> </Typography>
                   <Typography>Phone: <b>{company?.contact}</b> </Typography>
                   <Typography>Post Code: <b>{company?.postCode}</b> </Typography>

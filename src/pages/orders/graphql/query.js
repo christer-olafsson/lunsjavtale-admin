@@ -12,10 +12,22 @@ export const ORDERS = gql`
           finalPrice
           status
           deliveryDate
+          actualPrice
+          discountAmount
           finalPrice
           paidAmount
           dueAmount
           note
+           statuses{
+            edges{
+              node{
+                id
+                status
+                note
+                createdOn
+              }
+            }
+          }
           coupon{
             id
             name

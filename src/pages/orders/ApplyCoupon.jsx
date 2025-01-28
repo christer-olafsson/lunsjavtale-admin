@@ -7,14 +7,15 @@ import CButton from '../../common/CButton/CButton';
 import toast from 'react-hot-toast';
 import { APPLY_COUPON, ORDER_STATUS_UPDATE } from './graphql/mutation';
 import { COUPONS } from '../coupons/graphql/query';
+import { ORDERS } from './graphql/query';
 
 
-const ApplyCoupon = ({ data, fetchOrders, closeDialog }) => {
+const ApplyCoupon = ({ data, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [couponCode, setCouponCode] = useState('')
   const [coupons, setCoupons] = useState([]);
 
-  const { loading: couponsLoading } = useQuery(COUPONS, {
+  useQuery(COUPONS, {
     onCompleted: (res) => {
       setCoupons(res.coupons.edges.map(item => item.node))
     }
@@ -23,10 +24,10 @@ const ApplyCoupon = ({ data, fetchOrders, closeDialog }) => {
 
   const [applyCoupon, { loading }] = useMutation(APPLY_COUPON, {
     onCompleted: (res) => {
-      fetchOrders()
       toast.success(res.applyCoupon.message)
       closeDialog()
     },
+    refetchQueries: [ORDERS],
     onError: (err) => {
       toast.error(err.message)
       if (err.graphQLErrors && err.graphQLErrors.length > 0) {

@@ -1,29 +1,27 @@
-import { Add, ArrowBack, ArrowDropDown, Download } from '@mui/icons-material';
-import { Avatar, Box, Button, Chip, Collapse, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Add, ArrowBack, ArrowDropDown, Edit } from '@mui/icons-material';
+import { Avatar, Box, Button, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ORDER, ORDERS } from './graphql/query';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { ORDER } from './graphql/query';
+import { useQuery } from '@apollo/client';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import SelectedStaffs from './SelectedStaffs';
 import { format } from 'date-fns';
-import { ORDER_STATUS_UPDATE } from './graphql/mutation';
-import toast from 'react-hot-toast';
-import CButton from '../../common/CButton/CButton';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import InvoiceTemplate, { downloadPDF } from './InvoiceTemplate';
 import CDialog from '../../common/dialog/CDialog';
 import CreatePayment from './CreatePayment';
+import UpdateOrder from './UpdateOrder';
+import ApplyCoupon from './ApplyCoupon';
 
 
 const OrderDetails = () => {
   const [order, setOrder] = useState([]);
   const [selectedStaffDetailsId, setSelectedStaffDetailsId] = useState('')
-  const [errors, setErrors] = useState({});
-  const [orderStatus, setOrderStatus] = useState('')
   const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
   const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
-  const [note, setNote] = useState('')
+  const [updateOrderDialogOpen, setUpdateOrderDialogOpen] = useState(false)
+  const [couponDialogOpen, setCouponDialogOpen] = useState(false)
 
 
   const toggleDrawer = (event) => {
@@ -40,8 +38,9 @@ const OrderDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const [fetchOrder, { loading, error: orderErr }] = useLazyQuery(ORDER, {
-    fetchPolicy: 'network-only',
+  const { loading, error: orderErr } = useQuery(ORDER, {
+    notifyOnNetworkStatusChange: true,
+    skip: !id,
     variables: {
       id,
     },
@@ -49,40 +48,6 @@ const OrderDetails = () => {
       setOrder(res.order)
     },
   });
-
-
-  const [orderStatusUpdate, { loading: statusLoading }] = useMutation(ORDER_STATUS_UPDATE, {
-    refetchQueries: [ORDERS],
-    onCompleted: (res) => {
-      fetchOrder()
-      toast.success(res.orderStatusUpdate.message)
-    },
-    onError: (err) => {
-      toast.error(err.message)
-      if (err.graphQLErrors && err.graphQLErrors.length > 0) {
-        const graphqlError = err.graphQLErrors[0];
-        const { extensions } = graphqlError;
-        if (extensions && extensions.errors) {
-          setErrors(extensions.errors)
-        }
-      }
-    }
-  });
-
-  const handleUpdate = () => {
-    if (orderStatus === 'Placed' || orderStatus === 'Updated') {
-      setErrors({ status: 'Status required!' })
-      toast.error('Order Status Required!')
-      return
-    }
-    orderStatusUpdate({
-      variables: {
-        id: order.id,
-        status: orderStatus,
-        note
-      }
-    })
-  }
 
 
   const handleSelectedStaffsDetails = (data) => {
@@ -94,15 +59,6 @@ const OrderDetails = () => {
     }
   }
 
-  useEffect(() => {
-    setOrderStatus(order?.status ?? '')
-    setNote(order?.note ?? '')
-  }, [order])
-
-
-  useEffect(() => {
-    fetchOrder()
-  }, [])
 
   if (loading) {
     return <LoadingBar />
@@ -120,9 +76,19 @@ const OrderDetails = () => {
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order Details</Typography>
       </Stack>
 
+      {/* update order */}
+      <CDialog openDialog={updateOrderDialogOpen}>
+        <UpdateOrder data={order} closeDialog={() => setUpdateOrderDialogOpen(false)} />
+      </CDialog>
+
       {/* create payment */}
       <CDialog openDialog={openCreatePaymentDialog}>
-        <CreatePayment orderData={order} fetchOrder={fetchOrder} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+        <CreatePayment orderData={order} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+      </CDialog>
+
+      {/* apply coupon */}
+      <CDialog openDialog={couponDialogOpen}>
+        <ApplyCoupon data={order} closeDialog={() => setCouponDialogOpen(false)} />
       </CDialog>
 
       {/* invoice page */}
@@ -133,9 +99,12 @@ const OrderDetails = () => {
       <Box mt={2}>
         <Stack direction='row' justifyContent='space-between' mb={2}>
           <Box />
-          <Button sx={{ width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content', alignSelf: 'flex-end' }} startIcon={<Add />} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+          <Stack direction='row' gap={2}>
+            <Button disabled={order?.status === 'Delivered' || order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap' }} startIcon={<Edit />} onClick={() => setUpdateOrderDialogOpen(true)} variant='outlined'>Update</Button>
+            <Button disabled={order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap', }} startIcon={<Add />} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+          </Stack>
         </Stack>
-        <Stack direction='row' gap={2} alignItems='center' mb={2}>
+        {/* <Stack direction='row' gap={2} alignItems='center' mb={2}>
           {
             order?.status === 'Delivered' &&
             <Button
@@ -151,7 +120,7 @@ const OrderDetails = () => {
             </Button>
           }
 
-        </Stack>
+        </Stack> */}
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
           <Stack>
             <Stack direction='row' alignItems='center'>
@@ -159,17 +128,17 @@ const OrderDetails = () => {
               <Stack alignItems='center' sx={{
                 display: 'inline-flex',
                 padding: '0px 12px',
-                bgcolor:
-                  order?.status === 'Cancelled' ? 'red' :
-                    order?.status === 'Placed' ? '#6251DA' :
-                      order?.status === 'Updated' ? '#6251DA' :
-                        order?.status === 'Confirmed' ? '#433878' :
-                          order?.status === 'Delivered' ? 'green' :
-                            order?.status === 'Processing' ? '#B17457' :
-                              order?.status === 'Payment-completed' ? '#00695c' :
-                                order?.status === 'Ready-to-deliver' ? '#283593' :
-                                  order?.status === 'Payment-pending' ? '#c2185b' :
-                                    '#616161',
+                bgcolor: {
+                  Placed: '#6251DA',
+                  Updated: '#6251DA',
+                  Confirmed: '#433878',
+                  Processing: '#B17457',
+                  Delivered: 'green',
+                  'Payment-completed': '#00695c',
+                  'Ready-to-deliver': '#283593',
+                  'Payment-pending': '#c2185b',
+                  Cancelled: 'red',
+                }[order?.status],
                 color: '#FFF',
                 borderRadius: '4px',
                 minWidth: '150px',
@@ -202,33 +171,11 @@ const OrderDetails = () => {
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment Type:</b></Typography>
               <Typography sx={{ border: '1px solid lightgray', px: 1, borderRadius: '5px' }}>{order?.paymentType === 'online' ? 'Vipps' : order?.paymentType}</Typography>
             </Stack>
-            {
-              order?.coupon &&
-              <Stack direction='row'>
-                <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Coupon:</b></Typography>
-                <Typography sx={{ bgcolor: 'coral', px: 1, borderRadius: '4px', color: '#fff' }}>{order?.coupon.name}</Typography>
-              </Stack>
-            }
-            {
-              order?.discountAmount &&
-              <Stack direction='row'>
-                <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
-                <Typography>{order?.discountAmount} kr</Typography>
-              </Stack>
-            }
+
+
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Customer Allowance:</b></Typography>
               <Typography>{order?.companyAllowance ?? '0'} %</Typography>
-            </Stack>
-            <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Final Price:</b></Typography>
-              <Typography sx={{ color: 'blue', fontWeight: 600 }}>{order?.finalPrice ?? '0'} kr</Typography>
-            </Stack>
-            <Stack direction='row'>
-              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Due Amount:</b></Typography>
-              <Stack direction='row'>
-                <Typography sx={{ fontWeight: 600, color: 'coral' }} mr={1}>{order?.companyDueAmount} kr </Typography>
-              </Stack>
             </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Staffs Due Amount:</b></Typography>
@@ -237,8 +184,34 @@ const OrderDetails = () => {
               </Stack>
             </Stack>
             <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Company Due Amount:</b></Typography>
+              <Stack direction='row'>
+                <Typography sx={{ fontWeight: 600, color: 'coral' }} mr={1}>{order?.companyDueAmount} kr </Typography>
+              </Stack>
+            </Stack>
+            {
+              order?.discountAmount &&
+              <Stack direction='row'>
+                <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
+                <Typography sx={{ color: 'coral' }}>-{order?.discountAmount} kr</Typography>
+              </Stack>
+            }
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Final Price:</b></Typography>
+              <Typography sx={{ color: 'blue', fontWeight: 600 }}>{order?.finalPrice ?? '0'} kr</Typography>
+            </Stack>
+
+            <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Paid Amount:</b></Typography>
-              <Typography sx={{ fontWeight: 600, color: 'green' }}>{order?.paidAmount} kr</Typography>
+              <Typography sx={{ fontWeight: 600, color: order?.paidAmount == 0.00 ? 'darkgray' : 'green' }}>{order?.paidAmount} kr</Typography>
+            </Stack>
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Coupon:</b></Typography>
+              {
+                order?.coupon ?
+                  <Typography sx={{ bgcolor: 'coral', px: 1, borderRadius: '4px', color: '#fff' }}>{order?.coupon?.name}</Typography> :
+                  <Button disabled={order?.status === 'Delivered' || order?.status === 'Cancelled'} onClick={() => setCouponDialogOpen(true)} variant='outlined' size='small'>Apply</Button>
+              }
             </Stack>
             {
               order?.note &&
@@ -272,10 +245,7 @@ const OrderDetails = () => {
                 <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Phone:</b></Typography>
                 <Typography>{order?.billingAddress?.phone}</Typography>
               </Stack>
-              <Stack direction='row'>
-                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Sector:</b></Typography>
-                <Typography>{order?.billingAddress?.sector}</Typography>
-              </Stack>
+
             </Box>
             <Divider sx={{ display: { xs: 'none', md: 'block' } }} orientation="vertical" />
             <Box>
@@ -314,34 +284,12 @@ const OrderDetails = () => {
             </Box>
           </Stack>
         </Stack>
-        <Stack sx={{ width: '250px' }} direction='row' gap={2} my={2}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Order Status</InputLabel>
-            <Select
-              disabled={order?.status === 'Cancelled' || order?.status === 'Delivered'}
-              label="Order Status"
-              error={Boolean(errors.status)}
-              value={orderStatus}
-              onChange={e => setOrderStatus(e.target.value)}
-            >
-              <MenuItem value={'Confirmed'}>Confirmed </MenuItem>
-              <MenuItem value={'Processing'}>Processing </MenuItem>
-              <MenuItem value={'Ready-to-deliver'}>Ready to deliver </MenuItem>
-              <MenuItem value={'Delivered'}>Delivered </MenuItem>
-              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-            </Select>
-          </FormControl>
-          <CButton disable={order?.status === 'Cancelled' || order?.status === 'Delivered'} onClick={handleUpdate} isLoading={statusLoading} variant='contained'>Apply</CButton>
-        </Stack>
-        {
-          (orderStatus !== 'Placed') &&
-          <TextField value={note} onChange={e => setNote(e.target.value)} label='Note' sx={{ maxWidth: '300px', width: '100%' }} multiline rows={3} />
-        }
+
         <Divider sx={{ mt: 3 }} />
 
         <Stack direction={{ xs: 'column', lg: 'row' }} justifyContent='space-between' mt={3} gap={6}>
 
-          <Box>
+          <Box flex={2}>
 
             <Stack gap={3}>
               {

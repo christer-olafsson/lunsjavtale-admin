@@ -1,47 +1,29 @@
 /* eslint-disable react/prop-types */
-import { Avatar, Box, Button, FormControl, IconButton, Input, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Loader from '../../common/loader/Index';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import DataTable from '../../common/datatable/DataTable';
 import { format } from 'date-fns';
-import { DeleteOutline, EditOutlined, Search } from '@mui/icons-material';
+import { AccessTimeOutlined, DeleteOutline, EditOutlined } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { ORDER_HISTORY_DELETE } from '../orders/graphql/mutation';
 import CDialog from '../../common/dialog/CDialog';
-import ApplyCoupon from '../orders/ApplyCoupon';
 import UpdateOrder from '../orders/UpdateOrder';
 import CButton from '../../common/CButton/CButton';
-import { ORDERS } from '../orders/graphql/query';
 import useIsMobile from '../../hook/useIsMobile';
+import moment from 'moment-timezone';
 
 const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
   const [orders, setOrders] = useState([])
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
-  const [searchText, setSearchText] = useState(null)
-  const [statusFilter, setStatusFilter] = useState('');
-  const [couponRowData, setCouponRowData] = useState({})
-  const [couponDialogOpen, setCouponDialogOpen] = useState(false)
   const [deleteOrderDialogOpen, setDeleteOrderDialogOpen] = useState(false);
   const [deleteOrderId, setDeleteOrderId] = useState('')
 
   const isMobile = useIsMobile()
-
-  // const [fetchOrders, { loading, error }] = useLazyQuery(ORDERS, {
-  //   variables: {
-  //     deliveryDate: searchText ? searchText : null,
-  //     status: statusFilter === 'all' ? '' : statusFilter,
-  //     company: data?.id
-  //   },
-  //   fetchPolicy: 'network-only',
-  //   onCompleted: (res) => {
-  //     setOrders(res.orders.edges.map(item => item.node));
-  //   }
-  // });
-
 
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
     onCompleted: (res) => {
@@ -60,11 +42,6 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
     setOrderUpdateData(row)
   }
 
-  function handleCoupon(row) {
-    setCouponRowData(row)
-    setCouponDialogOpen(true)
-  }
-
   function handleDeleteDialog(row) {
     setDeleteOrderDialogOpen(true)
     setDeleteOrderId(row.id)
@@ -78,141 +55,193 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
     })
   }
 
+  function timeUntilNorway(futureDate, mode = "") {
+
+    if (mode === "Delivered") {
+      return "Delivered";
+    }
+    if (mode === "Cancelled") {
+      return "Cancelled";
+    }
+
+    const now = moment().tz("Europe/Oslo");
+    const future = moment.tz(futureDate, "UTC").tz("Europe/Oslo");
+
+    const diffInMilliseconds = future.diff(now);
+
+    if (diffInMilliseconds < 0) {
+      return "Date has passed";
+    }
+
+    const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+    const remainingMilliseconds = diffInMilliseconds % (1000 * 60 * 60 * 24);
+    const diffInHours = Math.floor(remainingMilliseconds / (1000 * 60 * 60));
+
+    if (diffInDays === 0 && diffInHours === 0) {
+      return "Delivery today";
+    } else if (diffInDays === 0) {
+      return `Delivery in ${diffInHours}h`;
+    } else {
+      return `Delivery in ${diffInDays}Days ${diffInHours}h`;
+    }
+  }
+
   const columns = [
     {
-      field: 'id', headerName: '', width: 70,
+      field: 'id', headerName: '', width: 100,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Link to={`/dashboard/orders/details/${params.row.id}`}>
-            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>{params.row.id}</Typography>
+          <Link className='link' to={`/dashboard/orders/details/${params.row.id}`}>
+            <Typography sx={{ fontSize: { xs: '14px', md: '16px' }, color: 'blue' }}>&#x2022; {params.row.id}</Typography>
           </Link>
         </Stack>
       ),
     },
     {
-      field: 'Date', width: 280,
+      field: 'Order Date', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Date</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Date</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Ordered: <b>{format(params.row.createdOn, 'dd-MM-yyyy hh:mm a')}</b> </Typography>
-            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> Delivery: <b>{format(params.row.deliveryDate, 'dd-MM-yyyy')}</b> </Typography>
+            <Typography sx={{ display: 'inline-flex', }}>
+              {format(params.row.createdOn, 'dd-MM-yyyy')}
+            </Typography>
+            <Typography sx={{ fontSize: '14px', display: 'inline-flex' }}>
+              {format(params.row?.createdOn, 'hh:mm a')}
+            </Typography>
           </Stack>
         )
       }
     },
     {
-      field: 'totalPrice', headerName: '', width: 150,
+      field: 'Delivery Date', width: 150,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Delivery Date</Typography>
+      ),
+      renderCell: (params) => {
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            <Typography sx={{ fontWeight: 600, display: 'inline-flex', }}>
+              {/* <CalendarMonthOutlined fontSize='small' /> */}
+              {format(params.row.deliveryDate, 'dd-MM-yyyy')}
+            </Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 600, color: 'green', display: 'inline-flex' }}>
+              {/* <AccessTime sx={{ mr: .5 }} fontSize='small' /> */}
+              {format(params.row?.deliveryDate, 'hh:mm a')}
+            </Typography>
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'totalPrice', headerName: '', width: 120,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Total Price</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            <span style={{ fontWeight: 400 }}>kr </span>
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          <Typography sx={{ color: 'blue', fontWeight: 600 }}>
             {params.row.finalPrice}
+            <span style={{ fontWeight: 300 }}> kr</span>
           </Typography>
+          {
+            params.row.discountAmount > 0 &&
+            <Typography sx={{ fontSize: '14px', color: 'red', fontWeight: 600 }}>
+              -{params.row.discountAmount}
+              <span style={{ fontWeight: 400 }}> kr</span>
+            </Typography>
+          }
         </Stack>
       )
     },
     {
-      field: 'paidAmount', headerName: '', width: 150,
+      field: 'amount', headerName: '', width: 150,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Paid Amount</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Amount</Typography>
       ),
       renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            <span style={{ fontWeight: 400 }}>kr </span>
-            {params.row.paidAmount}
-          </Typography>
+        <Stack sx={{ height: '100%' }} justifyContent='center'>
+          {
+            params.row.paidAmount > 0 &&
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: params.row.paidAmount > 0 ? 'green' : 'lightgray' }}>
+              Paid: <b>{params.row.paidAmount}</b>
+              <span style={{ fontWeight: 400, marginLeft: '5px' }}>kr </span>
+            </Typography>
+          }
+          {
+            params.row.dueAmount > 0 &&
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, color: params.row.dueAmount > 0 ? 'coral' : 'lightgray' }}>
+              due: <b>{params.row.dueAmount}</b>
+              <span style={{ fontWeight: 400, marginLeft: '5px' }}>kr </span>
+            </Typography>
+          }
         </Stack>
       )
     },
+    // {
+    //   field: 'dueAmount', headerName: '', width: 150,
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+    //       <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
+    //         <span style={{ fontWeight: 400 }}>kr </span>
+    //         {params.row.dueAmount}
+    //       </Typography>
+    //     </Stack>
+    //   )
+    // },
     {
-      field: 'dueAmount', headerName: '', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Due Amount</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
-            <span style={{ fontWeight: 400 }}>kr </span>
-            {params.row.dueAmount}
-          </Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'status', headerName: 'Status', width: 250,
+      field: 'status', headerName: 'Status', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
       renderCell: (params) => {
         const { row } = params
+        const isNew = ['Placed', 'Updated', 'Payment-pending', 'Payment-completed'].includes(row.status);
         return (
-          <Box sx={{
-            ml: 5,
-            display: 'inline-flex',
-            padding: '4px 12px',
-            bgcolor:
-              row?.status === 'Cancelled' ? 'red' :
-                row?.status === 'Placed' ? '#6251DA' :
-                  row?.status === 'Updated' ? '#6251DA' :
-                    row?.status === 'Confirmed' ? '#433878' :
-                      row?.status === 'Delivered' ? 'green' :
-                        row?.status === 'Processing' ? '#B17457' :
-                          row?.status === 'Payment-completed' ? '#00695c' :
-                            row?.status === 'Ready-to-deliver' ? '#283593' :
-                              row?.status === 'Payment-pending' ? '#c2185b' :
-                                '#616161',
-            color: '#FFF',
-            borderRadius: '4px',
-          }}>
-            <Typography sx={{ fontWeight: 600 }} variant='body2'>{row.status}</Typography>
-          </Box>
+          <Stack sx={{ height: '100%' }} justifyContent='center' gap={.5}>
+            <Stack alignItems='center' direction='row' gap={.5}>
+              <Box sx={{
+                display: 'inline-flex',
+                padding: '2px 12px',
+                bgcolor: {
+                  Placed: '#6251DA',
+                  Updated: '#6251DA',
+                  Confirmed: '#433878',
+                  Processing: '#B17457',
+                  Delivered: 'green',
+                  'Payment-completed': '#00695c',
+                  'Ready-to-deliver': '#283593',
+                  'Payment-pending': '#c2185b',
+                  Cancelled: 'red',
+                }[row.status],
+                color: '#FFF',
+                borderRadius: '4px',
+              }}>
+                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '14px' }} >
+                  {row.status}
+                </Typography>
+              </Box>
+              {isNew &&
+                <Typography sx={{ color: 'purple', fontSize: '14px', fontWeight: 600 }} variant='body2'>new</Typography>
+              }
+            </Stack>
+            <Typography variant='body2' sx={{ fontWeight: 500, display: 'inline-flex' }}>
+              <AccessTimeOutlined sx={{ mr: .5 }} fontSize='small' />
+              {timeUntilNorway(params.row.deliveryDate, params.row.status)}
+            </Typography>
+          </Stack>
         )
       }
     },
-    {
-      field: 'Coupon', headerName: 'Action', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Coupon</Typography>
-      ),
-      renderCell: (params) => {
-        const { row } = params;
-        return (
-          <Stack sx={{ height: '100%' }} justifyContent='center'>
-            {
-              row.coupon ?
-                <Typography variant='body2' sx={{
-                  fontWeight: 600,
-                  bgcolor: 'coral',
-                  color: '#fff',
-                  borderRadius: '4px',
-                  px: 1,
-                  width: 'fit-content'
-                }}>{row.coupon.name}</Typography> :
-                <Button
-                  sx={{ width: 'fit-content' }}
-                  disabled={
-                    row.status === 'Cancelled'
-                    || row.status === 'Delivered'
-                    || row.coupon !== null
-                  }
-                  onClick={() => handleCoupon(params.row)}>
-                  Apply
-                </Button>
-            }
-          </Stack>
-        )
-      },
-    },
+
     {
       field: 'action', headerName: 'Action', width: 70,
       renderHeader: () => (
@@ -268,42 +297,7 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
           px: 1
         }}>({orders?.length})</Typography>
       </Stack>
-      {/* <Stack direction={{ xs: 'column', md: 'row' }} gap={2}>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          maxWidth: '300px',
-          bgcolor: '#fff',
-          width: '100%',
-          border: '1px solid lightgray',
-          borderRadius: '4px',
-          pl: 2
-        }}>
-          <Input type='date' onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Name / Email' />
-          <IconButton><Search /></IconButton>
-        </Box>
-        <Box sx={{ minWidth: 200 }}>
-          <FormControl size='small' fullWidth>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              label="Status"
-              onChange={e => setStatusFilter(e.target.value)}
-            >
-              <MenuItem value={'all'}>All </MenuItem>
-              <MenuItem value={'Placed'}>Placed</MenuItem>
-              <MenuItem value={'Confirmed'}>Confirmed</MenuItem>
-              <MenuItem value={'Delivered'}>Delivered</MenuItem>
-              <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Stack> */}
-      {/* apply coupon */}
-      <CDialog openDialog={couponDialogOpen}>
-        <ApplyCoupon fetchOrders={fetchOrders} data={couponRowData} closeDialog={() => setCouponDialogOpen(false)} />
-      </CDialog>
+
       {/* update order */}
       <CDialog openDialog={orderUpdateDialogOpen}>
         <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />

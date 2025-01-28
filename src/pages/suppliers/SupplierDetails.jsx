@@ -16,6 +16,7 @@ import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import { VENDOR } from './graphql/query';
 import { format } from 'date-fns';
 import SupplierProductCard from './SupplierProductCard';
+import LoadingBar from '../../common/loadingBar/LoadingBar';
 
 const SupplierDetails = () => {
   const [vendor, setVendor] = useState({});
@@ -28,6 +29,14 @@ const SupplierDetails = () => {
     variables: { id },
     onCompleted: (res) => setVendor(res.vendor),
   });
+
+
+  if (vendorLoading) {
+    return <LoadingBar />
+  }
+  if (vendorErr) {
+    return <ErrorMsg />
+  }
 
   return (
     <Box maxWidth="xl" sx={{ p: 3 }}>

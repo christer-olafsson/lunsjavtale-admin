@@ -41,7 +41,7 @@ const LinkBtn = ({ style, text, icon, link, onClick, expandIcon, expand, subItem
             borderRadius: '4px',
             overflow: 'hidden',
             // mb: 1,
-            color: !expandIcon && isActive ? 'primary.main' : '#95A2B0',
+            color: !expandIcon && isActive ? 'primary.main' : 'lightgray',
             bgcolor: !expandIcon && isActive ? 'light.main' : '',
             ...style,
             position: 'relative',
@@ -192,21 +192,21 @@ function Layout() {
       flexDirection: 'column',
       // justifyContent: 'center',
       alignItems: 'center',
-      bgcolor: '#1E293B',
+      bgcolor: 'primary.main',
       // height: '100%',
       height: '200vh',
       pb: 3
     }}>
       <Toolbar sx={{
         display: 'flex',
-        justifyContent: 'center', mt: 2
+        justifyContent: 'center', mt: 2,
       }}>
         <Link to='/'>
           <Box sx={{
             width: { xs: '150px', md: '180px' },
             mb: 5
           }}>
-            <img style={{ width: '100%' }} src="/logo.gif" alt="" />
+            <img style={{ width: '100%' }} src="/logo-white.png" alt="" />
           </Box>
         </Link>
       </Toolbar>

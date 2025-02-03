@@ -197,6 +197,19 @@ const OrderDetails = () => {
               </Stack>
             }
             <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment:</b></Typography>
+              <Typography sx={{
+                fontWeight: 600,
+                fontSize: '14px',
+                border: '1px solid lightgray',
+                px: 1,
+                borderRadius: '4px',
+                color: order?.isFullPaid ? 'green' : 'red',
+              }}>
+                {order?.isFullPaid ? 'Done' : 'Pending'}
+              </Typography>
+            </Stack>
+            <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Final Price:</b></Typography>
               <Typography sx={{ color: 'blue', fontWeight: 600 }}>{order?.finalPrice ?? '0'} kr</Typography>
             </Stack>
@@ -205,6 +218,7 @@ const OrderDetails = () => {
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Paid Amount:</b></Typography>
               <Typography sx={{ fontWeight: 600, color: order?.paidAmount == 0.00 ? 'darkgray' : 'green' }}>{order?.paidAmount} kr</Typography>
             </Stack>
+
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Coupon:</b></Typography>
               {

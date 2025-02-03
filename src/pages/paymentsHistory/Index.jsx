@@ -216,7 +216,7 @@ const PaymentsHistory = () => {
             </CButton>
           </Stack>
         </Stack>
-        <Button sx={{ mb: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+        {/* <Button sx={{ mb: { xs: 2, md: 0 }, width: 'fit-content', whiteSpace: 'nowrap', height: 'fit-content' }} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button> */}
       </Stack>
       <Box mt={3}>
         {

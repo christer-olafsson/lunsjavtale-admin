@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client';
 import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ORDER_PAYMENT } from './graphql/query';
-import { Avatar, Box, Divider, IconButton, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
 import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
@@ -33,17 +33,16 @@ const PaymentDetails = () => {
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Payment Details</Typography>
       </Stack>
       <Box mt={3}>
-        <Stack direction='row' gap={2}>
-          <Stack alignItems='center' sx={{
+        <Stack direction='row' justifyContent='space-between' gap={2}>
+          <Typography sx={{
             mb: 2,
             display: 'inline-flex',
             padding: '5px 12px',
             border: '1px solid lightgray',
             borderRadius: '50px',
-            minWidth: '200px',
-          }}>
-            <Typography sx={{ fontWeight: 600 }} variant='body2'>Payment: {payment?.status}</Typography>
-          </Stack>
+            fontWeight: 600
+          }} variant='body2'>Payment: {payment?.status}
+          </Typography>
         </Stack>
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
           <Stack direction={{ xs: 'column', md: 'row' }} gap={3}>

@@ -119,8 +119,8 @@ const SupplierDetails = () => {
                   <Stack gap={2} mt={{ xs: 3, md: 0 }}>
                     {[
                       { label: 'Sold Amount', value: `${vendor?.soldAmount ?? '00'} kr`, bgColor: 'RebeccaPurple' },
-                      { label: 'Lunsjavtale Commission', value: `${vendor?.commission ?? '0'} %`, bgColor: 'blue' },
-                      { label: 'Lunsjavtale Commission', value: `${vendor?.ownerCommission ?? '0'} kr`, bgColor: 'blue' },
+                      // { label: 'Lunsjavtale Commission', value: `${vendor?.commission ?? '0'} %`, bgColor: 'blue' },
+                      { label: 'L Commission', value: `(${vendor?.commission}%) ${vendor?.ownerCommission ?? '0'} kr`, bgColor: 'blue' },
                       { label: 'Withdrawn Amount', value: `${vendor?.withdrawnAmount ?? '00'} kr`, bgColor: 'purple' },
                       { label: 'Balance', value: `${vendor?.balance ?? '00'} kr`, bgColor: 'green' },
                     ].map((item, index) => (

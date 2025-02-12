@@ -97,11 +97,11 @@ const OrderDetails = () => {
       {/* </SlideDrawer> */}
 
       <Box mt={2}>
-        <Stack direction='row' justifyContent='space-between' mb={2}>
+        <Stack direction='row' justifyContent='space-between' mb={4}>
           <Box />
           <Stack direction='row' gap={2}>
-            <Button disabled={order?.status === 'Delivered' || order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap' }} startIcon={<Edit />} onClick={() => setUpdateOrderDialogOpen(true)} variant='outlined'>Update</Button>
-            <Button disabled={order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap', }} startIcon={<Add />} onClick={() => setOpenCreatePaymentDialog(true)} variant='contained'>Create Payment</Button>
+            <Button disabled={order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap', }} startIcon={<Add />} onClick={() => setOpenCreatePaymentDialog(true)} variant='outlined'>Payment</Button>
+            <Button disabled={order?.status === 'Delivered' || order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap' }} startIcon={<Edit />} onClick={() => setUpdateOrderDialogOpen(true)} variant='contained'>Update</Button>
           </Stack>
         </Stack>
         {/* <Stack direction='row' gap={2} alignItems='center' mb={2}>
@@ -248,13 +248,13 @@ const OrderDetails = () => {
                 <Typography>{order?.billingAddress?.address}</Typography>
               </Stack>
               <Stack direction='row'>
-                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>First Name:</b></Typography>
+                <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Company:</b></Typography>
                 <Typography>{order?.billingAddress?.firstName}</Typography>
               </Stack>
-              <Stack direction='row'>
+              {/* <Stack direction='row'>
                 <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Last Name:</b></Typography>
                 <Typography>{order?.billingAddress?.lastName}</Typography>
-              </Stack>
+              </Stack> */}
               <Stack direction='row'>
                 <Typography sx={{ width: '100px', whiteSpace: 'nowarp' }}> <b>Phone:</b></Typography>
                 <Typography>{order?.billingAddress?.phone}</Typography>

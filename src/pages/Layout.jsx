@@ -281,12 +281,12 @@ function Layout() {
           text='Customers'
 
         />
-        <LinkBtn onClick={handleDrawerClose}
+        {/* <LinkBtn onClick={handleDrawerClose}
           notification={newMeetings.length > 0 ? newMeetings.length : ''}
           link='/dashboard/meetings'
           icon={<Diversity3 fontSize='small' />}
           text='Meetings'
-        />
+        /> */}
         <LinkBtn onClick={() => setExpandSuppliers(!expandSuppliers)}
           icon={<HolidayVillage fontSize='small' />}
           text='Suppliers'

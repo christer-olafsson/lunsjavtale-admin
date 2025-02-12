@@ -64,7 +64,7 @@ function App() {
         <Route path='/dashboard/suppliers' element={<Suppliers />} />
         <Route path='/dashboard/suppliers/details/:id' element={<SupplierDetails />} />
         <Route path='/dashboard/withdraw-req' element={<WithdrawReq />} />
-        <Route path='/dashboard/meetings' element={<Meeting />} />
+        {/* <Route path='/dashboard/meetings' element={<Meeting />} /> */}
         <Route path='/dashboard/coupons' element={<Coupons />} />
         <Route path='/dashboard/coupons/details/:id' element={<CouponDetails />} />
         <Route path='/dashboard/brand' element={<Brand />} />

@@ -8,8 +8,9 @@ import { CREATE_PAYMENT } from './graphql/mutation';
 import CButton from '../../common/CButton/CButton';
 import { COMPANIES } from '../../graphql/query';
 import { ORDER, USERS } from './graphql/query';
+import { COMPANY } from '../customers/graphql/query';
 
-const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
+const CreatePayment = ({ orderPayment, customerPayment, data, closeDialog }) => {
   const [errors, setErrors] = useState({});
   const [companies, setCompanies] = useState([]);
   const [users, setUsers] = useState([])
@@ -21,6 +22,8 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
     note: '',
   })
 
+  console.log(data)
+
   const { loading: companiesLoading } = useQuery(COMPANIES, {
     onCompleted: (res) => {
       setCompanies(res.companies.edges.map(item => ({
@@ -31,17 +34,6 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
       })))
     },
   });
-
-  useEffect(() => {
-    if (orderData) {
-      setPayload({
-        ...payload,
-        company: orderData?.company ?? {},
-        orders: [orderData?.id] ?? null,
-        paidAmount: orderData?.companyDueAmount ?? ''
-      })
-    }
-  }, [orderData])
 
 
   const { loading: usersLoading } = useQuery(USERS, {
@@ -61,12 +53,12 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
 
 
   const [createPayment, { loading }] = useMutation(CREATE_PAYMENT, {
-    refetchQueries: [ORDER],
+    refetchQueries: [ORDER, COMPANY],
     onCompleted: (res) => {
       toast.success(res.createPayment.message)
-      if (fetchOrderPayment) {
-        fetchOrderPayment()
-      }
+      // if (fetchOrderPayment) {
+      //   fetchOrderPayment()
+      // }
       closeDialog()
     },
     onError: (err) => {
@@ -103,6 +95,30 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
     })
   }
 
+  useEffect(() => {
+    if (data) {
+      if (orderPayment) {
+        setPayload({
+          ...payload,
+          company: data?.company ?? {},
+          orders: [data?.id] ?? null,
+          paidAmount: data?.companyDueAmount ?? ''
+        })
+      } else if (customerPayment) {
+        setPayload({
+          ...payload,
+          company: {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            logoUrl: data.logoUrl
+          },
+          paidAmount: data?.balance ?? ''
+        })
+      }
+    }
+  }, [data])
+
 
   return (
     <Box>
@@ -116,7 +132,7 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
 
       {/* company select */}
       <Autocomplete
-        disabled={orderData}
+        disabled={data}
         sx={{ mb: 2 }}
         options={companies}
         value={payload.company}
@@ -139,9 +155,9 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
         )}
       />
 
-      {/* user select */}
+      {/* staff select */}
       <Autocomplete
-        sx={{ mb: 2, display: orderData ? 'none' : 'block' }}
+        sx={{ mb: 2, display: data ? 'none' : 'block' }}
         options={users}
         disabled={!payload.company?.id}
         loading={usersLoading}
@@ -167,8 +183,8 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
 
       <FormGroup sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField
-          sx={{ display: !orderData ? 'none' : 'flex' }}
-          disabled={orderData}
+          sx={{ display: !data ? 'none' : 'flex' }}
+          disabled={data}
           onChange={e => setPayload({ ...payload, orders: e.target.value })}
           error={Boolean(errors.orders)}
           helperText={errors.orders}
@@ -183,7 +199,7 @@ const CreatePayment = ({ orderData, fetchOrderPayment, closeDialog }) => {
           value={payload.paidAmount}
           label='Amount'
           type='number'
-          inputProps={{ readOnly: orderData ? true : false }}
+          inputProps={{ readOnly: data ? true : false }}
         />
         <TextField
           onChange={e => setPayload({ ...payload, note: e.target.value })}

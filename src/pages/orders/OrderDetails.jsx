@@ -8,7 +8,6 @@ import ErrorMsg from '../../common/ErrorMsg/ErrorMsg';
 import SelectedStaffs from './SelectedStaffs';
 import { format } from 'date-fns';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
-import InvoiceTemplate, { downloadPDF } from './InvoiceTemplate';
 import CDialog from '../../common/dialog/CDialog';
 import CreatePayment from './CreatePayment';
 import UpdateOrder from './UpdateOrder';
@@ -18,22 +17,10 @@ import ApplyCoupon from './ApplyCoupon';
 const OrderDetails = () => {
   const [order, setOrder] = useState([]);
   const [selectedStaffDetailsId, setSelectedStaffDetailsId] = useState('')
-  const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
   const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
   const [updateOrderDialogOpen, setUpdateOrderDialogOpen] = useState(false)
   const [couponDialogOpen, setCouponDialogOpen] = useState(false)
 
-
-  const toggleDrawer = (event) => {
-    if (
-      event &&
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return;
-    }
-    setOpenSlideDrawer(!openSlideDrawer);
-  };
 
   const { id } = useParams()
   const navigate = useNavigate()
@@ -83,7 +70,7 @@ const OrderDetails = () => {
 
       {/* create payment */}
       <CDialog openDialog={openCreatePaymentDialog}>
-        <CreatePayment orderData={order} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+        <CreatePayment orderPayment data={order} closeDialog={() => setOpenCreatePaymentDialog(false)} />
       </CDialog>
 
       {/* apply coupon */}
@@ -91,10 +78,7 @@ const OrderDetails = () => {
         <ApplyCoupon data={order} closeDialog={() => setCouponDialogOpen(false)} />
       </CDialog>
 
-      {/* invoice page */}
-      {/* <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}> */}
-      <InvoiceTemplate data={order} toggleDrawer={toggleDrawer} />
-      {/* </SlideDrawer> */}
+
 
       <Box mt={2}>
         <Stack direction='row' justifyContent='space-between' mb={4}>
@@ -104,23 +88,7 @@ const OrderDetails = () => {
             <Button disabled={order?.status === 'Delivered' || order?.status === 'Cancelled'} sx={{ whiteSpace: 'nowrap' }} startIcon={<Edit />} onClick={() => setUpdateOrderDialogOpen(true)} variant='contained'>Update</Button>
           </Stack>
         </Stack>
-        {/* <Stack direction='row' gap={2} alignItems='center' mb={2}>
-          {
-            order?.status === 'Delivered' &&
-            <Button
-              size='small'
-              onClick={() => downloadPDF()}
-              // onClick={toggleDrawer}
-              sx={{ borderRadius: '50px', height: '30px' }}
-              variant='outlined'
-              startIcon={<Download />
 
-              }>
-              Invoice
-            </Button>
-          }
-
-        </Stack> */}
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent='space-between' gap={3}>
           <Stack>
             <Stack direction='row' alignItems='center'>
@@ -196,6 +164,10 @@ const OrderDetails = () => {
                 <Typography sx={{ color: 'coral' }}>-{order?.discountAmount} kr</Typography>
               </Stack>
             }
+            <Stack direction='row'>
+              <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Delivery Charge:</b></Typography>
+              <Typography sx={{ fontWeight: 600 }}>{order?.shippingCharge ?? '0'} kr</Typography>
+            </Stack>
             <Stack direction='row'>
               <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Payment:</b></Typography>
               <Typography sx={{

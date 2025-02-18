@@ -15,8 +15,9 @@ import UpdateOrder from '../orders/UpdateOrder';
 import CButton from '../../common/CButton/CButton';
 import useIsMobile from '../../hook/useIsMobile';
 import moment from 'moment-timezone';
+import { COMPANY } from './graphql/query';
 
-const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
+const CustomerOrders = ({ data, loading, error }) => {
   const [orders, setOrders] = useState([])
   const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [orderUpdateData, setOrderUpdateData] = useState({})
@@ -27,10 +28,10 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
 
   const [orderHistoryDelete, { loading: deleteLoading }] = useMutation(ORDER_HISTORY_DELETE, {
     onCompleted: (res) => {
-      fetchOrders()
       toast.success(res.orderHistoryDelete.message)
       setDeleteOrderDialogOpen(false)
     },
+    refetchQueries: [COMPANY],
     onError: (err) => {
       toast.error(err.message)
     }
@@ -198,7 +199,7 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
     //   )
     // },
     {
-      field: 'status', headerName: 'Status', width: 200,
+      field: 'status', headerName: 'Status', width: 220,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
@@ -225,7 +226,7 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
                 color: '#FFF',
                 borderRadius: '4px',
               }}>
-                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '14px' }} >
+                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '12px' }} >
                   {row.status}
                 </Typography>
               </Box>
@@ -300,7 +301,7 @@ const CustomerOrders = ({ data, fetchOrders, loading, error }) => {
 
       {/* update order */}
       <CDialog openDialog={orderUpdateDialogOpen}>
-        <UpdateOrder fetchOrders={fetchOrders} data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
+        <UpdateOrder data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
       </CDialog>
       {/* delete Order */}
       <CDialog closeDialog={() => setDeleteOrderDialogOpen(false)} maxWidth='sm' openDialog={deleteOrderDialogOpen}>

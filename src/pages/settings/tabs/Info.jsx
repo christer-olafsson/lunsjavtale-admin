@@ -139,7 +139,7 @@ const Info = () => {
 
   return (
     <Box sx={{ minHeight: '600px' }} maxWidth='xxl'>
-      <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600, mb: 6 }}>Update Company Info </Typography>
+      <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600, mb: 6 }}>Company Info </Typography>
       <Stack direction='row' justifyContent='space-between' mb={2}>
         <Box />
         {
@@ -153,7 +153,7 @@ const Info = () => {
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={{ xs: 2, md: 6 }}>
         <Stack sx={{ flex: 1 }} gap={2}>
-          <TextField disabled={!editOn} value={payload.name} onChange={handleInputChange} name='name' size='small' fullWidth label='Name' />
+          <TextField disabled={!editOn} value={payload.name} onChange={handleInputChange} name='name' size='small' fullWidth label='Company Name' />
           <TextField disabled={!editOn} value={payload.email} onChange={handleInputChange} name='email' size='small' fullWidth label='Email' />
           <TextField disabled={!editOn} value={payload.contact} onChange={handleInputChange} name='contact' size='small' fullWidth label='Contact' />
           {/* <TextField disabled={!editOn} value={payload.formationDate} onChange={handleInputChange} name='formationDate' size='small' type='date' helperText='Formation Date' fullWidth label='' /> */}

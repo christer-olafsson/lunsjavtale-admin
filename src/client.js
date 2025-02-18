@@ -22,11 +22,11 @@ const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
     // Graphql Error hapenning
     if (graphQLErrors) {
-      graphQLErrors.forEach(({ message, extensions, locations, path }) => {
+      graphQLErrors.forEach(({ message, code,extensions, locations, path }) => {
         console.log('graphql err:',message)
         if (
           message === "Signature has expired" ||
-          message === "You are not authorized user."
+          code === "unauthorized"
         ) {
           localStorage.removeItem('admin_lunsjavtale');
           // localStorage.removeItem("refresh");

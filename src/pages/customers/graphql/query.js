@@ -35,16 +35,19 @@ export const COMPANY = gql`
           isFullPaid
           status
           dueAmount
-           statuses{
-      edges{
-        node{
-          id
-          status
-          note
-          createdOn
-        }
-      }
-    }
+          companyDueAmount
+          employeeDueAmount
+          shippingCharge
+          statuses{
+            edges{
+              node{
+                id
+                status
+                note
+                createdOn
+              }
+            }
+          }
         }
       }
     }

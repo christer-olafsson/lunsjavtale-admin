@@ -262,7 +262,7 @@ const Orders = () => {
     },
 
     {
-      field: 'status', headerName: 'Status', width: 200,
+      field: 'status', headerName: 'Status', width: 230,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' }, ml: 5 }}>Status</Typography>
       ),
@@ -289,7 +289,7 @@ const Orders = () => {
                 color: '#FFF',
                 borderRadius: '4px',
               }}>
-                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '14px' }} >
+                <Typography sx={{ fontWeight: 600, textAlign: 'center', fontSize: '13px' }} >
                   {row.status}
                 </Typography>
               </Box>

@@ -1,6 +1,6 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { LockOutlined, West } from '@mui/icons-material'
-import { Box, IconButton, Stack, Tab, Typography } from '@mui/material'
+import { Add, DescriptionOutlined, Download, LockOutlined, West } from '@mui/icons-material'
+import { Box, Button, IconButton, Stack, Tab, Typography } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { COMPANY } from './graphql/query'
 import { useEffect, useState } from 'react'
@@ -10,11 +10,28 @@ import CustomersList from './CustomersList'
 import { format } from 'date-fns'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import CustomerOrders from './CustomerOrders'
-import LoadingBar from '../../common/loadingBar/LoadingBar'
+import InvoiceTemplate, { downloadPDF } from '../invoice/InvoiceTemplate'
+import CDialog from '../../common/dialog/CDialog'
+import CreatePayment from '../orders/CreatePayment'
 
 const CustomerDetails = () => {
   const [company, setCompany] = useState({})
   const [value, setValue] = useState('1');
+  const [openCreatePaymentDialog, setOpenCreatePaymentDialog] = useState(false)
+  const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
+
+
+  const toggleDrawer = (event) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setOpenSlideDrawer(!openSlideDrawer);
+  };
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -24,8 +41,7 @@ const CustomerDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const [fetchCompany, { loading: loadingCompany, error: companyErr }] = useLazyQuery(COMPANY, {
-    fetchPolicy: 'network-only',
+  const { loading: loadingCompany, error: companyErr } = useQuery(COMPANY, {
     notifyOnNetworkStatusChange: true,
     variables: {
       id
@@ -34,10 +50,6 @@ const CustomerDetails = () => {
       setCompany(res.company)
     },
   });
-
-  useEffect(() => {
-    fetchCompany()
-  }, [])
 
 
   return (
@@ -48,11 +60,40 @@ const CustomerDetails = () => {
         </IconButton>
         <Typography sx={{ fontSize: '20px', fontWeight: 600 }}>Customer Details</Typography>
       </Stack>
+      <Stack direction='row' justifyContent='space-between' mb={4}>
+        <Box />
+        <Stack direction='row' gap={2}>
+          <Button disabled={company?.balance === '0.00'} startIcon={<Add />} onClick={() => setOpenCreatePaymentDialog(true)} variant='outlined'>Payment</Button>
+          <Button
+            size='small'
+            onClick={() => downloadPDF()}
+            variant='contained'
+            disabled={company?.balance === '0.00'}
+            // onClick={toggleDrawer}
+            startIcon={<Download />
+
+            }>
+            Invoice
+          </Button>
+        </Stack>
+
+      </Stack>
+
+      {/* create payment */}
+      <CDialog openDialog={openCreatePaymentDialog}>
+        <CreatePayment customerPayment data={company} closeDialog={() => setOpenCreatePaymentDialog(false)} />
+      </CDialog>
+
+      {/* invoice page */}
+      {/* <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}> */}
+      <InvoiceTemplate data={company} toggleDrawer={toggleDrawer} />
+      {/* </SlideDrawer> */}
+
       {
         loadingCompany ? <Loader /> : companyErr ? <ErrorMsg /> :
           <Box>
             <Stack direction={{ xs: 'column', md: 'row' }} gap={2} alignItems='center' justifyContent='space-between'>
-              <Stack direction='row' gap={2} mb={5} alignItems='center'>
+              <Stack direction='row' gap={2} mb={5} >
                 <img style={{
                   width: '100px',
                   height: '100px',
@@ -137,7 +178,7 @@ const CustomerDetails = () => {
                   </TabList>
                 </Box>
                 <TabPanel value="1">
-                  <CustomerOrders fetchOrders={fetchCompany} loading={loadingCompany} error={companyErr} data={company} />
+                  <CustomerOrders loading={loadingCompany} error={companyErr} data={company} />
                 </TabPanel>
                 <TabPanel value="2">
                   <CustomersList data={company} />

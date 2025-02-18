@@ -87,6 +87,7 @@ export const ORDER = gql`
     isDeleted
     deliveryDate
     finalPrice
+    actualPrice
     status
     createdOn
     isDeleted

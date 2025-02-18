@@ -183,7 +183,7 @@ const CreatePayment = ({ orderPayment, customerPayment, data, closeDialog }) => 
 
       <FormGroup sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField
-          sx={{ display: !data ? 'none' : 'flex' }}
+          sx={{ display: customerPayment ? 'none' : 'flex' }}
           disabled={data}
           onChange={e => setPayload({ ...payload, orders: e.target.value })}
           error={Boolean(errors.orders)}

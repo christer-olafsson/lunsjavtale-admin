@@ -41,7 +41,7 @@ export const downloadPDF = () => {
 const InvoiceTemplate = ({ data, toggleDrawer }) => {
   const [clientDetails, setClientDetails] = useState({})
 
-  console.log(data)
+  // console.log(data)
 
   useQuery(CLIENT_DETAILS, {
     onCompleted: (res) => {
@@ -124,7 +124,7 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
       </Box>
 
       <Box mb={10} mt={8}>
-        <Typography sx={{ fontSize: '25px', fontWeight: 600, mb: 2 }}>Invoice</Typography>
+        <Typography sx={{ fontSize: '25px', fontWeight: 600, mb: 2 }}>Due Invoice</Typography>
         <Stack gap={.8}>
           <Divider sx={{ borderBottomWidth: '3px', borderBottomColor: 'black' }} />
           {/* <Stack direction='row'>
@@ -151,8 +151,9 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
             <tr>
               <th>Order ID</th>
               <th>Date</th>
-              <th>Shipping</th>
-              <th>Due Amount</th>
+              <th>Shipping Charge</th>
+              <th>Total Amount</th>
+              <th>Total Due</th>
             </tr>
           </thead>
           <tbody>
@@ -176,6 +177,7 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
 
                     </td>
                     <td>{node?.shippingCharge} kr </td>
+                    <td>{node?.finalPrice} kr </td>
                     <td>
                       <Typography>
                         {node?.dueAmount} kr
@@ -190,6 +192,7 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
             <tr>
               <td style={{ border: 'none' }}></td>
               <td style={{ border: 'none' }}></td>
+              <td style={{ border: 'none' }}></td>
               <td style={{ fontWeight: 'bold' }}>Total </td>
               <td style={{ fontWeight: 'bold' }}>{data?.balance} kr</td>
             </tr>
@@ -198,10 +201,15 @@ const InvoiceTemplate = ({ data, toggleDrawer }) => {
         </table>
       </Box>
 
-      <Box sx={{ border: '1px solid lightgray', mt: 20, p: 2, minHeight: '150px' }}>
+      {/* <Box sx={{ border: '1px solid lightgray', mt: 20, p: 2, minHeight: '150px' }}>
         <Typography sx={{ fontSize: '20px', mb: 2 }}>Note and Term</Typography>
         <Typography>{data?.note}</Typography>
-      </Box>
+      </Box> */}
+
+      <Stack direction='row' justifyContent='flex-start' mt={20} >
+        <Typography sx={{ fontSize: '20px', fontWeight: 600, borderTop: '1px solid gray' }}>Signature</Typography>
+
+      </Stack>
 
     </Box>
   )

@@ -226,13 +226,13 @@ const Orders = () => {
             {params.row.finalPrice}
             <span style={{ fontWeight: 300 }}> kr</span>
           </Typography>
-          {
+          {/* {
             params.row.discountAmount > 0 &&
             <Typography sx={{ fontSize: '14px', color: 'red', fontWeight: 600 }}>
               -{params.row.discountAmount}
               <span style={{ fontWeight: 400 }}> kr</span>
             </Typography>
-          }
+          } */}
         </Stack>
       )
     },

@@ -161,7 +161,7 @@ const OrderDetails = () => {
               order?.discountAmount &&
               <Stack direction='row'>
                 <Typography sx={{ width: '200px', whiteSpace: 'nowarp' }}> <b>Discount Amount:</b></Typography>
-                <Typography sx={{ color: 'coral' }}>-{order?.discountAmount} kr</Typography>
+                <Typography sx={{ color: 'green' }}>{order?.discountAmount} kr</Typography>
               </Stack>
             }
             <Stack direction='row'>
@@ -196,7 +196,7 @@ const OrderDetails = () => {
               {
                 order?.coupon ?
                   <Typography sx={{ bgcolor: 'coral', px: 1, borderRadius: '4px', color: '#fff' }}>{order?.coupon?.name}</Typography> :
-                  <Button disabled={order?.status === 'Delivered' || order?.status === 'Cancelled'} onClick={() => setCouponDialogOpen(true)} variant='outlined' size='small'>Apply</Button>
+                  <Button disabled={order?.status === 'Cancelled'} onClick={() => setCouponDialogOpen(true)} variant='outlined' size='small'>Apply</Button>
               }
             </Stack>
             {

@@ -131,7 +131,7 @@ const CreatePayment = ({ orderPayment, customerPayment, data, closeDialog }) => 
       </Stack>
 
       {/* company select */}
-      <Autocomplete
+      {/* <Autocomplete
         disabled={data}
         sx={{ mb: 2 }}
         options={companies}
@@ -139,6 +139,7 @@ const CreatePayment = ({ orderPayment, customerPayment, data, closeDialog }) => 
         loading={companiesLoading}
         onChange={(_, value) => setPayload({ ...payload, company: value })}
         getOptionLabel={(option) => option.email}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
             <Stack direction='row' gap={2}>
@@ -153,16 +154,17 @@ const CreatePayment = ({ orderPayment, customerPayment, data, closeDialog }) => 
         renderInput={(params) => (
           <TextField error={Boolean(errors.company)} helperText={errors.company} {...params} label="Payment for (Customer)" />
         )}
-      />
+      /> */}
 
       {/* staff select */}
-      <Autocomplete
+      {/* <Autocomplete
         sx={{ mb: 2, display: data ? 'none' : 'block' }}
         options={users}
         disabled={!payload.company?.id}
         loading={usersLoading}
         onChange={(_, value) => setPayload({ ...payload, paymentFor: value })}
         getOptionLabel={(option) => option.email}
+        // isOptionEqualToValue={(option, value) => option.id === value.id}
         renderOption={(props, option, { selected }) => (
           <li {...props}>
             <Stack direction='row' gap={2}>
@@ -179,7 +181,7 @@ const CreatePayment = ({ orderPayment, customerPayment, data, closeDialog }) => 
         renderInput={(params) => (
           <TextField {...params} label="Payment for (User)" />
         )}
-      />
+      /> */}
 
       <FormGroup sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField

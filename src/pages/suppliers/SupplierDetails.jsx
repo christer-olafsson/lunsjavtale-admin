@@ -39,7 +39,7 @@ const SupplierDetails = () => {
   }
 
   return (
-    <Box maxWidth="xl" sx={{ p: 3 }}>
+    <Box maxWidth="xl" >
       {/* Header */}
       <Stack direction="row" alignItems="center" gap={2} mb={3}>
         <IconButton onClick={() => navigate(-1)}>

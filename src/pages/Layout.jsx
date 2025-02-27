@@ -22,6 +22,7 @@ import { ORDERS } from './orders/graphql/query';
 import { COMPANIES, ME } from '../graphql/query';
 import { FOOD_MEETINGS } from './meeting/graphql/query';
 import { WITHDRAW_REQ } from './withdraw-req/graphql/query';
+import NavItem from './NavItem';
 
 
 const drawerWidth = 264;
@@ -87,17 +88,10 @@ function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUsermenuOpen] = useState(null);
-  const [openEmail, setOpenEmail] = useState(false)
   const [openNotification, setOpenNotification] = useState(false);
-  const [expandFoodMenu, setExpandFoodMenu] = useState(false)
-  const [expandSuppliers, setExpandSuppliers] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState([])
-  const [placedOrders, setPlacedOrders] = useState([])
-  const [newCompanies, setNewCompanies] = useState([])
-  const [newMeetings, setNewMeetings] = useState([])
-  const [newWithdrawReq, setNewWithdrawReq] = useState([])
 
-  const { pathname } = useLocation();
+
 
   const { data: user } = useQuery(ME)
 
@@ -107,40 +101,6 @@ function Layout() {
     }
   });
 
-  useQuery(ORDERS, {
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (res) => {
-      const relevantStatuses = ['Placed', 'Updated', 'Payment-pending', 'Payment-completed'];
-      setPlacedOrders(res.orders.edges
-        .filter(item => relevantStatuses.includes(item.node.status))
-        .map(item => item.node)
-      );
-    }
-  });
-
-  useQuery(COMPANIES, {
-    fetchPolicy: "network-only",
-    onCompleted: (res) => {
-      setNewCompanies(res.companies.edges.filter(item => !item.node.isChecked).map(item => item.node))
-    },
-  });
-
-  useQuery(FOOD_MEETINGS, {
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (res) => {
-      setNewMeetings(res.foodMeetings.edges.filter(item => item.node.status === 'pending').map(item => item.node))
-    }
-  });
-
-  useQuery(WITHDRAW_REQ, {
-    fetchPolicy: "network-only",
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (res) => {
-      setNewWithdrawReq(res.withdrawRequests.edges.filter(item => item.node.status === 'pending').map(item => item.node))
-    },
-  });
 
   const [logout, { loading }] = useMutation(LOGOUT, {
     onCompleted: (res) => {
@@ -169,22 +129,6 @@ function Layout() {
     }
   };
 
-  useEffect(() => {
-    if (newWithdrawReq.length > 0) {
-      setExpandSuppliers(true)
-    }
-  }, [newWithdrawReq])
-
-
-  useEffect(() => {
-    if (pathname === '/dashboard/food-item' || pathname === '/dashboard/food-categories') {
-      setExpandFoodMenu(true)
-    }
-    if (pathname === '/dashboard/suppliers' || pathname === '/dashboard/sales-history' || pathname === '/dashboard/withdraw-req') {
-      setExpandSuppliers(true)
-    }
-  }, [pathname])
-
 
   const drawer = (
     <Box sx={{
@@ -210,154 +154,9 @@ function Layout() {
           </Box>
         </Link>
       </Toolbar>
-      {/* <Divider /> */}
-      {/* <Typography sx={{
-        width: '80%',
-        padding: '16px 12px',
-        color: '#fff',
-        bgcolor: 'primary.main',
-        borderRadius: '8px',
-        fontSize: '15px',
-        fontWeight: 500,
-        textAlign: 'center',
-        m: 3
-      }}>
-        Deal: Lunsjavtale
-      </Typography> */}
-      <Stack sx={{
-        width: '80%'
-      }}>
-        <LinkBtn
-          onClick={handleDrawerClose}
-          link='/' icon={<SpaceDashboard fontSize='small' />} text='Dashboard'
-        />
-        <LinkBtn
-          notification={unreadNotifications > 0 ? unreadNotifications : ''}
-          onClick={handleDrawerClose}
-          link='/dashboard/notifications' icon={<NotificationsNone fontSize='small' />} text='Notifications'
-        />
-        <LinkBtn onClick={() => setExpandFoodMenu(!expandFoodMenu)}
-          expandIcon
-          expand={expandFoodMenu || pathname === '/dashboard/food-item'}
-          icon={<LunchDining fontSize='small' />}
-          text='Food Menu'
-        />
-        <Collapse in={expandFoodMenu} timeout="auto" unmountOnExit>
-          <Box sx={{ ml: 3 }}>
-            <LinkBtn
-              onClick={handleDrawerClose}
-              link='/dashboard/food-item'
-              text='Food Item'
-              subItem
-            />
-            <LinkBtn
-              onClick={handleDrawerClose}
-              link='/dashboard/food-categories'
-              text='Food Categories'
-              subItem
-            />
-          </Box>
-        </Collapse>
-        {
-          user?.me?.role !== 'seo-manager' &&
-          <>
-            < LinkBtn onClick={handleDrawerClose}
-              notification={placedOrders.length > 0 ? placedOrders.length : ''}
-              link='/dashboard/orders'
-              icon={<ShoppingCartCheckoutOutlined fontSize='small' />}
-              text='Orders'
-            />
-            <LinkBtn onClick={handleDrawerClose}
-              link='/dashboard/payments-history'
-              icon={<History fontSize='small' />}
-              text='Payment-History'
-            />
-          </>
-        }
-        <LinkBtn onClick={handleDrawerClose}
-          notification={newCompanies.length > 0 ? newCompanies.length : ''}
-          link='/dashboard/customers'
-          icon={<People fontSize='small' />}
-          text='Customers'
 
-        />
-        {/* <LinkBtn onClick={handleDrawerClose}
-          notification={newMeetings.length > 0 ? newMeetings.length : ''}
-          link='/dashboard/meetings'
-          icon={<Diversity3 fontSize='small' />}
-          text='Meetings'
-        /> */}
-        <LinkBtn onClick={() => setExpandSuppliers(!expandSuppliers)}
-          icon={<HolidayVillage fontSize='small' />}
-          text='Suppliers'
-          expandIcon
-          expand={expandSuppliers}
-        />
-        {
-          <Collapse in={expandSuppliers}>
-            <Box sx={{ ml: 3 }}>
-              <LinkBtn
-                onClick={handleDrawerClose}
-                link='/dashboard/suppliers'
-                text='All Suppliers'
-                subItem
-              />
-              {
-                user?.me?.role !== 'seo-manager' &&
-                <>
-                  <LinkBtn
-                    onClick={handleDrawerClose}
-                    link='/dashboard/sales-history'
-                    text='Sales-History'
-                    subItem
-                  />
-                  <LinkBtn
-                    notification={newWithdrawReq.length > 0 ? newWithdrawReq.length : ''}
-                    onClick={handleDrawerClose}
-                    link='/dashboard/withdraw-req'
-                    text='Withdraw-Req'
-                    subItem
-                  />
-                </>
-              }
-            </Box>
-          </Collapse>
-        }
-        <LinkBtn onClick={handleDrawerClose}
-          link='/dashboard/coupons'
-          icon={<Discount fontSize='small' />}
-          text='Coupons'
-        />
-        <LinkBtn
-          onClick={handleDrawerClose}
-          link='/dashboard/areas' icon={<MapOutlined fontSize='small' />} text='Areas'
-        />
-        <LinkBtn onClick={handleDrawerClose}
-          link='/dashboard/brand'
-          icon={<Business fontSize='small' />}
-          text='Brand'
-        />
-        <LinkBtn onClick={handleDrawerClose}
-          link='/dashboard/faq'
-          icon={<LiveHelp fontSize='small' />}
-          text='Faq'
-        />
-        <LinkBtn onClick={handleDrawerClose}
-          link='/dashboard/social'
-          icon={<Instagram fontSize='small' />}
-          text='Social'
-        />
-        <LinkBtn onClick={handleDrawerClose}
-          link='/dashboard/promotion'
-          icon={<Recommend fontSize='small' />}
-          text='Promotion'
-        />
-        <LinkBtn onClick={handleDrawerClose}
-          link='/dashboard/settings'
-          icon={<Settings fontSize='small' />}
-          text='Settings'
-        />
-      </Stack>
+      {/* navitem, */}
+      <NavItem handleDrawerClose={handleDrawerClose} />
     </Box>
   );
 
@@ -390,23 +189,7 @@ function Layout() {
             <MenuIcon />
           </IconButton>
           <Box />
-          {/* <TextField sx={{
-            mr: { xs: 0, sm: 2, md: 20 },
-            maxWidth: '700px',
-            width: '100%'
-          }}
-            size='small'
-            placeholder='Type to search'
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{
-                    display: { xs: 'none', md: 'block' }
-                  }} />
-                </InputAdornment>
-              )
-            }}
-          /> */}
+
           <Box sx={{
             display: 'flex',
             alignItems: 'center',
@@ -414,17 +197,14 @@ function Layout() {
           }}>
             {
               import.meta.env.VITE_ENVIRONMENT === 'stage' &&
-              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: 'red' }}>(Test Mode)</Typography>
+              <Typography sx={{ fontSize: '14px', fontWeight: 600, color: 'red' }}>Test Mode</Typography>
             }
             {/* small notification */}
             <ClickAwayListener onClickAway={() => setOpenNotification(false)}>
               <Box sx={{
                 mr: 1
               }}>
-                <IconButton onClick={() => (
-                  setOpenNotification(!openNotification),
-                  setOpenEmail(false)
-                )} sx={{ color: 'darkgray' }} color="inherit"
+                <IconButton onClick={() => setOpenNotification(!openNotification)} sx={{ color: 'darkgray' }} color="inherit"
                 >
                   <Badge badgeContent={unreadNotifications} color="error">
                     <NotificationsNone sx={{ fontSize: '30px' }} />
@@ -448,7 +228,7 @@ function Layout() {
                   onClick={() => setUsermenuOpen(!userMenuOpen)}
                   sx={{ cursor: 'pointer' }}
                 >
-                  <Avatar src={user?.me.photoUrl ? user?.me.photoUrl : ''} sx={{ width: 32, height: 32 }} />
+                  {/* <Avatar src={user?.me.photoUrl ? user?.me.photoUrl : ''} sx={{ width: 32, height: 32 }} /> */}
                   <Box ml={1}>
                     <Typography sx={{ fontSize: '16px', fontWeight: 600, lineHeight: '20px' }}>{user?.me.username}</Typography>
                     <Typography sx={{
@@ -483,16 +263,10 @@ function Layout() {
                   borderRadius: '8px'
                 }} in={userMenuOpen}>
                   <Stack sx={{ width: '100%' }} alignItems='center'>
-                    <Avatar src={user?.me.photoUrl ?? ''} sx={{ width: '100px', height: '100px', mb: 2 }} />
+                    {/* <Avatar src={user?.me.photoUrl ?? ''} sx={{ width: '100px', height: '100px', mb: 2 }} /> */}
                     <Typography sx={{ fontSize: '20px', textAlign: 'center' }}>{user?.me.username}</Typography>
-                    <Typography sx={{ textAlign: 'center', fontSize: '14px' }}>{user?.me.email}</Typography>
-                    <Typography sx={{ textAlign: 'center', fontSize: '14px', mb: 2 }}>{user?.me.phone}</Typography>
-                    {/* <MenuItem onClick={() => setUsermenuOpen(false)}>
-                      <ListItemIcon>
-                        <Settings fontSize="small" />
-                      </ListItemIcon>
-                      Settings
-                    </MenuItem> */}
+                    <Typography sx={{ textAlign: 'center', fontSize: '14px', mb: 2 }}>{user?.me.email}</Typography>
+                    {/* <Typography sx={{ textAlign: 'center', fontSize: '14px', mb: 2 }}>{user?.me.phone}</Typography> */}
                     <Divider sx={{ width: '100%' }} />
                     <MenuItem onClick={() => (
                       setUsermenuOpen(false),
@@ -510,46 +284,6 @@ function Layout() {
             </ClickAwayListener>
             {/* user menu end */}
 
-            {/* <Box>
-              <IconButton
-                onClick={handleUserMenuOpen}
-                size="small"
-                aria-controls={open ? 'account-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-              >
-                <Avatar sx={{ width: 32, height: 32 }}>L</Avatar>
-              </IconButton>
-              <Menu
-                anchorEl={userMenuOpen}
-                id="account-menu"
-                open={open}
-                onClose={handleUserMenuClose}
-                onClick={handleUserMenuClose}
-                PaperProps={paperProps}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-              >
-                <Link style={{ textDecoration: 'none' }} className='link' to='dashboard/settings'>
-                  <MenuItem onClick={handleUserMenuClose}>
-                    <ListItemIcon>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
-                  </MenuItem>
-                </Link>
-                <Divider />
-                <MenuItem onClick={() => (
-                  handleUserMenuClose(),
-                  handleLogout()
-                )}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
-              </Menu>
-            </Box> */}
 
           </Box>
         </Toolbar>

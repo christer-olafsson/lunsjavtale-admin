@@ -92,7 +92,7 @@ const SupplierDetails = () => {
                         </Typography>
                       )}
                       <Typography><b>Contact: </b>{vendor?.contact}</Typography>
-                      <Typography><b>Total Commission: </b><span style={{ color: 'green' }}>{vendor?.ownerCommission ?? '0'}</span> kr</Typography>
+                      <Typography sx={{ bgcolor: '#0000FF', width: 'fit-content', color: '#fff', px: 2, borderRadius: '4px' }} ><b>Lifetime Service Fee: </b><span>{vendor?.ownerCommission ?? '0'}</span> kr</Typography>
                       <Typography mt={2} mb={1}><b>Post Codes:</b></Typography>
                       <Stack direction="row" gap={1.5} flexWrap="wrap">
                         {vendor?.postCode?.map((p) => (
